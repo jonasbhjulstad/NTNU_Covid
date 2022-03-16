@@ -1,19 +1,38 @@
 cmake_minimum_required(VERSION 3.20)
 project(Custom_Vulkan)
 include(FetchContent)
-set(MINGW_INCLUDE "C:\\msys64\\mingw64\\include")
 find_package(Vulkan REQUIRED)
-find_package(glfw3 REQUIRED HINTS "C:\\msys64\\mingw64\\lib\\cmake")
 
+set(CMAKE_CXX_STANDARD 17)
 
 FetchContent_Declare(
     imgui_repo
     GIT_REPOSITORY "https://github.com/ocornut/imgui.git"
 )
 
-set(CMAKE_CXX_STANDARD_REQUIRED 17)
 
 FetchContent_MakeAvailable(imgui_repo)
+
+
+FetchContent_Declare(
+    glm_repo
+    GIT_REPOSITORY "https://github.com/g-truc/glm.git"
+)
+
+
+FetchContent_MakeAvailable(glm_repo)
+
+
+
+FetchContent_Declare(
+    glfw_repo
+    GIT_REPOSITORY "https://github.com/glfw/glfw.git"
+)
+
+
+FetchContent_MakeAvailable(glfw_repo)
+
+
 file(GLOB IMGUI_SOURCE_FILES
     "${imgui_repo_SOURCE_DIR}/*.cpp"
     )

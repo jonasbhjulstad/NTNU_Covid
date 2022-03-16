@@ -1,5 +1,7 @@
 #ifndef NV_APPLICATION_HPP
 #define NV_APPLICATION_HPP
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include <array>
 #include "NV_SwapChain.hpp"
 #include "NV_Queue.hpp"

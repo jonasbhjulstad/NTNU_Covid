@@ -1,5 +1,6 @@
 #ifndef NV_QUEUE_HPP
 #define NV_QUEUE_HPP
+#include <set>
 #include <optional>
 #include <cstdint>
 #include <vulkan/vulkan.hpp>

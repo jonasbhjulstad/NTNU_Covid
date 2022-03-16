@@ -30,7 +30,8 @@ void createImageViews(SwapChainData &swapChainData, VkDevice logicalDevice)
 
 
 void recreateSwapChain(PipelineData &pipelineData,
-                       std::vector<VkFramebuffer> &frameBuffers)
+                       std::vector<VkFramebuffer> &frameBuffers,
+                       VkSurfaceKHR surface)
 {
     int width = 0, height = 0;
     glfwGetFramebufferSize(pipelineData.window, &width, &height);
@@ -42,7 +43,7 @@ void recreateSwapChain(PipelineData &pipelineData,
 
     vkDeviceWaitIdle(pipelineData.logicalDevice);
     cleanupSwapChain(pipelineData.swapChainData, frameBuffers, pipelineData.pipeline, pipelineData.layout, pipelineData.renderPass, pipelineData.logicalDevice);
-    createSwapChain(pipelineData.physicalDevice, pipelineData.swapChainData.);
+    createSwapChain(pipelineData.physicalDevice, pipelineData.swapChainData.support, surface, pipelineData.window, pipelineData.logicalDevice);
 }
 
 PipelineData createGraphicsPipeline(const std::string &vertShaderPath,

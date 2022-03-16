@@ -1,7 +1,7 @@
 #include "NV_Application.hpp"
 namespace NV
 {
-    const std::vector<Vertex> createCircleVertices(const float &radius, const uint32_t N_vertices, const glm::vec3 color = {1.0f, .0f, .0f})
+    const std::vector<Vertex> createCircleVertices(const float &radius, const uint32_t N_vertices, const glm::vec3 color)
     {
         std::vector<Vertex> vertices(N_vertices + 1);
         vertices[0] = {{.0f, .0f}, color};
@@ -15,7 +15,7 @@ namespace NV
     static const uint16_t N_vertices = 10;
     const std::vector<Vertex> vertices = createCircleVertices(1.0, N_vertices);
 
-    const std::vector<uint16_t> createCircleIndices(const uint32_t N_vertices)
+    std::vector<uint16_t> createCircleIndices(const uint32_t N_vertices)
     {
         std::vector<uint16_t> indices(3 * N_vertices);
         for (uint32_t i = 0; i < N_vertices; i++)
@@ -33,7 +33,7 @@ namespace NV
                                   GLFWwindow *window,
                                   VkPhysicalDevice physicalDevice)
     {
-        NV_Data data;
+        NV_Data data{};
         createLogicalDevice(physicalDevice, data.graphicsQueue, data.presentQueue, data.logicalDevice);
 
         data.descriptorSetLayout = createDescriptorSetLayout(data.logicalDevice);
