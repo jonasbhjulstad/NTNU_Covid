@@ -20,7 +20,7 @@
 #include "imgui_impl_vulkan.h"
 #include <stdio.h>          // printf, fprintf
 #include <stdlib.h>         // abort
-
+#include "core/NetworkViewport/NV_Application.hpp"
 // [Win32] Our example includes a copy of glfw3.lib pre-compiled with VS2010 to maximize ease of testing and compatibility with old VS compilers.
 // To link with VS2010-era libraries, VS2015+ requires linking with legacy_stdio_definitions.lib, which we do using this pragma.
 // Your own project should not be affected, as you are likely to link with a newer binary of GLFW that is adequate for your version of Visual Studio.
@@ -80,38 +80,7 @@ struct Vertex
     }
 };
 
-const std::vector<Vertex> createCircleVertices(const float &radius, const uint32_t N_vertices, const glm::vec3 color = {1.0f, .0f, .0f})
-{
-    std::vector<Vertex> vertices(N_vertices + 1);
-    vertices[0] = {{.0f, .0f}, color};
-    for (uint32_t i = 0; i < N_vertices; i++)
-    {
-        vertices[i] = {{radius * cos(2.0f * M_PI / (float)N_vertices * (float)i), radius * sin(2.0f * M_PI / (float)N_vertices * (float)i)}, color};
-    }
-    return vertices;
-}
 
-static const uint16_t N_vertices = 10;
-static const std::vector<Vertex> vertices = createCircleVertices(1.0, N_vertices);
-// {
-//     {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, 1.0f},
-//     {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, 1.0f},
-//     {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, 1.0f},
-//     {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}, 1.0f}};
-
-const std::vector<uint16_t> createCircleIndices(const uint32_t N_vertices)
-{
-    std::vector<uint16_t> indices(3 * N_vertices);
-    for (uint32_t i = 0; i < N_vertices; i++)
-    {
-        indices[3 * i] = 0;
-        indices[3 * i + 1] = 1 + i;
-        indices[3 * i + 2] = 2 + i;
-    }
-    return indices;
-}
-
-static const std::vector<uint16_t> indices = createCircleIndices(N_vertices);
 
 
 static void check_vk_result(VkResult err)

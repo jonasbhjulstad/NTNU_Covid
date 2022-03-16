@@ -1,5 +1,5 @@
-#ifndef NETWORK_VIEWPORT_SHADER_MODULE_HPP
-#define NETWORK_VIEWPORT_SHADER_MODULE_HPP
+#ifndef NV_SHADER_MODULE_HPP
+#define NV_SHADER_MODULE_HPP
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <fstream>

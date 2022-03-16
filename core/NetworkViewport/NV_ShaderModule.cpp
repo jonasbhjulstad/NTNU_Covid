@@ -1,4 +1,4 @@
-#include "NetworkViewport_ShaderModule.hpp"
+#include "NV_ShaderModule.hpp"
 
 static std::vector<char> readShader(const std::string &shaderPath)
 {

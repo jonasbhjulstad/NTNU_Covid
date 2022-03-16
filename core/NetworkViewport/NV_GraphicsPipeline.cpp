@@ -1,4 +1,4 @@
-#include "NetworkViewport_GraphicsPipeline.hpp"
+#include "NV_GraphicsPipeline.hpp"
 
 void createImageViews(SwapChainData &swapChainData, VkDevice logicalDevice)
 {
@@ -28,33 +28,9 @@ void createImageViews(SwapChainData &swapChainData, VkDevice logicalDevice)
     }
 }
 
-std::vector<VkFramebuffer> createFramebuffers(SwapChainData &swapChainData, VkRenderPass renderPass, VkDevice logicalDevice)
-{
 
-    std::vector<VkFramebuffer> swapChainFramebuffers(swapChainData.imageViews.size());
-
-    for (size_t i = 0; i < swapChainData.imageViews.size(); i++)
-    {
-        VkImageView attachments[] = {
-            swapChainData.imageViews[i]};
-
-        VkFramebufferCreateInfo framebufferInfo{};
-        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass = renderPass;
-        framebufferInfo.attachmentCount = 1;
-        framebufferInfo.pAttachments = attachments;
-        framebufferInfo.width = swapChainData.extent.width;
-        framebufferInfo.height = swapChainData.extent.height;
-        framebufferInfo.layers = 1;
-
-        if (vkCreateFramebuffer(logicalDevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS)
-        {
-            throw std::runtime_error("failed to create framebuffer!");
-        }
-    }
-}
-
-void recreateSwapChain(PipelineData &pipelineData, std::vector<VkFramebuffer> &frameBuffers)
+void recreateSwapChain(PipelineData &pipelineData,
+                       std::vector<VkFramebuffer> &frameBuffers)
 {
     int width = 0, height = 0;
     glfwGetFramebufferSize(pipelineData.window, &width, &height);
@@ -66,22 +42,13 @@ void recreateSwapChain(PipelineData &pipelineData, std::vector<VkFramebuffer> &f
 
     vkDeviceWaitIdle(pipelineData.logicalDevice);
     cleanupSwapChain(pipelineData.swapChainData, frameBuffers, pipelineData.pipeline, pipelineData.layout, pipelineData.renderPass, pipelineData.logicalDevice);
-    createSwapChain();
-
-    (VkPhysicalDevice physicalDevice,
-                              const SwapChainSupportDetails &swapChainSupport,
-                              VkSurfaceKHR surface,
-                              GLFWwindow *window,
-                              VkDevice logicalDevice)
-    createImageViews();
-    createRenderPass();
-    createGraphicsPipeline();
-    createFramebuffers();
+    createSwapChain(pipelineData.physicalDevice, pipelineData.swapChainData.);
 }
 
-
-void createGraphicsPipeline(const std::string &vertShaderPath,
+PipelineData createGraphicsPipeline(const std::string &vertShaderPath,
                             const std::string fragShaderPath,
+                            VkExtent2D swapChainExtent,
+                            VkDescriptorSetLayout descriptorSetLayout,
                             VkDevice logicalDevice)
 {
     auto vertShaderCode = readShader(vertShaderPath);
@@ -174,7 +141,10 @@ void createGraphicsPipeline(const std::string &vertShaderPath,
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 
-    if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS)
+    PipelineData pipelineData;
+
+
+    if (vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineData.layout) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create pipeline layout!");
     }
@@ -188,16 +158,18 @@ void createGraphicsPipeline(const std::string &vertShaderPath,
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState = &multisampling;
     pipelineInfo.pColorBlendState = &colorBlending;
-    pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.layout = pipelineData.layout;
+    pipelineInfo.renderPass = pipelineData.renderPass;
     pipelineInfo.subpass = 0;
     pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS)
+    if (vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipelineData.pipeline) != VK_SUCCESS)
     {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
     vkDestroyShaderModule(logicalDevice, fragShaderModule, nullptr);
     vkDestroyShaderModule(logicalDevice, vertShaderModule, nullptr);
+
+    return pipelineData;
 }

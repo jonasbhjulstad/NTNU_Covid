@@ -1,7 +1,5 @@
-#ifndef NETWORK_VIEWPORT_GRAPHICS_PIPELINE_HPP
-#define NETWORK_VIEWPORT_GRAPHICS_PIPELINE_HPP
-#define _USE_MATH_DEFINES
-#include <math.h>
+#ifndef NV_GRAPHICS_PIPELINE_HPP
+#define NV_GRAPHICS_PIPELINE_HPP
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #define GLM_FORCE_RADIANS
@@ -18,11 +16,10 @@
 #include <limits>
 #include <array>
 #include <set>
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include "NetworkViewport_QueueFamilies.hpp"
-#include "NetworkViewport_ShaderModule.hpp"
-#include "NetworkViewport_SwapChain.hpp"
+#include "NV_Queue.hpp"
+#include "NV_ShaderModule.hpp"
+#include "NV_SwapChain.hpp"
+#include "NV_Buffers.hpp"
 // #include <imgui_impl_vulkan.h>
 
 struct PipelineData
@@ -41,7 +38,6 @@ struct PipelineData
 
 void createImageViews(SwapChainData &swapChainData, VkDevice logicalDevice);
 
-std::vector<VkFramebuffer> createFramebuffers(SwapChainData &swapChainData, VkRenderPass renderPass, VkDevice logicalDevice);
 VkRenderPass createRenderPass(VkFormat swapChainImageFormat, VkDevice logicalDevice);
 
 void recreateSwapChain(GLFWwindow *window, VkDevice logicalDevice);

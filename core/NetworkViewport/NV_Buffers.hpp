@@ -1,5 +1,5 @@
-#ifndef NETWORK_VIEWPORT_BUFFER_HPP
-#define NETWORK_VIEWPORT_BUFFER_HPP
+#ifndef NV_BUFFER_HPP
+#define NV_BUFFER_HPP
 #include <vector>
 #include <array>
 #include <stdexcept>
@@ -38,11 +38,12 @@ struct Vertex
     }
 };
 
-struct BufferData
+struct Buffer
 {
     VkBuffer buffer;
     VkDeviceMemory memory;
 };
+
 
 
 uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties, VkPhysicalDevice physicalDevice);

@@ -1,8 +1,15 @@
-#ifndef NETWORK_VIEWPORT_QUEUE_FAMILIES_HPP
-#define NETWORK_VIEWPORT_QUEUE_FAMILIES_HPP
-#include <vulkan/vulkan.hpp>
+#ifndef NV_QUEUE_HPP
+#define NV_QUEUE_HPP
 #include <optional>
 #include <cstdint>
+#include <vulkan/vulkan.hpp>
+
+struct QueueData
+{
+    VkDevice logicalDevice;
+    VkQueue graphicsQueue;
+    VkQueue presentQueue;
+};
 
 struct QueueFamilyIndices
 {
@@ -16,6 +23,4 @@ struct QueueFamilyIndices
 };
 
 QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
-
-
 #endif
