@@ -90,17 +90,18 @@ void copyBuffer(VkBuffer srcBuffer,
     vkFreeCommandBuffers(logicalDevice, commandPool, 1, &commandBuffer);
 }
 
-std::vector<BufferData> createUniformBuffers(VkDeviceSize bufferSize,
+std::vector<Buffer> createUniformBuffers(VkDeviceSize bufferSize,
                                              VkDevice logicalDevice,
                                              VkPhysicalDevice physicalDevice,
-                                             VkMemoryPropertyFlagBits memFlags = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT const uint32_t maxFrames = 2)
+                                             VkMemoryPropertyFlagBits memFlags = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                             const uint32_t maxFrames = 2)
 {
 
-    std::vector<BufferData> uniformBuffers(maxFrames);
+    std::vector<Buffer> uniformBuffers(maxFrames);
 
     for (size_t i = 0; i < maxFrames; i++)
     {
-        createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_HOST_VISIBLE_BIT | memFlags, uniformBuffers[i].buffer, uniformBuffers[i].memory, logicalDevice, physicalDevice);
+        createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | memFlags, uniformBuffers[i].buffer, uniformBuffers[i].memory, logicalDevice, physicalDevice);
     }
     return uniformBuffers;
 }
@@ -154,7 +155,7 @@ std::array<Buffer, 2> createStagedIndexBuffer(const std::vector<uint32_t> &indic
 {
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
-    BufferData stagingBuffer;
+    Buffer stagingBuffer;
     createBuffer(bufferSize,
                  VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
@@ -167,7 +168,7 @@ std::array<Buffer, 2> createStagedIndexBuffer(const std::vector<uint32_t> &indic
     memcpy(data, indices.data(), (size_t)bufferSize);
     vkUnmapMemory(logicalDevice, stagingBuffer.memory);
 
-    BufferData gpuBuffer;
+    Buffer gpuBuffer;
 
     createBuffer(bufferSize,
                  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,

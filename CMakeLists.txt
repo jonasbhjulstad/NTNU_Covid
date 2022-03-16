@@ -28,15 +28,16 @@ target_link_libraries(ImGui PRIVATE Vulkan::Vulkan glfw)
 add_subdirectory(core)
 add_subdirectory(shaders)
 add_executable(AppTest ImguiMain.cpp)
-target_link_libraries(AppTest PUBLIC Vulkan::Vulkan glfw ImGui ${NV_LIBS})
+target_link_libraries(AppTest PUBLIC Vulkan::Vulkan glfw ImGui NV_Application)
 include_directories(${MINGW_INCLUDE})
 
-if (${Win32})
+if (WIN32)
   if (${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64")
     set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin/glslangValidator.exe")
   else()
     set(GLSL_VALIDATOR "$ENV{VULKAN_SDK}/Bin32/glslangValidator.exe")
   endif()
+  set(GLSL_V_FLAG "-V")
 else()
     set(GLSL_VALIDATOR /usr/bin/glslc)
 endif()
@@ -52,7 +53,7 @@ foreach(GLSL ${GLSL_SOURCE_FILES})
   add_custom_command(
     OUTPUT ${SPIRV}
     COMMAND ${CMAKE_COMMAND} -E make_directory "${PROJECT_BINARY_DIR}/shaders/"
-    COMMAND ${GLSL_VALIDATOR} ${GLSL} -o ${SPIRV}
+    COMMAND ${GLSL_VALIDATOR} ${GLSL_V_FLAG} ${GLSL} -o ${SPIRV}
     DEPENDS ${GLSL})
   list(APPEND SPIRV_BINARY_FILES ${SPIRV})
 endforeach(GLSL)

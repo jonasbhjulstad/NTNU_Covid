@@ -2,6 +2,7 @@
 #define NV_APPLICATION_HPP
 #include <array>
 #include "NV_SwapChain.hpp"
+#include "NV_Queue.hpp"
 #include "NV_GraphicsPipeline.hpp"
 #include "NV_Command.hpp"
 #include "NV_Synchronization.hpp"
@@ -17,24 +18,27 @@ struct UniformBufferObject
 struct NV_Data
 {
     VkDevice logicalDevice;
-    VKQueue graphicsQueue, presentQueue;
+    VkQueue graphicsQueue, presentQueue;
     VkDescriptorSetLayout descriptorSetLayout;
     PipelineData pipelineData;
     VkCommandPool commandPool;
-    std::array<BufferData, 2> vertexBuffers;
-    std::array<BufferData, 2> indexBuffers;
-    std::vector<VkFrameBuffer> swapChainFrameBuffers;
-    std::vector<BufferData> uniformBuffers;
+    std::array<Buffer, 2> vertexBuffers;
+    std::array<Buffer, 2> indexBuffers;
+    std::vector<VkFramebuffer> swapChainFrameBuffers;
+    std::vector<Buffer> uniformBuffers;
     VkDescriptorPool descriptorPool;
     std::vector<VkCommandBuffer> commandBuffers;
     FrameSemaphores frameSemaphores;
+};
+namespace NV
+{
+    const std::vector<Vertex> createCircleVertices(const float &radius, const uint32_t N_vertices, const glm::vec3 color = {1.0f, .0f, .0f});
+    const std::vector<uint16_t> createCircleIndices(const uint32_t N_vertices);
+
+    NV_Data createNetworkViewport(VkSurfaceKHR surface,
+                                  GLFWwindow *window,
+                                  VkPhysicalDevice physicalDevice);
+    void cleanupNetworkViewport(NV_Data &data, const size_t maxFrames = 2);
 }
-
-
-
-
-
-createCommandBuffers(logicalDevice);
-FrameSemaphores frameSemaphores = createFrameSemaphores(logicalDevice);
 
 #endif
