@@ -3,7 +3,7 @@ project(Custom_Vulkan)
 include(FetchContent)
 find_package(Vulkan REQUIRED)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED 17)
 
 FetchContent_Declare(
     imgui_repo
@@ -32,23 +32,25 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(glfw_repo)
 
-
 file(GLOB IMGUI_SOURCE_FILES
-    "${imgui_repo_SOURCE_DIR}/*.cpp"
-    )
+"${imgui_repo_SOURCE_DIR}/*.cpp"
+)
 file(GLOB IMGUI_BACKEND_FILES
-    "${imgui_repo_SOURCE_DIR}/backends/*glfw.cpp"
-    "${imgui_repo_SOURCE_DIR}/backends/*vulkan.cpp"
-    )
+"${imgui_repo_SOURCE_DIR}/backends/*glfw.cpp"
+"${imgui_repo_SOURCE_DIR}/backends/*vulkan.cpp"
+)
 add_library(ImGui STATIC ${IMGUI_SOURCE_FILES} ${IMGUI_BACKEND_FILES})
 target_include_directories(ImGui PUBLIC ${imgui_repo_SOURCE_DIR} ${imgui_repo_SOURCE_DIR}/backends)
 target_link_libraries(ImGui PRIVATE Vulkan::Vulkan glfw)
 
 add_subdirectory(core)
 add_subdirectory(shaders)
-add_executable(AppTest ImguiMain.cpp)
-target_link_libraries(AppTest PUBLIC Vulkan::Vulkan glfw ImGui NV_Application)
+# add_executable(AppTest ImguiMain.cpp)'
+add_executable(Triangle triangle.cpp)
+target_link_libraries(Triangle PUBLIC Vulkan::Vulkan glfw ImGui)
+# target_link_libraries(AppTest PUBLIC Vulkan::Vulkan glfw ImGui)# NV_Application)
 include_directories(${MINGW_INCLUDE})
+link_libraries(Vulkan::Vulkan glm::glm glfw)
 
 if (WIN32)
   if (${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "AMD64")
@@ -82,11 +84,11 @@ add_custom_target(
     DEPENDS ${SPIRV_BINARY_FILES}
     )
 
-add_dependencies(AppTest Shaders)
+add_dependencies(Triangle Shaders)
 
-add_custom_command(TARGET AppTest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:AppTest>/shaders/"
+add_custom_command(TARGET Triangle POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:Triangle>/shaders/"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${PROJECT_BINARY_DIR}/shaders"
-        "$<TARGET_FILE_DIR:AppTest>/shaders"
+        "$<TARGET_FILE_DIR:Triangle>/shaders"
         )
