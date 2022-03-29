@@ -14,15 +14,22 @@
 #define ENABLE_VALIDATION true
 
 #include "ImGuiApp.hpp"
+#include "gltfBasicInstancePipeline.hpp"
 // ----------------------------------------------------------------------------
 // VulkanExample
 // ----------------------------------------------------------------------------
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
 #define NODE_INSTANCE_COUNT 10
-#define BEZIER_LINE_WIDTH 10.f
 class VulkanExample : public VulkanExampleBase
 {
+
+#ifdef WIN32
+const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data";
+#else
+const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data";
+#endif
+const std::string shadersPath = assetPath + "\\shaders";
 public:
 	ImGUI *imGui = nullptr;
 	struct Models
@@ -30,17 +37,17 @@ public:
 		vkglTF::Model models;
 		vkglTF::Model logos;
 		vkglTF::Model background;
-		vkglTF::Model node;
 	} models;
 
+	vks::Buffer uniformBufferVS;
 
-	struct NodeInstanceData
-	{
-		glm::vec3 pos;
-		glm::vec3 rot;
-	};
 
-	vks::Buffer nodeInstanceBuffer;
+	struct UBOVS {
+		glm::mat4 projection;
+		glm::mat4 view;
+		glm::vec4 lightPos = glm::vec4(0.0f, -5.0f, 0.0f, 1.0f);
+	} uboVS;
+
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
@@ -51,10 +58,8 @@ public:
 		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
-
-		this->enabledFeatures.fillModeNonSolid = true;
-
 	}
+
 
 	~VulkanExample()
 	{
@@ -66,7 +71,7 @@ public:
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.statue, nullptr);
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.node, nullptr);
 
-		// uniformBuffers.VS.destroy();
+		uniformBufferVS.destroy();
 
 		delete imGui;
 	}
@@ -127,41 +132,13 @@ public:
 
 	void setupDescriptorSetLayouts()
 	{
-		// Statue
-		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
-			vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
-		};
-		VkDescriptorSetLayoutCreateInfo descriptorLayout =
-			vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
-		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayouts.statue));
 
-		// Pipeline layout
-		VkPipelineLayoutCreateInfo pPipelineLayoutCreateInfo = vks::initializers::pipelineLayoutCreateInfo(&descriptorSetLayouts.statue, 1);
-		VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pPipelineLayoutCreateInfo, nullptr, &pipelineLayouts.statue));
 
 	}
 
 	void setupDescriptorSets()
 	{
 
-		// Statue
-		VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.statue, 1);
-		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets.statue));
-
-		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-			vks::initializers::writeDescriptorSet(descriptorSets.statue, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.VS.descriptor)};
-		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
-
-		allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayouts.node, 1);
-
-		// node
-
-		VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSets.node));
-
-		writeDescriptorSets = {
-			vks::initializers::writeDescriptorSet(descriptorSets.node, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformBuffers.VS.descriptor)};
-
-		vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 	}
 
@@ -236,76 +213,6 @@ public:
 
 	}
 
-	void prepareInstanceData()
-	{
-		std::vector<NodeInstanceData> nodeInstanceData;
-		nodeInstanceData.resize(NODE_INSTANCE_COUNT);
-
-		std::random_device rnd;
-
-		double xMin, xMax, yMin, yMax, zMin, zMax;
-		xMin = -100.;
-		xMax = 100.;
-		yMin = -100.;
-		yMax = 100.;
-		zMin = -100.;
-		zMax = 100.;
-
-		std::uniform_real_distribution<float> distX(xMin, xMax);
-		std::uniform_real_distribution<float> distY(yMin, yMax);
-		std::uniform_real_distribution<float> distZ(zMin, zMax);
-
-		for (uint32_t i = 0; i < NODE_INSTANCE_COUNT; i++)
-		{
-			nodeInstanceData[i].pos = {distX(rnd), distY(rnd), distZ(rnd)};
-			nodeInstanceData[i].rot = {M_PI_2, .0f, .0f};
-		}
-
-		nodeInstanceBuffer.size = NODE_INSTANCE_COUNT * sizeof(NodeInstanceData);
-
-		struct
-		{
-			VkDeviceMemory memory;
-			VkBuffer buffer;
-		} stagingBuffer;
-
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
-			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			nodeInstanceBuffer.size,
-			&stagingBuffer.buffer,
-			&stagingBuffer.memory,
-			nodeInstanceData.data()));
-
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
-			VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-			VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-			nodeInstanceBuffer.size,
-			&nodeInstanceBuffer.buffer,
-			&nodeInstanceBuffer.memory));
-
-		VkCommandBuffer copyCmd = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, true);
-
-		VkBufferCopy copyRegion = {};
-		copyRegion.size = nodeInstanceBuffer.size;
-		vkCmdCopyBuffer(
-			copyCmd,
-			stagingBuffer.buffer,
-			nodeInstanceBuffer.buffer,
-			1,
-			&copyRegion);
-
-		vulkanDevice->flushCommandBuffer(copyCmd, queue, true);
-
-		nodeInstanceBuffer.descriptor.range = nodeInstanceBuffer.size;
-		nodeInstanceBuffer.descriptor.buffer = nodeInstanceBuffer.buffer;
-		nodeInstanceBuffer.descriptor.offset = 0;
-
-		// Destroy staging resources
-		vkDestroyBuffer(device, stagingBuffer.buffer, nullptr);
-		vkFreeMemory(device, stagingBuffer.memory, nullptr);
-	}
-
 	// Prepare and initialize uniform buffer containing shader uniforms
 	void prepareUniformBuffers()
 	{
@@ -313,17 +220,9 @@ public:
 		VK_CHECK_RESULT(vulkanDevice->createBuffer(
 			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			&uniformBuffers.VS,
+			&uniformBufferVS,
 			sizeof(uboVS),
 			&uboVS));
-
-		// Vertex shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			&uniformBuffers.bezier,
-			sizeof(uboBezier),
-			&uboBezier));
 
 		updateUniformBuffers();
 	}
@@ -374,17 +273,17 @@ public:
 	void loadAssets()
 	{
 		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		models.models.loadFromFile(getAssetPath() + "models/vulkanscenemodels.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.background.loadFromFile(getAssetPath() + "models/vulkanscenebackground.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.logos.loadFromFile(getAssetPath() + "models/vulkanscenelogos.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.node.loadFromFile(getAssetPath() + "models/ico_node.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.models.loadFromFile(assetPath + "models/vulkanscenemodels.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.background.loadFromFile(assetPath + "models/vulkanscenebackground.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.logos.loadFromFile(assetPath + "models/vulkanscenelogos.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		models.node.loadFromFile(assetPath + "models/ico_node.gltf", vulkanDevice, queue, glTFLoadingFlags);
 	}
 
 	void prepareImGui()
 	{
 		imGui = new ImGUI(this);
 		imGui->init((float)width, (float)height);
-		imGui->initResources(renderPass, queue, getShadersPath());
+		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
 	void prepare()

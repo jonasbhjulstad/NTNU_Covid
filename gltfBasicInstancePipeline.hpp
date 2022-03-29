@@ -3,16 +3,30 @@
 #include <vector>
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
+
+struct glTFBasicInstanceCreateInfo
+{
+    VkDevice device;
+    vks::VulkanDevice *vulkanDevice;
+    vks::Buffer* uniformProjectionBuffer;
+    VkQueue queue;
+    std::string vertexShaderPath;
+    std::string fragmentShaderPath;
+    std::string modelAssetPath;
+    VkRenderPass renderPass;
+};
+
 class glTFBasicInstancePipeline
 {
-    glTFBasicInstancePipeline(VkDevice _device,
-                              vks::VulkanDevice *_vulkanDevice,
-                              vks::Buffer* _uniformProjectionBuffer,
-                              VkQueue _queue)
-        : device(_device),
-          vulkanDevice(_vulkanDevice),
-          uniformProjectionBuffer(_uniformProjectionBuffer),
-          queue(_queue)
+    glTFBasicInstancePipeline(glTFBasicInstanceCreateInfo& createInfo)
+        : device(createInfo.device),
+          vulkanDevice(createInfo.vulkanDevice),
+          uniformProjectionBuffer(createInfo.uniformProjectionBuffer),
+          queue(createInfo.queue),
+          vertexShaderPath(createInfo.vertexShaderPath),
+          fragmentShaderPath(createInfo.fragmentShaderPath),
+          modelAssetPath(createInfo.modelAssetPath),
+          renderPass(createInfo.renderPass)
     {
     }
     VkQueue queue;
@@ -20,6 +34,10 @@ class glTFBasicInstancePipeline
     vks::VulkanDevice *vulkanDevice;
     vkglTF::Model model;
     vks::Buffer* uniformProjectionBuffer;
+    std::string vertexShaderPath;
+    std::string fragmentShaderPath;
+    std::string modelAssetPath;
+    VkRenderPass renderPass;
 
     const enum bind_IDs { GLTF_BIP_VERTEX_BIND_ID,
                           GLTF_BIP_INSTANCE_BIND_ID };
@@ -38,8 +56,12 @@ class glTFBasicInstancePipeline
     std::vector<InstanceData> instanceData;
     vks::Buffer instanceBuffer;
 
-    void prepareInstanceData()
+    void prepareInstanceData(const std::vector<InstanceData>& instanceData)
     {
+
+
+        instanceBuffer.size = instanceData.size() * sizeof(InstanceData);
+
         struct
         {
             VkDeviceMemory memory;
@@ -52,7 +74,7 @@ class glTFBasicInstancePipeline
             instanceBuffer.size,
             &stagingBuffer.buffer,
             &stagingBuffer.memory,
-            nodeInstanceData.data()));
+            instanceData.data()));
 
         VK_CHECK_RESULT(vulkanDevice->createBuffer(
             VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
@@ -83,10 +105,9 @@ class glTFBasicInstancePipeline
         vkFreeMemory(device, stagingBuffer.memory, nullptr);
     }
 
-    void setupDescriptorLayout()
+    void setupDescriptorSetLayout()
     {
 
-        // node
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
             // Binding 0 : Vertex shader uniform buffer
             vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
@@ -106,8 +127,6 @@ class glTFBasicInstancePipeline
     {
         VkDescriptorSetAllocateInfo allocInfo = vks::initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayout, 1);
 
-        // node
-
         VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
@@ -120,6 +139,67 @@ class glTFBasicInstancePipeline
     {
         return {vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2),
                 vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
+    }
+
+    void preparePipeline()
+    {
+		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = vks::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
+		VkPipelineRasterizationStateCreateInfo rasterizationState = vks::initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+		VkPipelineColorBlendAttachmentState blendAttachmentState = vks::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
+		VkPipelineColorBlendStateCreateInfo colorBlendState = vks::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
+		VkPipelineDepthStencilStateCreateInfo depthStencilState = vks::initializers::pipelineDepthStencilStateCreateInfo(VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
+		VkPipelineViewportStateCreateInfo viewportState = vks::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
+		VkPipelineMultisampleStateCreateInfo multisampleState = vks::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
+		std::vector<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+		VkPipelineDynamicStateCreateInfo dynamicState = vks::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
+
+		std::array<VkPipelineShaderStageCreateInfo, 2> shaderStages;
+
+		VkGraphicsPipelineCreateInfo pipelineCI = vks::initializers::pipelineCreateInfo(pipelineLayout, renderPass);
+		pipelineCI.pInputAssemblyState = &inputAssemblyState;
+		pipelineCI.pRasterizationState = &rasterizationState;
+		pipelineCI.pColorBlendState = &colorBlendState;
+		pipelineCI.pMultisampleState = &multisampleState;
+		pipelineCI.pViewportState = &viewportState;
+		pipelineCI.pDepthStencilState = &depthStencilState;
+		pipelineCI.pDynamicState = &dynamicState;
+		pipelineCI.stageCount = static_cast<uint32_t>(2);
+		pipelineCI.pStages = shaderStages.data();
+
+        pipelineCI.layout = pipelineLayout;
+
+		// Vertex input bindings
+		// The instancing pipeline uses a vertex input state with two bindings
+		std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
+			// Binding point 0: Mesh vertex layout description at per-vertex rate
+			vks::initializers::vertexInputBindingDescription(GLTF_BIP_VERTEX_BIND_ID, sizeof(vkglTF::Vertex), VK_VERTEX_INPUT_RATE_VERTEX),
+			// Binding point 1: Instanced data at per-instance rate
+			vks::initializers::vertexInputBindingDescription(GLTF_BIP_INSTANCE_BIND_ID, sizeof(instanceData), VK_VERTEX_INPUT_RATE_INSTANCE)};
+
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
+			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),				   // Location 0: Position
+			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 1, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3), // Location 1: Normal
+			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 2, VK_FORMAT_R32G32_SFLOAT, sizeof(float) * 6),	   // Location 2: Texture coordinates
+			// Per-Instance attributes
+
+			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_INSTANCE_BIND_ID, 3, VK_FORMAT_R32G32B32_SFLOAT, 0),				// Position
+			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_INSTANCE_BIND_ID, 4, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3) // Rotation
+		};
+
+		VkPipelineVertexInputStateCreateInfo inputState = vks::initializers::pipelineVertexInputStateCreateInfo();
+		inputState.pVertexBindingDescriptions = bindingDescriptions.data();
+		inputState.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+		inputState.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		inputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		pipelineCI.pVertexInputState = &inputState;
+		pipelineCI.layout = pipelineLayout;
+
+
+		shaderStages[0] = vulkanDevice->loadShader(vertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT);
+		shaderStages[1] = device->loadShader(fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT);
+
+		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
     }
 
     void buildCommandBuffer(VkCommandBuffer drawCmdBuffer, VkDeviceSize offsets[1] = {0})
@@ -137,6 +217,21 @@ class glTFBasicInstancePipeline
         vkCmdBindIndexBuffer(drawCmdBuffer, model.indices.buffer, 0, VK_INDEX_TYPE_UINT32);
 
         vkCmdDrawIndexed(drawCmdBuffer, model.indices.count, 0, 0, 0, 0);
+    }
+
+	void loadAssets()
+	{
+		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
+		model.loadFromFile(modelAssetPath, vulkanDevice, queue, glTFLoadingFlags);
+	}
+
+    void prepare()
+    {
+        loadAssets();
+        prepareInstanceData();
+        setupDescriptorSetLayout()
+        preparePipeline();
+        setupDescriptorSets();
     }
 
     ~glTFBasicInstancePipeline()
