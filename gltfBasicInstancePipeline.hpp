@@ -197,7 +197,7 @@ class glTFBasicInstancePipeline
 
 
 		shaderStages[0] = vulkanDevice->loadShader(vertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT);
-		shaderStages[1] = device->loadShader(fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT);
+		shaderStages[1] = ->loadShader(fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
     }
