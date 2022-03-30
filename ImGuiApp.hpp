@@ -82,7 +82,7 @@ public:
 	}
 
 	// Initialize all Vulkan resources used by the ui
-	void initResources(VkRenderPass renderPass, VkQueue copyQueue, const std::string& shadersPath)
+	void initResources(VkRenderPass& renderPass, VkQueue copyQueue, const std::string& shadersPath)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 
@@ -301,8 +301,8 @@ public:
 
 		pipelineCreateInfo.pVertexInputState = &vertexInputState;
 
-		shaderStages[0] = example->loadShader(shadersPath + "imgui/ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-		shaderStages[1] = example->loadShader(shadersPath + "imgui/ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+		shaderStages[0] = example->loadShader(shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+		shaderStages[1] = example->loadShader(shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device->logicalDevice, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
 	}

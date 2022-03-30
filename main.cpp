@@ -28,26 +28,39 @@ class VulkanExample : public VulkanExampleBase
 	const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
 	const std::string shadersPath = assetPath + "shaders\\";
 	const std::string modelPath = assetPath + "models\\";
+	const std::string texturePath = assetPath + "textures\\";
 #else
 	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
 	const std::string shadersPath = assetPath + "shaders/";
 	const std::string modelPath = assetPath + "models/";
+	const std::string texturePath = assetPath + "textures/";
 #endif
 
 public:
 	ImGUI *imGui = nullptr;
-	const glTFBasicInstanceCreateInfo nodeCreateInfo = {device, vulkanDevice, &uniformBufferVS, queue,
-														shadersPath + "node.vert.spv", shadersPath + "node.frag.spv", modelPath + "ico_node.gltf", renderPass};
-
+	const uint32_t N_instance_models = 2;
 	struct Models
 	{
-		glTFBasicInstance *node;
+		vkglTF::Model node;
+		vkglTF::Model bezier;
 	} models;
+
+	struct Textures
+	{
+		vks::Texture2DArray node;
+		vks::Texture2DArray bezier;
+	} textures;
+
+
+	struct BasicInstanceModels
+	{
+		glTFBasicInstance* node;
+		glTFBasicInstance* bezier;
+	} BIModels;
 
 	std::string vertexShaderPath;
 	std::string fragmentShaderPath;
 	std::string modelAssetPath;
-	VkRenderPass renderPass;
 
 	vks::Buffer uniformBufferVS;
 
@@ -67,6 +80,7 @@ public:
 		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
+
 	}
 
 	~VulkanExample()
@@ -79,7 +93,6 @@ public:
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.statue, nullptr);
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.node, nullptr);
 
-		delete models.node;
 		uniformBufferVS.destroy();
 		delete imGui;
 	}
@@ -122,7 +135,8 @@ public:
 
 			VkDeviceSize offsets[1] = {0};
 
-			models.node->buildCommandBuffer(drawCmdBuffers[i], offsets);
+			BIModels.node->buildCommandBuffer(drawCmdBuffers[i], offsets);
+			BIModels.bezier->buildCommandBuffer(drawCmdBuffers[i], offsets);
 
 			// Render imGui
 			imGui->drawFrame(drawCmdBuffers[i]);
@@ -135,7 +149,7 @@ public:
 
 	void setupDescriptorPool()
 	{
-		std::vector<VkDescriptorPoolSize> poolSizes = glTFBasicInstance::getPoolSize();
+		std::vector<VkDescriptorPoolSize> poolSizes = glTFBasicInstance::getPoolSize(N_instance_models);
 
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, 2);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
@@ -178,6 +192,21 @@ public:
 		uniformBufferVS.unmap();
 	}
 
+	// prepareRenderPass()
+	// {
+	// 	VkClearValue clearValues[2];
+	// 	clearValues[0].color = { { 0.2f, 0.2f, 0.2f, 1.0f} };
+	// 	clearValues[1].depthStencil = { 1.0f, 0 };
+	// 	VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
+	// 	renderPassBeginInfo.renderPass = renderPass;
+	// 	renderPassBeginInfo.renderArea.offset.x = 0;
+	// 	renderPassBeginInfo.renderArea.offset.y = 0;
+	// 	renderPassBeginInfo.renderArea.extent.width = width;
+	// 	renderPassBeginInfo.renderArea.extent.height = height;
+	// 	renderPassBeginInfo.clearValueCount = 2;
+	// 	renderPassBeginInfo.pClearValues = clearValues;
+	// }
+
 	void draw()
 	{
 		VulkanExampleBase::prepareFrame();
@@ -196,18 +225,19 @@ public:
 
 	std::vector<glTFBasicInstanceData> prepareNodeInstanceData()
 	{
-		std::vector<glTFBasicInstanceData> instanceData;
-		instanceData.reserve(NODE_INSTANCE_COUNT);
+		std::vector<glTFBasicInstanceData> instanceData(NODE_INSTANCE_COUNT);
 
 		float limits[] = {-100., 100., -100., 100., -100., 100.};
 		std::random_device rnd;
 		std::uniform_real_distribution<float> distX(limits[0], limits[1]);
 		std::uniform_real_distribution<float> distY(limits[2], limits[3]);
 		std::uniform_real_distribution<float> distZ(limits[4], limits[5]);
+		std::uniform_real_distribution<float> distScale(.2f,2.0f);
 		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
 		{
 			instanceData[i].pos = glm::vec3(distX(rnd), distY(rnd), distZ(rnd));
-			instanceData[i].rot = glm::vec3(.0, .0, .0);
+			instanceData[i].rot = glm::vec3(.0f,.0f,.0f);
+			instanceData[i].scale = distScale(rnd);
 		}
 
 		return instanceData;
@@ -219,10 +249,21 @@ public:
 		prepareUniformBuffers();
 		setupDescriptorPool();
 
-		models.node = new glTFBasicInstance(nodeCreateInfo);
-		auto instanceData = prepareNodeInstanceData();
-		models.node->prepare(instanceData, descriptorPool);
 		prepareImGui();
+
+        const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
+		models.node.loadFromFile(modelPath + "ico_node.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		textures.node.loadFromFile(texturePath + "icoTex2.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
+		models.bezier.loadFromFile(modelPath + "bezier.gltf", vulkanDevice, queue, glTFLoadingFlags);
+		// textures.bezier.loadFromFile(texturePath + "bezier.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
+		auto instanceData = prepareNodeInstanceData();
+		BIModels.node = new glTFBasicInstance(device, vulkanDevice, &uniformBufferVS, queue,
+														shadersPath + "node.vert.spv", shadersPath + "node.frag.spv", modelPath + "ico_node.gltf", renderPass, &models.node, &textures.node);
+
+		BIModels.node->prepare(instanceData, descriptorPool);
+
+		BIModels.bezier = new glTFBasicInstance(device, vulkanDevice, &uniformBufferVS, queue,
+														shadersPath + "bezier.vert.spv", shadersPath + "bezier.frag.spv", modelPath + "bezier.gltf", renderPass, &models.bezier);
 		buildCommandBuffers();
 		prepared = true;
 	}
