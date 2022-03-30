@@ -14,40 +14,49 @@
 #define ENABLE_VALIDATION true
 
 #include "ImGuiApp.hpp"
-#include "gltfBasicInstancePipeline.hpp"
+#include "gltfBasicInstance.hpp"
 // ----------------------------------------------------------------------------
 // VulkanExample
 // ----------------------------------------------------------------------------
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
-#define NODE_INSTANCE_COUNT 10
+#define NODE_INSTANCE_COUNT 100
 class VulkanExample : public VulkanExampleBase
 {
 
 #ifdef WIN32
-const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data";
+	const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
+	const std::string shadersPath = assetPath + "shaders\\";
+	const std::string modelPath = assetPath + "models\\";
 #else
-const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data";
+	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
+	const std::string shadersPath = assetPath + "shaders/";
+	const std::string modelPath = assetPath + "models/";
 #endif
-const std::string shadersPath = assetPath + "\\shaders";
+
 public:
 	ImGUI *imGui = nullptr;
+	const glTFBasicInstanceCreateInfo nodeCreateInfo = {device, vulkanDevice, &uniformBufferVS, queue,
+														shadersPath + "node.vert.spv", shadersPath + "node.frag.spv", modelPath + "ico_node.gltf", renderPass};
+
 	struct Models
 	{
-		vkglTF::Model models;
-		vkglTF::Model logos;
-		vkglTF::Model background;
+		glTFBasicInstance *node;
 	} models;
+
+	std::string vertexShaderPath;
+	std::string fragmentShaderPath;
+	std::string modelAssetPath;
+	VkRenderPass renderPass;
 
 	vks::Buffer uniformBufferVS;
 
-
-	struct UBOVS {
+	struct UBOVS
+	{
 		glm::mat4 projection;
-		glm::mat4 view;
-		glm::vec4 lightPos = glm::vec4(0.0f, -5.0f, 0.0f, 1.0f);
+		glm::mat4 modelview;
+		glm::vec4 lightPos;
 	} uboVS;
-
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
@@ -60,7 +69,6 @@ public:
 		settings.overlay = false;
 	}
 
-
 	~VulkanExample()
 	{
 		// vkDestroyPipeline(device, pipelines.statue, nullptr);
@@ -71,8 +79,8 @@ public:
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.statue, nullptr);
 		// vkDestroyDescriptorSetLayout(device, descriptorSetLayouts.node, nullptr);
 
+		delete models.node;
 		uniformBufferVS.destroy();
-
 		delete imGui;
 	}
 
@@ -112,6 +120,9 @@ public:
 			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
+			VkDeviceSize offsets[1] = {0};
+
+			models.node->buildCommandBuffer(drawCmdBuffers[i], offsets);
 
 			// Render imGui
 			imGui->drawFrame(drawCmdBuffers[i]);
@@ -124,93 +135,10 @@ public:
 
 	void setupDescriptorPool()
 	{
-		std::vector<VkDescriptorPoolSize> poolSizes = {};
+		std::vector<VkDescriptorPoolSize> poolSizes = glTFBasicInstance::getPoolSize();
 
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, 2);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
-	}
-
-	void setupDescriptorSetLayouts()
-	{
-
-
-	}
-
-	void setupDescriptorSets()
-	{
-
-
-	}
-
-	void preparePipelines()
-	{
-		// Rendering
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = vks::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
-		VkPipelineRasterizationStateCreateInfo rasterizationState = vks::initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
-		VkPipelineColorBlendAttachmentState blendAttachmentState = vks::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
-		VkPipelineColorBlendStateCreateInfo colorBlendState = vks::initializers::pipelineColorBlendStateCreateInfo(1, &blendAttachmentState);
-		VkPipelineDepthStencilStateCreateInfo depthStencilState = vks::initializers::pipelineDepthStencilStateCreateInfo(VK_TRUE, VK_TRUE, VK_COMPARE_OP_LESS_OR_EQUAL);
-		VkPipelineViewportStateCreateInfo viewportState = vks::initializers::pipelineViewportStateCreateInfo(1, 1, 0);
-		VkPipelineMultisampleStateCreateInfo multisampleState = vks::initializers::pipelineMultisampleStateCreateInfo(VK_SAMPLE_COUNT_1_BIT);
-		std::vector<VkDynamicState> dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
-		VkPipelineDynamicStateCreateInfo dynamicState = vks::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
-
-		std::array<VkPipelineShaderStageCreateInfo, 3> shaderStages;
-
-
-		VkGraphicsPipelineCreateInfo pipelineCI = vks::initializers::pipelineCreateInfo(pipelineLayouts.statue, renderPass);
-		pipelineCI.pInputAssemblyState = &inputAssemblyState;
-		pipelineCI.pRasterizationState = &rasterizationState;
-		pipelineCI.pColorBlendState = &colorBlendState;
-		pipelineCI.pMultisampleState = &multisampleState;
-		pipelineCI.pViewportState = &viewportState;
-		pipelineCI.pDepthStencilState = &depthStencilState;
-		pipelineCI.pDynamicState = &dynamicState;
-		pipelineCI.stageCount = static_cast<uint32_t>(2);
-		pipelineCI.pStages = shaderStages.data();
-		pipelineCI.pVertexInputState = vkglTF::Vertex::getPipelineVertexInputState({vkglTF::VertexComponent::Position, vkglTF::VertexComponent::Normal, vkglTF::VertexComponent::Color});
-		;
-		shaderStages[0] = loadShader(getShadersPath() + "imgui/scene.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-		shaderStages[1] = loadShader(getShadersPath() + "imgui/scene.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipelines.statue));
-
-		// Node pipeline
-
-		pipelineCI.layout = pipelineLayouts.node;
-
-		// Vertex input bindings
-		// The instancing pipeline uses a vertex input state with two bindings
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
-			// Binding point 0: Mesh vertex layout description at per-vertex rate
-			vks::initializers::vertexInputBindingDescription(NODE_VERTEX_BIND_ID, sizeof(vkglTF::Vertex), VK_VERTEX_INPUT_RATE_VERTEX),
-			// Binding point 1: Instanced data at per-instance rate
-			vks::initializers::vertexInputBindingDescription(NODE_INSTANCE_BIND_ID, sizeof(NodeInstanceData), VK_VERTEX_INPUT_RATE_INSTANCE)};
-
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
-			vks::initializers::vertexInputAttributeDescription(NODE_VERTEX_BIND_ID, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),				   // Location 0: Position
-			vks::initializers::vertexInputAttributeDescription(NODE_VERTEX_BIND_ID, 1, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3), // Location 1: Normal
-			vks::initializers::vertexInputAttributeDescription(NODE_VERTEX_BIND_ID, 2, VK_FORMAT_R32G32_SFLOAT, sizeof(float) * 6),	   // Location 2: Texture coordinates
-			// Per-Instance attributes
-
-			vks::initializers::vertexInputAttributeDescription(NODE_INSTANCE_BIND_ID, 3, VK_FORMAT_R32G32B32_SFLOAT, 0),				// Position
-			vks::initializers::vertexInputAttributeDescription(NODE_INSTANCE_BIND_ID, 4, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3) // Rotation
-		};
-
-		VkPipelineVertexInputStateCreateInfo inputState = vks::initializers::pipelineVertexInputStateCreateInfo();
-		inputState.pVertexBindingDescriptions = bindingDescriptions.data();
-		inputState.pVertexAttributeDescriptions = attributeDescriptions.data();
-
-		inputState.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
-		inputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		pipelineCI.pVertexInputState = &inputState;
-		pipelineCI.layout = pipelineLayouts.node;
-
-		shaderStages[0] = loadShader(getShadersPath() + "imgui/node.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-		shaderStages[1] = loadShader(getShadersPath() + "imgui/node.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-
-		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipelines.node));
-
-
 	}
 
 	// Prepare and initialize uniform buffer containing shader uniforms
@@ -244,20 +172,10 @@ public:
 			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
 			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
 		};
-		uboVS.nodeRot = t_ms * M_PI_2 / 10000;
 
-		VK_CHECK_RESULT(uniformBuffers.VS.map());
-		memcpy(uniformBuffers.VS.mapped, &uboVS, sizeof(uboVS));
-		uniformBuffers.VS.unmap();
-
-		// Bezier geometry shader control points
-
-		uboBezier.P1scale = glm::vec3(.25, .30, .0);
-		uboBezier.P2scale = glm::vec3(.25, .30, .0);
-
-		VK_CHECK_RESULT(uniformBuffers.bezier.map());
-		memcpy(uniformBuffers.bezier.mapped, &uboBezier, sizeof(uboBezier));
-		uniformBuffers.bezier.unmap();
+		VK_CHECK_RESULT(uniformBufferVS.map());
+		memcpy(uniformBufferVS.mapped, &uboVS, sizeof(uboVS));
+		uniformBufferVS.unmap();
 	}
 
 	void draw()
@@ -269,16 +187,6 @@ public:
 		VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
 		VulkanExampleBase::submitFrame();
 	}
-
-	void loadAssets()
-	{
-		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		models.models.loadFromFile(assetPath + "models/vulkanscenemodels.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.background.loadFromFile(assetPath + "models/vulkanscenebackground.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.logos.loadFromFile(assetPath + "models/vulkanscenelogos.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		models.node.loadFromFile(assetPath + "models/ico_node.gltf", vulkanDevice, queue, glTFLoadingFlags);
-	}
-
 	void prepareImGui()
 	{
 		imGui = new ImGUI(this);
@@ -286,16 +194,34 @@ public:
 		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
+	std::vector<glTFBasicInstanceData> prepareNodeInstanceData()
+	{
+		std::vector<glTFBasicInstanceData> instanceData;
+		instanceData.reserve(NODE_INSTANCE_COUNT);
+
+		float limits[] = {-100., 100., -100., 100., -100., 100.};
+		std::random_device rnd;
+		std::uniform_real_distribution<float> distX(limits[0], limits[1]);
+		std::uniform_real_distribution<float> distY(limits[2], limits[3]);
+		std::uniform_real_distribution<float> distZ(limits[4], limits[5]);
+		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
+		{
+			instanceData[i].pos = glm::vec3(distX(rnd), distY(rnd), distZ(rnd));
+			instanceData[i].rot = glm::vec3(.0, .0, .0);
+		}
+
+		return instanceData;
+	}
+
 	void prepare()
 	{
 		VulkanExampleBase::prepare();
-		loadAssets();
 		prepareUniformBuffers();
-		prepareInstanceData();
-		setupDescriptorSetLayouts();
-		preparePipelines();
 		setupDescriptorPool();
-		setupDescriptorSets();
+
+		models.node = new glTFBasicInstance(nodeCreateInfo);
+		auto instanceData = prepareNodeInstanceData();
+		models.node->prepare(instanceData, descriptorPool);
 		prepareImGui();
 		buildCommandBuffers();
 		prepared = true;
