@@ -5,13 +5,7 @@
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
 
-struct glTFBasicInstanceData
-{
-    glm::vec3 pos;
-    glm::vec3 rot;
-    float scale;
-};
-
+template <typename InstanceData = glm::vec3>
 class glTFBasicInstance
 {
 public:
@@ -62,11 +56,11 @@ public:
 
     uint32_t N_instances = 0;
 
-    void prepareInstanceData(std::vector<glTFBasicInstanceData> &instanceData)
+    void prepareInstanceData(std::vector<InstanceData> &instanceData)
     {
         
         N_instances = static_cast<uint32_t>(instanceData.size());
-        instanceBuffer.size = N_instances * sizeof(glTFBasicInstanceData);
+        instanceBuffer.size = N_instances * sizeof(InstanceData);
 
         struct
         {
@@ -117,9 +111,13 @@ public:
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
             // Binding 0 : Vertex shader uniform buffer
             vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT, 0),
-            // Binding 1 : Fragment shader combined sampler
-            vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1),
         };
+
+        if (texture)
+        {
+        // Binding 1 : Fragment shader combined sampler
+        setLayoutBindings.push_back(vks::initializers::descriptorSetLayoutBinding(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT, 1));
+        }
 
         VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
         VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
@@ -137,6 +135,7 @@ public:
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
             vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformProjectionBuffer->descriptor)};
+            // vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &texture->descriptor)};
         if (texture)
         {
             writeDescriptorSets.push_back(vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1, &texture->descriptor));
@@ -144,17 +143,6 @@ public:
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
     }
 
-    static std::vector<VkDescriptorPoolSize> getPoolSize(const uint32_t N_instance_model_types = 1)
-    {
-        std::vector<VkDescriptorPoolSize> poolSizes(2*N_instance_model_types);
-
-        for (uint32_t i = 0; i < N_instance_model_types; i++)
-            {
-                poolSizes[2*i] = vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2);
-                poolSizes[2*i+1] = vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1);
-            }
-        return poolSizes;
-    }
 
     void preparePipeline(VkPipelineCache pipelineCache = VK_NULL_HANDLE)
     {
@@ -187,20 +175,18 @@ public:
             // Binding point 0: Mesh vertex layout description at per-vertex rate
             vks::initializers::vertexInputBindingDescription(GLTF_BIP_VERTEX_BIND_ID, sizeof(vkglTF::Vertex), VK_VERTEX_INPUT_RATE_VERTEX),
             // Binding point 1: Instanced data at per-instance rate
-            vks::initializers::vertexInputBindingDescription(GLTF_BIP_INSTANCE_BIND_ID, sizeof(glTFBasicInstanceData), VK_VERTEX_INPUT_RATE_INSTANCE)};
+            vks::initializers::vertexInputBindingDescription(GLTF_BIP_INSTANCE_BIND_ID, sizeof(InstanceData), VK_VERTEX_INPUT_RATE_INSTANCE)};
 
         std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
 			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 0, VK_FORMAT_R32G32B32_SFLOAT, 0),					// Location 0: Position
 			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 1, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3),	// Location 1: Normal
 			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 2, VK_FORMAT_R32G32_SFLOAT, sizeof(float) * 6),		// Location 2: Texture coordinates
 			vks::initializers::vertexInputAttributeDescription(GLTF_BIP_VERTEX_BIND_ID, 3, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 8),	// Location 3: Color
-            // Per-Instance attributes
-
-            vks::initializers::vertexInputAttributeDescription(GLTF_BIP_INSTANCE_BIND_ID, 4, VK_FORMAT_R32G32B32_SFLOAT, 0),                // Position
-            vks::initializers::vertexInputAttributeDescription(GLTF_BIP_INSTANCE_BIND_ID, 5, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 3), // Rotation
-            vks::initializers::vertexInputAttributeDescription(GLTF_BIP_INSTANCE_BIND_ID, 6, VK_FORMAT_R32_SFLOAT, sizeof(float) * 6) // Rotation
         };
 
+        std::vector<VkVertexInputAttributeDescription> instanceDataDescriptions = InstanceData::getAttributeDescriptions(GLTF_BIP_INSTANCE_BIND_ID, 4);
+
+        attributeDescriptions.insert(attributeDescriptions.end(), instanceDataDescriptions.begin(), instanceDataDescriptions.end());
         VkPipelineVertexInputStateCreateInfo inputState = vks::initializers::pipelineVertexInputStateCreateInfo();
         inputState.pVertexBindingDescriptions = bindingDescriptions.data();
         inputState.pVertexAttributeDescriptions = attributeDescriptions.data();
@@ -240,7 +226,7 @@ public:
         vkCmdDrawIndexed(drawCmdBuffer, model->indices.count, N_instances, 0, 0, 0);
     }
 
-    void prepare(std::vector<glTFBasicInstanceData> &instanceData, VkDescriptorPool descriptorPool)
+    void prepare(std::vector<InstanceData> &instanceData, VkDescriptorPool descriptorPool)
     {
         prepareInstanceData(instanceData);
         setupDescriptorSetLayout();

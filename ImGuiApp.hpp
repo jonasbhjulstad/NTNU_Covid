@@ -3,9 +3,8 @@
 
 // Options and values to display/toggle from the UI
 struct UISettings {
-	bool displayModels = false;
-	bool displayLogos = false;
-	bool displayBackground = false;
+	bool displayNodes = true;
+	bool displayEdges = true;
 	bool animateLight = false;
 	float lightSpeed = 0.25f;
 	std::array<float, 50> frameTimes{};
@@ -340,9 +339,8 @@ public:
 
 		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Example settings");
-		ImGui::Checkbox("Render models", &uiSettings.displayModels);
-		ImGui::Checkbox("Display logos", &uiSettings.displayLogos);
-		ImGui::Checkbox("Display background", &uiSettings.displayBackground);
+		ImGui::Checkbox("Display nodes", &uiSettings.displayNodes);
+		ImGui::Checkbox("Display edges", &uiSettings.displayEdges);
 		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
 		ImGui::SliderFloat("Light speed", &uiSettings.lightSpeed, 0.1f, 1.0f);
 		ImGui::End();
