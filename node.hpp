@@ -15,6 +15,7 @@ struct NodeInstanceData
             vks::initializers::vertexInputAttributeDescription(bind_ID, layoutOffset + 1, VK_FORMAT_R32_SFLOAT, sizeof(float)*3),// Position
         };
     }
+
 };
 
 #endif

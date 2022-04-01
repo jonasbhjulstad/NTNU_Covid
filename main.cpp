@@ -15,6 +15,7 @@
 
 #include "ImGuiApp.hpp"
 #include "gltfBasicInstance.hpp"
+#include "computeBasic.hpp"
 #include "node.hpp"
 #include "bezier.hpp"
 // ----------------------------------------------------------------------------
@@ -70,6 +71,7 @@ public:
 		glm::mat4 projection;
 		glm::mat4 modelview;
 		glm::vec4 lightPos;
+		float theta;
 	} uboVS;
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
@@ -153,6 +155,9 @@ public:
 				vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, N_GLTF_BASIC_INSTANCE_TYPES),
 				vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, N_GLTF_BASIC_INSTANCE_TYPES)};
 
+		auto computePoolSizes = ComputeBasic::getPoolSizes();
+		poolSizes.insert(poolSizes.end(), computePoolSizes.begin(), computePoolSizes.end());
+
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, 2);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 	}
@@ -188,6 +193,9 @@ public:
 			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
 			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
 		};
+
+		uboVS.theta = t_ms/1000*M_PI_2;
+
 
 		VK_CHECK_RESULT(uniformBufferVS.map());
 		memcpy(uniformBufferVS.mapped, &uboVS, sizeof(uboVS));
