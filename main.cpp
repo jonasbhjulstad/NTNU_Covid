@@ -15,9 +15,68 @@
 
 #include "ImGuiApp.hpp"
 #include "gltfBasicInstance.hpp"
-#include "computeBasic.hpp"
 #include "node.hpp"
 #include "bezier.hpp"
+
+
+class ProjectionBuffer
+{
+	vks::Buffer buffer;
+
+	struct UBO_Projection
+	{
+		glm::mat4 projection;
+		glm::mat4 modelview;
+		glm::vec4 lightPos;
+		float theta;
+	} UBO_Projection;
+
+		// Prepare and initialize uniform buffer containing shader uniforms
+	void prepare(vks::VulkanDevice* vulkanDevice)
+	{
+		// Vertex shader uniform buffer block
+		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&buffer,
+			sizeof(UBO_Projection),
+			&UBO_Projection));
+
+		update();
+	}
+
+	std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
+
+	void update()
+	{
+		// Vertex shader
+		UBO_Projection.projection = camera.matrices.perspective;
+		UBO_Projection.modelview = camera.matrices.view * glm::mat4(1.0f);
+
+		float t_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+
+		// Light source
+		if (uiSettings.animateLight)
+		{
+			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
+			UBO_Projection.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
+			UBO_Projection.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
+		};
+
+		UBO_Projection.theta = t_ms/1000*M_PI_2;
+
+
+		VK_CHECK_RESULT(buffer.map());
+		memcpy(buffer.mapped, &UBO_Projection, sizeof(UBO_Projection));
+		buffer.unmap();
+	}
+
+	~ProjectionBuffer()
+	{
+		buffer.destroy();
+	}
+};
+
 // ----------------------------------------------------------------------------
 // VulkanExample
 // ----------------------------------------------------------------------------
@@ -64,15 +123,7 @@ public:
 	std::string fragmentShaderPath;
 	std::string modelAssetPath;
 
-	vks::Buffer uniformBufferVS;
-
-	struct UBOVS
-	{
-		glm::mat4 projection;
-		glm::mat4 modelview;
-		glm::vec4 lightPos;
-		float theta;
-	} uboVS;
+	ProjectionBuffer projectionBuffer;
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
@@ -87,7 +138,6 @@ public:
 
 	~VulkanExample()
 	{
-		uniformBufferVS.destroy();
 		delete imGui;
 	}
 
@@ -155,52 +205,10 @@ public:
 				vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, N_GLTF_BASIC_INSTANCE_TYPES),
 				vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, N_GLTF_BASIC_INSTANCE_TYPES)};
 
-		auto computePoolSizes = ComputeBasic::getPoolSizes();
-		poolSizes.insert(poolSizes.end(), computePoolSizes.begin(), computePoolSizes.end());
-
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, 2);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device, &descriptorPoolInfo, nullptr, &descriptorPool));
 	}
 
-	// Prepare and initialize uniform buffer containing shader uniforms
-	void prepareUniformBuffers()
-	{
-		// Vertex shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			&uniformBufferVS,
-			sizeof(uboVS),
-			&uboVS));
-
-		updateUniformBuffers();
-	}
-
-	std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
-
-	void updateUniformBuffers()
-	{
-		// Vertex shader
-		uboVS.projection = camera.matrices.perspective;
-		uboVS.modelview = camera.matrices.view * glm::mat4(1.0f);
-
-		float t_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
-
-		// Light source
-		if (uiSettings.animateLight)
-		{
-			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
-			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
-			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
-		};
-
-		uboVS.theta = t_ms/1000*M_PI_2;
-
-
-		VK_CHECK_RESULT(uniformBufferVS.map());
-		memcpy(uniformBufferVS.mapped, &uboVS, sizeof(uboVS));
-		uniformBufferVS.unmap();
-	}
 
 	void draw()
 	{
@@ -255,7 +263,7 @@ public:
 	void prepare()
 	{
 		VulkanExampleBase::prepare();
-		prepareUniformBuffers();
+		projectionBuffer.prepare();
 		setupDescriptorPool();
 
 		prepareImGui();
@@ -265,13 +273,13 @@ public:
 		textures.node.loadFromFile(texturePath + "icoTex2.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
 		models.bezier.loadFromFile(modelPath + "bezier.gltf", vulkanDevice, queue, glTFLoadingFlags);
 		// textures.bezier.loadFromFile(texturePath + "bezier.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
-		BIModels.node = new glTFBasicInstance<NodeInstanceData>(device, vulkanDevice, &uniformBufferVS, queue,
+		BIModels.node = new glTFBasicInstance<NodeInstanceData>(device, vulkanDevice, &buffer, queue,
 																shadersPath + "node.vert.spv", shadersPath + "node.frag.spv", modelPath + "ico_node.gltf", renderPass, &models.node, &textures.node);
 
 		auto nodeInstanceData = prepareNodeInstanceData();
 		BIModels.node->prepare(nodeInstanceData, descriptorPool);
 
-		BIModels.bezier = new glTFBasicInstance<BezierInstanceData>(device, vulkanDevice, &uniformBufferVS, queue,
+		BIModels.bezier = new glTFBasicInstance<BezierInstanceData>(device, vulkanDevice, &buffer, queue,
 																	shadersPath + "bezier.vert.spv", shadersPath + "bezier.frag.spv", modelPath + "bezier.gltf", renderPass, &models.bezier);
 
 		BIModels.bezier->prepare(prepareBezierInstanceData(nodeInstanceData), descriptorPool);
@@ -298,12 +306,12 @@ public:
 		draw();
 
 		if (uiSettings.animateLight)
-			updateUniformBuffers();
+			updateProjectionuniformBuffer();
 	}
 
 	virtual void viewChanged()
 	{
-		updateUniformBuffers();
+		updateProjectionuniformBuffer();
 	}
 
 	virtual void mouseMoved(double x, double y, bool &handled)
