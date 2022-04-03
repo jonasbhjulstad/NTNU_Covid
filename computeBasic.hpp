@@ -45,10 +45,10 @@ public:
     VkDescriptorSet descriptorSet;
 
 
-    // static const std::array getPoolSizes()
-    // {
-        // return {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}, {VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1}};
-    // }
+    static const std::array getPoolSizes()
+    {
+        return {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}};
+    }
 
     void setupDescriptorSetLayout()
     {

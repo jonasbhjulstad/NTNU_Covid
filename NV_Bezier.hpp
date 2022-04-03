@@ -1,5 +1,6 @@
 #ifndef NV_BEZIER_HPP
 #define NV_BEZIER_HPP
+#include <glm/glm.hpp>
 
 struct BezierInstanceData
 {

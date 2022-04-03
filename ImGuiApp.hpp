@@ -1,6 +1,9 @@
 #ifndef IMGUI_APP_HPP
 #define IMGUI_APP_HPP
 
+#include <imgui.h>
+#include "vulkanexamplebase.h"
+#include "VulkanglTFModel.h"
 // Options and values to display/toggle from the UI
 struct UISettings {
 	bool displayNodes = true;
@@ -11,7 +14,6 @@ struct UISettings {
 	float frameTimeMin = 9999.0f, frameTimeMax = 0.0f;
 	float lightTimer = 0.0f;
 } uiSettings;
-
 // ----------------------------------------------------------------------------
 // ImGUI class
 // ----------------------------------------------------------------------------

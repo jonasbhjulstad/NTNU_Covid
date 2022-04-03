@@ -14,68 +14,13 @@
 #define ENABLE_VALIDATION true
 
 #include "ImGuiApp.hpp"
-#include "gltfBasicInstance.hpp"
-#include "node.hpp"
-#include "bezier.hpp"
+#include "NV_glTFBasicInstance.hpp"
+#include "NV_ProjectionBuffer.hpp"
+#include "NV_Node.hpp"
+#include "NV_Bezier.hpp"
 
 
-class ProjectionBuffer
-{
-	vks::Buffer buffer;
 
-	struct UBO_Projection
-	{
-		glm::mat4 projection;
-		glm::mat4 modelview;
-		glm::vec4 lightPos;
-		float theta;
-	} UBO_Projection;
-
-		// Prepare and initialize uniform buffer containing shader uniforms
-	void prepare(vks::VulkanDevice* vulkanDevice)
-	{
-		// Vertex shader uniform buffer block
-		VK_CHECK_RESULT(vulkanDevice->createBuffer(
-			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
-			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			&buffer,
-			sizeof(UBO_Projection),
-			&UBO_Projection));
-
-		update();
-	}
-
-	std::chrono::time_point<std::chrono::steady_clock> t0 = std::chrono::steady_clock::now();
-
-	void update()
-	{
-		// Vertex shader
-		UBO_Projection.projection = camera.matrices.perspective;
-		UBO_Projection.modelview = camera.matrices.view * glm::mat4(1.0f);
-
-		float t_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
-
-		// Light source
-		if (uiSettings.animateLight)
-		{
-			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
-			UBO_Projection.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
-			UBO_Projection.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
-		};
-
-		UBO_Projection.theta = t_ms/1000*M_PI_2;
-
-
-		VK_CHECK_RESULT(buffer.map());
-		memcpy(buffer.mapped, &UBO_Projection, sizeof(UBO_Projection));
-		buffer.unmap();
-	}
-
-	~ProjectionBuffer()
-	{
-		buffer.destroy();
-	}
-};
 
 // ----------------------------------------------------------------------------
 // VulkanExample
@@ -100,28 +45,12 @@ class VulkanExample : public VulkanExampleBase
 
 public:
 	ImGUI *imGui = nullptr;
-	const uint32_t N_instance_models = 2;
-	struct Models
-	{
-		vkglTF::Model node;
-		vkglTF::Model bezier;
-	} models;
 
-	struct Textures
+	struct
 	{
-		vks::Texture2DArray node;
-		vks::Texture2DArray bezier;
-	} textures;
-
-	struct BasicInstanceModels
-	{
-		glTFBasicInstance<NodeInstanceData> *node;
-		glTFBasicInstance<BezierInstanceData> *bezier;
-	} BIModels;
-
-	std::string vertexShaderPath;
-	std::string fragmentShaderPath;
-	std::string modelAssetPath;
+		BasicInstancePipelineData node;
+		BasicInstancePipelineData bezier;
+	} graphicsPipelines;
 
 	ProjectionBuffer projectionBuffer;
 
@@ -130,7 +59,7 @@ public:
 		title = "Vulkan Example - ImGui";
 		camera.type = Camera::CameraType::lookat;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.8f));
-		camera.setRotation(glm::vec3(4.5f, -380.0f, 0.0f));
+		camera.setRotation(glm::vec3(4.5f, 380.0f, 0.0f));
 		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
@@ -177,15 +106,16 @@ public:
 			VkRect2D scissor = vks::initializers::rect2D(width, height, 0, 0);
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
-			VkDeviceSize offsets[1] = {0};
-
+			VkDeviceSize offset = 0;
+			graphicsPipelines.node.offset = offset;
 			if (uiSettings.displayNodes)
 			{
-				BIModels.node->buildCommandBuffer(drawCmdBuffers[i], offsets);
+				buildCommandBuffer(graphicsPipelines.node, drawCmdBuffers[i]);
 			}
+			graphicsPipelines.bezier.offset = offset;
 			if (uiSettings.displayEdges)
 			{
-				BIModels.bezier->buildCommandBuffer(drawCmdBuffers[i], offsets);
+				buildCommandBuffer(graphicsPipelines.bezier, drawCmdBuffers[i]);
 			}
 
 			// Render imGui
@@ -247,7 +177,7 @@ public:
 
 	std::vector<BezierInstanceData> prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData)
 	{
-		const uint32_t N_nodes = nodeInstanceData.size();
+		const uint32_t N_nodes = static_cast<uint32_t>(nodeInstanceData.size());
 		std::vector<BezierInstanceData> instanceData;
 		instanceData.reserve(N_nodes * N_nodes);
 		for (int i = 0; i < N_nodes; i++)
@@ -262,27 +192,50 @@ public:
 
 	void prepare()
 	{
+
 		VulkanExampleBase::prepare();
-		projectionBuffer.prepare();
+		projectionBuffer.prepare(vulkanDevice);
+		projectionBuffer.update(camera, frameTimer);
 		setupDescriptorPool();
 
 		prepareImGui();
 
-		const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-		models.node.loadFromFile(modelPath + "ico_node.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		textures.node.loadFromFile(texturePath + "icoTex2.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
-		models.bezier.loadFromFile(modelPath + "bezier.gltf", vulkanDevice, queue, glTFLoadingFlags);
-		// textures.bezier.loadFromFile(texturePath + "bezier.ktx", VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
-		BIModels.node = new glTFBasicInstance<NodeInstanceData>(device, vulkanDevice, &buffer, queue,
-																shadersPath + "node.vert.spv", shadersPath + "node.frag.spv", modelPath + "ico_node.gltf", renderPass, &models.node, &textures.node);
-
 		auto nodeInstanceData = prepareNodeInstanceData();
-		BIModels.node->prepare(nodeInstanceData, descriptorPool);
 
-		BIModels.bezier = new glTFBasicInstance<BezierInstanceData>(device, vulkanDevice, &buffer, queue,
-																	shadersPath + "bezier.vert.spv", shadersPath + "bezier.frag.spv", modelPath + "bezier.gltf", renderPass, &models.bezier);
+		BasicInstancedRenderingParams nodeParam;
 
-		BIModels.bezier->prepare(prepareBezierInstanceData(nodeInstanceData), descriptorPool);
+		nodeParam.vertexShaderPath = shadersPath + "node.vert.spv";
+		nodeParam.fragmentShaderPath = shadersPath + "node.frag.spv";
+		nodeParam.modelPath = modelPath + "node.gltf";
+		nodeParam.texturePath = texturePath + "node.ktx";
+
+		nodeParam.vulkanDevice = vulkanDevice;
+		nodeParam.uniformProjectionBuffer = uniformProjectionBuffer;
+		nodeParam.queue = queue;
+		nodeParam.descriptorPool = descriptorPool;
+		nodeParam.pipelineCache = pipelineCache;
+
+		nodePipelineData = prepareBasicInstancedRendering(nodeInstanceData, nodeParam);
+
+		buildCommandBuffer(nodePipelineData, drawCmdBuffers);
+		graphicsPipelines.node = prepareBezierInstanceData(nodeInstanceData);
+
+
+		BasicInstancedRenderingParams bezierParam;
+
+		bezierParam.vertexShaderPath = shadersPath + "bezier.vert.spv";
+		bezierParam.fragmentShaderPath = shadersPath + "bezier.frag.spv";
+		bezierParam.modelPath = modelPath + "bezier.gltf";
+
+		bezierParam.vulkanDevice = vulkanDevice;
+		bezierParam.uniformProjectionBuffer = uniformProjectionBuffer;
+		bezierParam.queue = queue;
+		bezierParam.descriptorPool = descriptorPool;
+		bezierParam.pipelineCache = pipelineCache;
+
+		graphicsPipelines.bezier = prepareBasicInstancedRendering(bezierInstanceData, bezierParam);
+
+		buildCommandBuffer(bezierPipelineData, drawCmdBuffers);
 
 		buildCommandBuffers();
 		prepared = true;
@@ -306,12 +259,12 @@ public:
 		draw();
 
 		if (uiSettings.animateLight)
-			updateProjectionuniformBuffer();
+			projectionBuffer.update(camera, frameTimer);
 	}
 
 	virtual void viewChanged()
 	{
-		updateProjectionuniformBuffer();
+		projectionBuffer.update(camera, frameTimer);
 	}
 
 	virtual void mouseMoved(double x, double y, bool &handled)
