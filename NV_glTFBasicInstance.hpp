@@ -7,21 +7,22 @@
 
 enum glTFBasicInstanceBindIDs
 {
-    GLTF_BIP_INSTANCE_BIND_ID,
-    GLTF_BIP_VERTEX_BIND_ID
+    GLTF_BIP_VERTEX_BIND_ID,
+    GLTF_BIP_INSTANCE_BIND_ID
 };
 
 struct BasicInstancePipelineData
 {
-    vkglTF::Model model;
-    vks::Texture2D texture;
+    std::unique_ptr<vkglTF::Model> model;
+    std::unique_ptr<vks::Texture2D> texture;
     vks::Buffer instanceBuffer;
     VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;
     VkDescriptorSet descriptorSet;
     VkPipeline pipeline;
-    VkDeviceSize offset;
+    VkDeviceSize* offset;
     uint32_t N_instances;
+
 };
 
 struct BasicInstancedRenderingParams
@@ -187,13 +188,11 @@ VkPipeline setupPipeline(const std::string &vertexShaderPath,
     pipelineCI.stageCount = static_cast<uint32_t>(2);
     pipelineCI.pStages = shaderStages.data();
 
-    pipelineCI.layout = pipelineLayout;
-
     // Vertex input bindings
     // The instancing pipeline uses a vertex input state with two bindings
     std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
         // Binding point 0: Mesh vertex layout description at per-vertex rate
-        vks::initializers::vertexInputBindingDescription(GLTF_BIP_INSTANCE_BIND_ID, sizeof(vkglTF::Vertex), VK_VERTEX_INPUT_RATE_VERTEX),
+        vks::initializers::vertexInputBindingDescription(GLTF_BIP_VERTEX_BIND_ID, sizeof(vkglTF::Vertex), VK_VERTEX_INPUT_RATE_VERTEX),
         // Binding point 1: Instanced data at per-instance rate
         vks::initializers::vertexInputBindingDescription(GLTF_BIP_INSTANCE_BIND_ID, sizeof(InstanceData), VK_VERTEX_INPUT_RATE_INSTANCE)};
 
@@ -214,72 +213,52 @@ VkPipeline setupPipeline(const std::string &vertexShaderPath,
     inputState.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
     inputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     pipelineCI.pVertexInputState = &inputState;
-    pipelineCI.layout = pipelineLayout;
 
     shaderStages[0] = loadShader(device, vertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT);
     shaderStages[1] = loadShader(device, fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT);
 
     VkPipeline pipeline;
-    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
+    VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineCI, nullptr, &pipeline));
     return pipeline;
-}
-
-void buildCommandBuffer(
-    VkPipelineLayout pipelineLayout,
-    VkPipeline pipeline,
-    VkDescriptorSet descriptorSet,
-    vkglTF::Model model,
-    VkBuffer instanceBuffer,
-    VkCommandBuffer drawCmdBuffer,
-    VkDeviceSize offsets,
-    uint32_t N_instances)
-{
-    vkCmdBindDescriptorSets(drawCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-    vkCmdBindPipeline(drawCmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
-
-    vkCmdBindVertexBuffers(drawCmdBuffer, GLTF_BIP_VERTEX_BIND_ID, 1, &model.vertices.buffer, &offsets);
-    vkCmdBindVertexBuffers(drawCmdBuffer, GLTF_BIP_INSTANCE_BIND_ID, 1, &instanceBuffer, &offsets);
-
-    vkCmdBindIndexBuffer(drawCmdBuffer, model.indices.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-    vkCmdDrawIndexed(drawCmdBuffer, model.indices.count, N_instances, 0, 0, 0);
 }
 
 void buildCommandBuffer(BasicInstancePipelineData& BI_data, VkCommandBuffer commandBuffer)
 {
-    buildCommandBuffer(BI_data.pipelineLayout,
-    BI_data.pipeline, 
-    BI_data.descriptorSet, 
-    BI_data.model,
-    BI_data.instanceBuffer.buffer,
-    commandBuffer,
-    BI_data.offset,
-    BI_data.N_instances);
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, BI_data.pipelineLayout, 0, 1, &BI_data.descriptorSet, 0, nullptr);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, BI_data.pipeline);
+
+    vkCmdBindVertexBuffers(commandBuffer, GLTF_BIP_VERTEX_BIND_ID, 1, &BI_data.model->vertices.buffer, BI_data.offset);
+    vkCmdBindVertexBuffers(commandBuffer, GLTF_BIP_INSTANCE_BIND_ID, 1, &BI_data.instanceBuffer.buffer, BI_data.offset);
+
+    vkCmdBindIndexBuffer(commandBuffer, BI_data.model->indices.buffer, 0, VK_INDEX_TYPE_UINT32);
+
+    vkCmdDrawIndexed(commandBuffer, BI_data.model->indices.count, BI_data.N_instances, 0, 0, 0);
 }
 
 template <typename InstanceData>
-BasicInstancePipelineData prepareBasicInstancedRendering(std::vector<InstanceData> &instanceData,
+std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::vector<InstanceData> &instanceData,
                                                          BasicInstancedRenderingParams &p)
 {
 
     VkDevice device = p.vulkanDevice->logicalDevice;
 
-    BasicInstancePipelineData BI_data;
+    std::unique_ptr<BasicInstancePipelineData> BI_data = std::make_unique<BasicInstancePipelineData>();
 
-    BI_data.model = loadModel(p.modelPath, p.vulkanDevice, p.queue);
-    BI_data.instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
+    BI_data->model = loadModel(p.modelPath, p.vulkanDevice, p.queue);
+    BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
     if (!p.texturePath.empty())
     {
-        BI_data.texture = loadTexture(p.texturePath, p.vulkanDevice, p.queue);
-        BI_data.descriptorSetLayout = textureDescriptorSetLayout(device);
+        BI_data->texture = loadTexture(p.texturePath, p.vulkanDevice, p.queue);
+        BI_data->descriptorSetLayout = textureDescriptorSetLayout(device);
     }
     else
     {
-        BI_data.descriptorSetLayout = uniformDescriptorSetLayout(device);
+        BI_data->descriptorSetLayout = uniformDescriptorSetLayout(device);
     }
-    BI_data.pipelineLayout = setupPipelineLayout(device, BI_data.descriptorSetLayout);
-    BI_data.descriptorSet = setupDescriptorSets(device, BI_data.descriptorSetLayout, p.descriptorPool, p.uniformProjectionBuffer);
-    BI_data.pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data.pipelineLayout, device, p.renderPass, p.pipelineCache);
+    BI_data->pipelineLayout = setupPipelineLayout(device, BI_data->descriptorSetLayout);
+    BI_data->descriptorSet = setupDescriptorSets(device, BI_data->descriptorSetLayout, p.descriptorPool, p.uniformProjectionBuffer);
+    BI_data->pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data->pipelineLayout, device, p.renderPass, p.pipelineCache);
+    BI_data->N_instances = instanceData.size();
 
     return BI_data;
 }

@@ -1,21 +1,22 @@
 #ifndef NV_ASSETS_HPP
 #define NV_ASSETS_HPP
 #include <string>
+#include <memory>
 #include "VulkanglTFModel.h"
 
 
-vkglTF::Model loadModel(const std::string &modelPath, vks::VulkanDevice *vulkanDevice, VkQueue queue)
+std::unique_ptr<vkglTF::Model> loadModel(const std::string &modelPath, vks::VulkanDevice *vulkanDevice, VkQueue queue)
 {
     const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
-    vkglTF::Model model;
-    model.loadFromFile(modelPath, vulkanDevice, queue, glTFLoadingFlags);
+    std::unique_ptr<vkglTF::Model> model = std::make_unique<vkglTF::Model>();
+    model->loadFromFile(modelPath, vulkanDevice, queue, glTFLoadingFlags);
     return model;
 }
 
-vks::Texture2D loadTexture(const std::string &texturePath, vks::VulkanDevice *vulkanDevice, VkQueue queue)
+std::unique_ptr<vks::Texture2D> loadTexture(const std::string &texturePath, vks::VulkanDevice *vulkanDevice, VkQueue queue)
 {
-    vks::Texture2D texture;
-    texture.loadFromFile(texturePath, VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
+    std::unique_ptr<vks::Texture2D> texture = std::make_unique<vks::Texture2D>();
+    texture->loadFromFile(texturePath, VK_FORMAT_R8G8B8A8_UNORM, vulkanDevice, queue);
     return texture;
 }
 

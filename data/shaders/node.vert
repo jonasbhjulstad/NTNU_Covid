@@ -67,7 +67,7 @@ void main()
 	// gRotMat[3] = vec4(0.0, 0.0, 0.0, 1.0);	
 	
 	vec4 locPos = vec4(inPos.xyz, 1.0);
-	vec4 pos = vec4((locPos.xyz * instanceScale) + instancePos, 1.0);
+	vec4 pos = vec4((locPos.xyz) + instancePos, 1.0);
 
 	gl_Position = ubo.projection * ubo.modelview * pos;// * gRotMat * pos;
 	outNormal = mat3(ubo.modelview) * inNormal;

@@ -15,7 +15,6 @@
 
 #include "ImGuiApp.hpp"
 #include "NV_glTFBasicInstance.hpp"
-#include "NV_ProjectionBuffer.hpp"
 #include "NV_Node.hpp"
 #include "NV_Bezier.hpp"
 
@@ -50,11 +49,24 @@ public:
 
 	struct
 	{
-		BasicInstancePipelineData node;
-		BasicInstancePipelineData bezier;
+		std::unique_ptr<BasicInstancePipelineData> node;
+		std::unique_ptr<BasicInstancePipelineData> bezier;
 	} graphicsPipelines;
 
-	ProjectionBuffer projectionBuffer;
+	vks::Buffer uniformBufferVS;
+	struct UBOVS {
+		glm::mat4 projection;
+		glm::mat4 modelview;
+		glm::vec4 lightPos;
+	} uboVS;
+
+	struct {
+		std::vector<NodeInstanceData> node;
+		std::vector<BezierInstanceData> bezier;
+	} instanceData;
+
+	const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
+
 
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
@@ -77,7 +89,7 @@ public:
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
 		VkClearValue clearValues[2];
-		clearValues[0].color = {{0.2f, 0.2f, 0.2f, 1.0f}};
+		clearValues[0].color = {{.0f,.94f/255.f,232.f/255.f, .4f}};
 		clearValues[1].depthStencil = {1.0f, 0};
 
 		VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
@@ -89,7 +101,7 @@ public:
 		renderPassBeginInfo.clearValueCount = 2;
 		renderPassBeginInfo.pClearValues = clearValues;
 
-		imGui->newFrame(this, (frameCounter == 0));
+		imGui->newFrame(this, (frameCounter == 0), uiSettings);
 
 		imGui->updateBuffers();
 
@@ -109,15 +121,16 @@ public:
 			vkCmdSetScissor(drawCmdBuffers[i], 0, 1, &scissor);
 
 			VkDeviceSize offset = 0;
-			graphicsPipelines.node.offset = offset;
+
+			graphicsPipelines.node->offset = &offset;
 			if (uiSettings.displayNodes)
 			{
-				buildCommandBuffer(graphicsPipelines.node, drawCmdBuffers[i]);
+				buildCommandBuffer(*graphicsPipelines.node, drawCmdBuffers[i]);
 			}
-			graphicsPipelines.bezier.offset = offset;
+			graphicsPipelines.bezier->offset = &offset;
 			if (uiSettings.displayEdges)
 			{
-				buildCommandBuffer(graphicsPipelines.bezier, drawCmdBuffers[i]);
+				buildCommandBuffer(*graphicsPipelines.bezier, drawCmdBuffers[i]);
 			}
 
 			// Render imGui
@@ -158,10 +171,11 @@ public:
 		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
-	std::vector<NodeInstanceData> prepareNodeInstanceData()
+	void prepareNodeInstanceData()
 	{
-		std::vector<NodeInstanceData> instanceData(NODE_INSTANCE_COUNT);
 
+		instanceData.node.reserve(NODE_INSTANCE_COUNT);
+		// float limits[] = {-100., 100., -100., 100., -100., 100.};
 		float limits[] = {-10., 10., -10., 10., -10., 10.};
 		std::random_device rnd;
 		std::uniform_real_distribution<float> distX(limits[0], limits[1]);
@@ -170,58 +184,51 @@ public:
 		std::uniform_real_distribution<float> distScale(.2f, 2.0f);
 		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
 		{
-			instanceData[i].pos = glm::vec3(distX(rnd), distY(rnd), distZ(rnd));
-			instanceData[i].scale = distScale(rnd);
+			instanceData.node.push_back({glm::vec3(distX(rnd), distY(rnd), distZ(rnd)), distScale(rnd)});
 		}
 
-		return instanceData;
 	}
 
-	std::vector<BezierInstanceData> prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData)
+	void prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData)
 	{
 		const uint32_t N_nodes = static_cast<uint32_t>(nodeInstanceData.size());
-		std::vector<BezierInstanceData> instanceData;
-		instanceData.reserve(N_nodes * N_nodes);
-		for (int i = 0; i < N_nodes; i++)
+
+		instanceData.bezier.reserve(N_nodes * N_nodes);
+		for (uint32_t i = 0; i < N_nodes; i++)
 		{
-			for (int j = i+1; j < N_nodes; j++)
+			for (uint32_t j = i+1; j < N_nodes; j++)
 			{
-				instanceData.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos});
+				instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos});
 			}
 		}
-		return instanceData;
 	}
 
-	void prepare()
+	void prepareNode()
 	{
-
-		VulkanExampleBase::prepare();
-		projectionBuffer.prepare(vulkanDevice);
-		projectionBuffer.update(camera, frameTimer, uiSettings);
-		setupDescriptorPool();
-
-		prepareImGui();
-
-		auto nodeInstanceData = prepareNodeInstanceData();
+		prepareNodeInstanceData();
 
 		BasicInstancedRenderingParams nodeParam;
 
 		nodeParam.vertexShaderPath = shadersPath + "node.vert.spv";
 		nodeParam.fragmentShaderPath = shadersPath + "node.frag.spv";
-		nodeParam.modelPath = modelPath + "node.gltf";
-		nodeParam.texturePath = texturePath + "node.ktx";
+		nodeParam.modelPath = modelPath + "ico_node.gltf";
+		nodeParam.texturePath = texturePath + "icoTex2.ktx";
 
 		nodeParam.vulkanDevice = vulkanDevice;
-		nodeParam.uniformProjectionBuffer = &projectionBuffer.buffer;
+		nodeParam.uniformProjectionBuffer = &uniformBufferVS;
 		nodeParam.queue = queue;
 		nodeParam.descriptorPool = descriptorPool;
 		nodeParam.pipelineCache = pipelineCache;
 		nodeParam.renderPass = renderPass;
 
-		auto nodePipelineData = prepareBasicInstancedRendering(nodeInstanceData, nodeParam);
+		graphicsPipelines.node = prepareBasicInstancedRendering(instanceData.node, nodeParam);
+
+	}
 
 
-		auto bezierInstanceData = prepareBezierInstanceData(nodeInstanceData);
+	void prepareBezier()
+	{
+		prepareBezierInstanceData(instanceData.node);
 
 
 		BasicInstancedRenderingParams bezierParam;
@@ -231,14 +238,26 @@ public:
 		bezierParam.modelPath = modelPath + "bezier.gltf";
 
 		bezierParam.vulkanDevice = vulkanDevice;
-		bezierParam.uniformProjectionBuffer = &projectionBuffer.buffer;
+		bezierParam.uniformProjectionBuffer = &uniformBufferVS;
 		bezierParam.queue = queue;
 		bezierParam.descriptorPool = descriptorPool;
 		bezierParam.pipelineCache = pipelineCache;
 		bezierParam.renderPass = renderPass;
 
-		graphicsPipelines.bezier = prepareBasicInstancedRendering(bezierInstanceData, bezierParam);
+		graphicsPipelines.bezier = prepareBasicInstancedRendering(instanceData.bezier, bezierParam);
 
+	}
+
+	void prepare()
+	{
+
+		VulkanExampleBase::prepare();
+		prepareUniformBuffers();
+		setupDescriptorPool();
+		prepareImGui();
+
+		prepareNode();
+		prepareBezier();
 
 		buildCommandBuffers();
 		prepared = true;
@@ -262,12 +281,12 @@ public:
 		draw();
 
 		if (uiSettings.animateLight)
-			projectionBuffer.update(camera, frameTimer, uiSettings);
+			updateUniformBuffers();
 	}
 
 	virtual void viewChanged()
 	{
-		projectionBuffer.update(camera, frameTimer, uiSettings);
+		updateUniformBuffers();
 	}
 
 	virtual void mouseMoved(double x, double y, bool &handled)
@@ -275,6 +294,40 @@ public:
 		ImGuiIO &io = ImGui::GetIO();
 		handled = io.WantCaptureMouse;
 	}
+
+
+	// Prepare and initialize uniform buffer containing shader uniforms
+	void prepareUniformBuffers()
+	{
+		// Vertex shader uniform buffer block
+		VK_CHECK_RESULT(vulkanDevice->createBuffer(
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+			&uniformBufferVS,
+			sizeof(uboVS),
+			&uboVS));
+
+		updateUniformBuffers();
+	}
+
+	void updateUniformBuffers()
+	{
+		// Vertex shader
+		uboVS.projection = camera.matrices.perspective;
+		uboVS.modelview = camera.matrices.view * glm::mat4(1.0f);
+
+		// Light source
+		if (uiSettings.animateLight) {
+			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
+			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
+			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
+		};
+
+		VK_CHECK_RESULT(uniformBufferVS.map());
+		memcpy(uniformBufferVS.mapped, &uboVS, sizeof(uboVS));
+		uniformBufferVS.unmap();
+	}
+
 };
 
 VULKAN_EXAMPLE_MAIN()

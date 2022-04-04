@@ -17,7 +17,6 @@ layout (binding = 0) uniform UBO
 	mat4 projection;
 	mat4 modelview;
 	vec4 lightPos;
-	float theta;
 } ubo;
 
 layout (location = 0) out vec3 outNormal;
@@ -39,10 +38,8 @@ void main()
 
 	vec3 centerPos = (endNodePos - startNodePos)/2 + startNodePos;
 	mat3 rotMat;
-	float c = cos(ubo.theta);
-	float s = sin(ubo.theta);
-
-	mat3 uMat;
+	float c = cos(theta);
+	float s = sin(theta);
 
 	rotMat[0] = vec3(c + u.x*u.x*(1-c), u.x*u.y*(1-c) - u.z*s, u.x*u.z*(1-c) + u.y*s);
 	rotMat[1] = vec3(u.y*u.x*(1-c) + u.z*s, c + u.y*u.y*(1-c), u.y*u.z*(1-c)-u.x*s);

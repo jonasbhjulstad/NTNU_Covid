@@ -309,7 +309,7 @@ public:
 	}
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(VulkanExampleBase *example, bool updateFrameGraph)
+	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings& uiSettings)
 	{
 		ImGui::NewFrame();
 
