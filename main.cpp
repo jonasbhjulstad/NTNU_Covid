@@ -44,6 +44,8 @@ class VulkanExample : public VulkanExampleBase
 #endif
 
 public:
+
+	UISettings uiSettings;
 	ImGUI *imGui = nullptr;
 
 	struct
@@ -195,7 +197,7 @@ public:
 
 		VulkanExampleBase::prepare();
 		projectionBuffer.prepare(vulkanDevice);
-		projectionBuffer.update(camera, frameTimer);
+		projectionBuffer.update(camera, frameTimer, uiSettings);
 		setupDescriptorPool();
 
 		prepareImGui();
@@ -210,15 +212,16 @@ public:
 		nodeParam.texturePath = texturePath + "node.ktx";
 
 		nodeParam.vulkanDevice = vulkanDevice;
-		nodeParam.uniformProjectionBuffer = uniformProjectionBuffer;
+		nodeParam.uniformProjectionBuffer = &projectionBuffer.buffer;
 		nodeParam.queue = queue;
 		nodeParam.descriptorPool = descriptorPool;
 		nodeParam.pipelineCache = pipelineCache;
+		nodeParam.renderPass = renderPass;
 
-		nodePipelineData = prepareBasicInstancedRendering(nodeInstanceData, nodeParam);
+		auto nodePipelineData = prepareBasicInstancedRendering(nodeInstanceData, nodeParam);
 
-		buildCommandBuffer(nodePipelineData, drawCmdBuffers);
-		graphicsPipelines.node = prepareBezierInstanceData(nodeInstanceData);
+
+		auto bezierInstanceData = prepareBezierInstanceData(nodeInstanceData);
 
 
 		BasicInstancedRenderingParams bezierParam;
@@ -228,14 +231,14 @@ public:
 		bezierParam.modelPath = modelPath + "bezier.gltf";
 
 		bezierParam.vulkanDevice = vulkanDevice;
-		bezierParam.uniformProjectionBuffer = uniformProjectionBuffer;
+		bezierParam.uniformProjectionBuffer = &projectionBuffer.buffer;
 		bezierParam.queue = queue;
 		bezierParam.descriptorPool = descriptorPool;
 		bezierParam.pipelineCache = pipelineCache;
+		bezierParam.renderPass = renderPass;
 
 		graphicsPipelines.bezier = prepareBasicInstancedRendering(bezierInstanceData, bezierParam);
 
-		buildCommandBuffer(bezierPipelineData, drawCmdBuffers);
 
 		buildCommandBuffers();
 		prepared = true;
@@ -259,12 +262,12 @@ public:
 		draw();
 
 		if (uiSettings.animateLight)
-			projectionBuffer.update(camera, frameTimer);
+			projectionBuffer.update(camera, frameTimer, uiSettings);
 	}
 
 	virtual void viewChanged()
 	{
-		projectionBuffer.update(camera, frameTimer);
+		projectionBuffer.update(camera, frameTimer, uiSettings);
 	}
 
 	virtual void mouseMoved(double x, double y, bool &handled)

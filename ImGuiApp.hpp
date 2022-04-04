@@ -13,7 +13,7 @@ struct UISettings {
 	std::array<float, 50> frameTimes{};
 	float frameTimeMin = 9999.0f, frameTimeMax = 0.0f;
 	float lightTimer = 0.0f;
-} uiSettings;
+};
 // ----------------------------------------------------------------------------
 // ImGUI class
 // ----------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 #include <chrono>
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
-
+#include "ImGuiApp.hpp"
 class ProjectionBuffer
 {
 	public:
@@ -19,7 +19,7 @@ class ProjectionBuffer
 
 		// Prepare and initialize uniform buffer containing shader uniforms
 	void prepare(vks::VulkanDevice* vulkanDevice);
-	void update(Camera& camera, float frameTimer);
+	void update(Camera& camera, float frameTimer, UISettings& uiSettings);
 
 	~ProjectionBuffer()
 	{
