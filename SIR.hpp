@@ -1,34 +1,50 @@
-#ifndef GLTF_BASIC_INSTANCE_PIPELINE_HPP
-#define GLTF_BASIC_INSTANCE_PIPELINE_HPP
-#include <vector>
-#include <array>
+/*
+ * Vulkan Example - imGui (https://github.com/ocornut/imgui)
+ *
+ * Copyright (C) 2017 by Sascha Willems - www.saschawillems.de
+ *
+ * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
+ */
+
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
-#include "gltfBasicInstance.hpp"
+#include <random>
+#include <chrono>
+#define ENABLE_VALIDATION true
 #include "computeBasic.hpp"
 
-template <typename InstanceData = glm::vec3>
-class glTFBasicInstance
+
+
+
+// ----------------------------------------------------------------------------
+// VulkanExample
+// ----------------------------------------------------------------------------
+
+#ifdef WIN32
+	const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
+	const std::string shadersPath = assetPath + "shaders\\";
+    const std::string computeShadersPath = assetPath + "computeShaders";
+	const std::string modelPath = assetPath + "models\\";
+	const std::string texturePath = assetPath + "textures\\";
+#else
+	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
+	const std::string shadersPath = assetPath + "shaders/";
+    const std::string computeShadersPath = assetPath + "computeShaders";
+	const std::string modelPath = assetPath + "models/";
+	const std::string texturePath = assetPath + "textures/";
+#endif
+
+class VulkanExample: public VulkanExampleBase
 {
-public:
-    glTFBasicInstance()
-    {
-    }
-
-    VkDevice device;
-    vks::VulkanDevice* vulkanDevice;
-    vks::Buffer* uniformProjectionBuffer;
-    VkQueue graphicsQueue;
-    glTFBasicInstance bezier;
-    glTFBasicInstance node;
-    ComputeBasic compute;
-
-    void prepare()
-    {
-
-    }
-
-
+	void render() {};
 };
 
-#endif
+using namespace BasicCompute;
+int main()
+{
+	auto vulkanExample = new VulkanExample();															
+	vulkanExample->initVulkan();																	
+	vulkanExample->setupWindow();					 												
+	vulkanExample->prepare();	
+
+}

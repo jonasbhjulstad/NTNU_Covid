@@ -22,7 +22,6 @@ struct BasicInstancePipelineData
     VkPipeline pipeline;
     VkDeviceSize* offset;
     uint32_t N_instances;
-
 };
 
 struct BasicInstancedRenderingParams

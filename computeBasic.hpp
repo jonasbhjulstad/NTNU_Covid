@@ -6,51 +6,37 @@
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
 
+namespace BasicCompute
 
-template <typename NodeState = glm::vec3>
-class ComputeBasic
 {
-public:
-    ComputeBasic(VkDevice _device,
-                      vks::VulkanDevice *_vulkanDevice,
-                      std::string _computeShaderPath,
-                      VkRenderPass _renderPass,
-                      uint32_t _N_particles)
-        : device(_device),
-          vulkanDevice(_vulkanDevice),
-          computeShaderPath(_computeShaderPath),
-          renderPass(_renderPass),
-          N_particles(_N_particles)
+    struct BasicComputeParams
     {
+        std::string computeShaderPath;
+        vks::VulkanDevice *vulkanDevice;
+        VkDescriptorPool descriptorPool;
+        uint32_t queueFamilyIndex;
+        uint32_t N_particles;
+        VkPipelineCache pipelineCache = nullptr;
+    };
 
-        vkGetDeviceQueue(device, queueFamilyIndex, 0, &queue);
-    }
-    uint32_t N_particles;
-    uint32_t queueFamilyIndex;
-    VkQueue queue;
-    VkDevice device;
-    vks::Buffer nodeStateBuffer;
-    vks::Buffer uniformParameterBuffer;
-    VkSemaphore semaphore;
-    vks::VulkanDevice *vulkanDevice;
-    std::string computeShaderPath;
-    VkRenderPass renderPass;
-    VkCommandBuffer commandBuffer;
-    VkCommandPool commandPool;
-
-    VkPipelineLayout pipelineLayout;
-    VkPipeline pipeline;
-
-    VkDescriptorSetLayout descriptorSetLayout;
-    VkDescriptorSet descriptorSet;
-
+    struct BasicComputePipelineData
+    {
+        VkDescriptorSetLayout descriptorSetLayout;
+        VkPipelineLayout pipelineLayout;
+        VkDescriptorSet descriptorSet;
+        VkCommandPool commandPool;
+        VkCommandBuffer commandBuffer;
+        VkPipeline pipeline;
+        VkDeviceSize *offset;
+        uint32_t N_particles;
+    };
 
     static const std::array getPoolSizes()
     {
         return {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}};
     }
 
-    void setupDescriptorSetLayout()
+    VkDescriptorSetLayout setupDescriptorSetLayout(VkDevice device)
     {
 
         std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {{0}};
@@ -65,22 +51,33 @@ public:
         setLayoutBindings[1].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 
         VkDescriptorSetLayoutCreateInfo descriptorLayout = vks::initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
+        VkDescriptorSetLayout descriptorSetLayout;
         VK_CHECK_RESULT(vkCreateDescriptorSetLayout(device, &descriptorLayout, nullptr, &descriptorSetLayout));
+
+        return descriptorSetLayout;
+    }
+
+    VkPipelineLayout setupPipelineLayout(VkDevice device)
+    {
 
         VkPipelineLayoutCreateInfo pipelineCI = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
         pipelineCI.setLayoutCount = 1;
         pipelineCI.pSetLayouts = &descriptorSetLayout;
 
+        VkPipelineLayout pipelineLayout;
         VK_CHECK_RESULT(vkCreatePipelineLayout(device, &pipelineCI, nullptr, &pipelineLayout));
+
+        return pipelineLayout;
     }
 
-    void setupDescriptorSets(VkDescriptorPool descriptorPool)
+    VkDescriptorSet setupDescriptorSets(VkDescriptorPool descriptorPool, VkDevice device)
     {
         VkDescriptorSetAllocateInfo allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
         allocInfo.descriptorPool = descriptorPool;
         allocInfo.descriptorSetCount = 1;
         allocInfo.pSetLayouts = &descriptorSetLayout;
 
+        VkDescriptorSet descriptorSet;
         VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
@@ -88,31 +85,36 @@ public:
             vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, &storageBuffer.descriptor)};
 
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
+
+        return descriptorSet;
     }
 
-    void preparePipeline(VkPipelineCache pipelineCache = VK_NULL_HANDLE)
+    VkPipeline preparePipeline(VkDevice device, VkPipelineCache pipelineCache = VK_NULL_HANDLE)
     {
         VkComputePipelineCreateInfo pipelineCI = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
-
+        VkPipeline pipeline;
         pipelineCI.stage = loadShader(computeShaderPath, VK_SHADER_STAGE_COMPUTE_BIT);
         pipelineCI.layout = pipelineLayout;
         VK_CHECK_RESULT(vkCreateComputePipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
+
+        return pipeline;
     }
 
-    void createCommandPool()
+    VkCommandPool createCommandPool(uint32_t queueFamilyIndex, VkDevice device)
     {
+        VkCommandPool commandPool;
         VkCommandPoolCreateInfo cmdPoolInfo = {};
         cmdPoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
         cmdPoolInfo.queueFamilyIndex = queueFamilyIndex;
         cmdPoolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
         VK_CHECK_RESULT(vkCreateCommandPool(device, &cmdPoolInfo, nullptr, &commandPool));
+        return commandPool;
     }
 
-    void createCommandBuffer()
+    void createCommandBuffer(vks::VulkanDevice *vulkanDevice, VkCommandPool commandPool)
     {
         commandBuffer = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, commandPool);
     }
-
 
     VkPipelineShaderStageCreateInfo loadShader(std::string fileName, VkShaderStageFlagBits stage)
     {
@@ -136,24 +138,24 @@ public:
         vkCmdDispatch(commandBuffer, N_particles / 256, 1, 1);
     }
 
-    void prepare(std::vector<InstanceData> &instanceData, VkDescriptorPool descriptorPool)
+    std::unique_ptr<BasicComputePipelineData> prepareBasicCompute(const BasicComputeParams &p)
     {
-        setupDescriptorSetLayout();
-        setupDescriptorSets();
-        preparePipeline();
-        createCommandPool();
-        createCommandBuffer();
-        setupDescriptorSets(descriptorPool);
-        buildCommandBuffer();
-    }
+        VkDevice device = p.vulkanDevice->logicalDevice;
+        uint32_t computeQueueFamilyIdx = p.vulkanDevice->queueFamilyIndices.compute;
 
-    ~ComputeBasic()
-    {
-        vkDestroyPipeline(device, pipeline, nullptr);
-        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-        vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
-        vkDestroyShaderModule(device, shaderStages[0].module, nullptr);
-        vkDestroyShaderModule(device, shaderStages[1].module, nullptr);
+        std::unique_ptr<BasicComputePipelineData> BC_data = std::make_unique<BasicComputePipelineData>();
+
+        p.commandPool = createCommandPool(computeQueueFamilyIdx, device);
+
+        BC_data->descriptorSetLayout = setupDescriptorSetLayout(device);
+        BC_data->pipelineLayout = setupPipelineLayout(device);
+
+        BC_data->descriptorSet =  setupDescriptorSets(p.descriptorPool,device);
+        BC_data->pipeline = preparePipeline(device, p.pipelineCache);
+        BC_data->commandPool = createCommandPool(computeQueueFamilyIdx, device);
+        BC_data->commandBuffer = createCommandBuffer(p.vulkanDevice, commandPool);
+
+        return BC_data;
     }
 };
 
