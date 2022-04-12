@@ -1,0 +1,6 @@
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/syclTest.dir
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/SIR.dir
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/SIR_serial.dir
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/SIR_sycl.dir
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/edit_cache.dir
+/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build/CMakeFiles/rebuild_cache.dir

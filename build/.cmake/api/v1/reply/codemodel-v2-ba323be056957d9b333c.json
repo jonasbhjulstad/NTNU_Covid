@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.21"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "test",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "SIR::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SIR-Debug-b42f25c90574917ed04d.json",
+					"name" : "SIR",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SIR_serial::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SIR_serial-Debug-627afc5dcc2d96f80a47.json",
+					"name" : "SIR_serial",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "SIR_sycl::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-SIR_sycl-Debug-ea29f9f030705df27b4a.json",
+					"name" : "SIR_sycl",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "syclTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-syclTest-Debug-637aebab1feb580da072.json",
+					"name" : "syclTest",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
+		"source" : "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
