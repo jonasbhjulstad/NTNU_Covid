@@ -1,22 +1,22 @@
 [
 {
   "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
-  "command": "dpcpp  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/syclTest.dir/cvAdvDiff_kry_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/cvAdvDiff_kry_sycl.cpp",
+  "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/syclTest.dir/cvAdvDiff_kry_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/cvAdvDiff_kry_sycl.cpp",
   "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/cvAdvDiff_kry_sycl.cpp"
 },
 {
   "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
-  "command": "dpcpp  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/SIR.dir/SIR.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR.cpp",
+  "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/SIR.dir/SIR.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR.cpp",
   "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR.cpp"
 },
 {
   "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
-  "command": "dpcpp  -fsycl  -g -fsycl -o CMakeFiles/SIR_serial.dir/SIR_serial.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_serial.cpp",
+  "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -o CMakeFiles/SIR_serial.dir/SIR_serial.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_serial.cpp",
   "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_serial.cpp"
 },
 {
   "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
-  "command": "dpcpp  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/SIR_sycl.dir/SIR_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_sycl.cpp",
+  "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/SIR_sycl.dir/SIR_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_sycl.cpp",
   "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_sycl.cpp"
 }
 ]

@@ -89,10 +89,6 @@ int main(int argc, char **argv)
     // Copy data to device
     N_VCopyToDevice_Sycl(u);
 
-    realtype S, I, R;
-    S = udata[0];
-    I = udata[1];
-    R = udata[2];
 
     // Create CVODE and specify the Backward Differentiation Formula
     void *cvode_mem = CVodeCreate(CV_BDF, sunctx);
@@ -106,8 +102,8 @@ int main(int argc, char **argv)
         return 1;
 
     // Specify the scalar relative tolerance and scalar absolute tolerance
-    realtype reltol = 1e-1;
-    realtype abstol = 1e-1;
+    realtype reltol = .0;
+    realtype abstol = 1e-6;
     retval = CVodeSStolerances(cvode_mem, reltol, abstol);
     if (check_retval(&retval, "CVodeSStolerances", 1))
         return 1;
@@ -131,7 +127,7 @@ int main(int argc, char **argv)
     // retval = CVodeSetJacTimes(cvode_mem, NULL, jtv);
     // if (check_retval(&retval, "CVodeSetJacTimesVecFn", 1))
     // return 1;
-    const realtype dt = .1;
+    const realtype dt = 5.;
     realtype tout = dt; // output time
     realtype t;              // CVODE return time
     long int nst;            // number of time steps
@@ -147,9 +143,7 @@ int main(int argc, char **argv)
         retval = CVodeGetNumSteps(cvode_mem, &nst);
         // if (check_retval(&retval, "CVodeGetNumSteps", 1))
         //     break;
-
-        udata = N_VGetArrayPointer(u);
-
+        udata = N_VGetDeviceArrayPointer(u);
         PrintSIR(t, udata, nst);
 
         // Update output time
@@ -163,40 +157,35 @@ int main(int argc, char **argv)
     return 0;
 }
 
-/* ---------------------------------------------------------------------------
- * Functions called by the solver
- * ---------------------------------------------------------------------------*/
-
-static int f(realtype t, N_Vector y, N_Vector ydot, void *user_data)
+static int f(realtype t, N_Vector u, N_Vector udot, void* user_data)
 {
+  UserData* data = static_cast<UserData*>(user_data);
 
-    UserData *data = static_cast<UserData *>(user_data);
+  // Extract needed constants from data
+  const size_t   NX    = static_cast<size_t>(data->NX);
+  const size_t   NEQ    = static_cast<size_t>(data->NEQ);
+  const realtype alpha = data->alpha;
+  const realtype beta = data->beta;
 
-    realtype alpha = data->alpha;
-    realtype beta = data->beta;
+  // Extract pointers to vector data
+  const realtype* udata  = N_VGetDeviceArrayPointer(u);
+  realtype*       dudata = N_VGetDeviceArrayPointer(udot);
 
-    const realtype *p_y = N_VGetArrayPointer(y);
-    realtype *p_ydot = N_VGetArrayPointer(ydot);
-    uint32_t NX = data->NX;
-    uint32_t NEQ = data->NEQ;
+  data->queue->submit([&](sycl::handler& h)
+  {
+    h.parallel_for(sycl::range{NEQ}, [=](sycl::id<1> idx)
+    {
+        realtype S = udata[3*idx[0]];
+        realtype I = udata[3*idx[0] + 1];
+        realtype R = udata[3*idx[0] + 2];
 
-    realtype S, I, R;
-    S = p_y[0];
-    I = p_y[1];
-    R = p_y[2];
+        dudata[3*idx[0]] = -beta * S * I;
+        dudata[3*idx[0] + 1] = beta * S * I - alpha * I;
+        dudata[3*idx[0] + 2] = alpha * I;
+    });
+  });
 
-    
-    data->queue->submit([&](sycl::handler &h)
-                        { h.parallel_for(sycl::range{NEQ}, [=](sycl::id<1> idx)
-                                         {
-        realtype S = p_y[3*idx[0]];
-        realtype I = p_y[3*idx[0] + 1];
-        realtype R = p_y[3*idx[0] + 2];
-
-        p_ydot[3*idx[0]] = -beta * S * I;
-        p_ydot[3*idx[0] + 1] = beta * S * I - alpha * I;
-        p_ydot[3*idx[0] + 2] = alpha * I; }); });
-    return 0;
+  return 0;
 }
 
 

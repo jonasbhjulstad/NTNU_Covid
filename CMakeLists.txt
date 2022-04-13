@@ -13,6 +13,8 @@ add_compile_options("-fsycl")
 add_executable(syclTest cvAdvDiff_kry_sycl.cpp)
 target_link_libraries(syclTest PUBLIC SUNDIALS::cvode SUNDIALS::nvecsycl)
 
+include_directories("${SYCL_INCLUDE_DIR}" ${SUNDIALS_INCLUDE_DIR})
+
 add_executable(SIR SIR.cpp)
 target_link_libraries(SIR PUBLIC SUNDIALS::cvode SUNDIALS::nvecsycl)
 

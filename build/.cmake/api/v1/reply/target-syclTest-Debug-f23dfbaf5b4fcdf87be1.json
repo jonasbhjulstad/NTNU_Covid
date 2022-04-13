@@ -13,7 +13,8 @@
 			"add_executable",
 			"target_link_libraries",
 			"find_package",
-			"add_compile_options"
+			"add_compile_options",
+			"include_directories"
 		],
 		"files" : 
 		[
@@ -60,6 +61,12 @@
 				"parent" : 0
 			},
 			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
 				"command" : 1,
 				"file" : 0,
 				"line" : 14,
@@ -83,12 +90,19 @@
 					"fragment" : "-std=gnu++17"
 				}
 			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 7,
+					"path" : "/opt/intel/oneapi/compiler/latest/linux/include"
+				}
+			],
 			"language" : "CXX",
 			"languageStandard" : 
 			{
 				"backtraces" : 
 				[
-					7
+					8
 				],
 				"standard" : "17"
 			},

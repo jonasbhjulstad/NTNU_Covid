@@ -13,7 +13,8 @@
 			"add_executable",
 			"target_link_libraries",
 			"find_package",
-			"add_compile_options"
+			"add_compile_options",
+			"include_directories"
 		],
 		"files" : 
 		[
@@ -28,7 +29,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 19,
+				"line" : 21,
 				"parent" : 0
 			},
 			{
@@ -58,6 +59,12 @@
 				"file" : 0,
 				"line" : 12,
 				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 16,
+				"parent" : 0
 			}
 		]
 	},
@@ -72,6 +79,13 @@
 				{
 					"backtrace" : 6,
 					"fragment" : "-fsycl"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 7,
+					"path" : "/opt/intel/oneapi/compiler/latest/linux/include"
 				}
 			],
 			"language" : "CXX",
