@@ -18,5 +18,10 @@
   "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
   "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -std=gnu++17 -o CMakeFiles/SIR_sycl.dir/SIR_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_sycl.cpp",
   "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/SIR_sycl.cpp"
+},
+{
+  "directory": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build",
+  "command": "dpcpp -I/opt/intel/oneapi/compiler/latest/linux/include  -fsycl  -g -fsycl -o CMakeFiles/deviceinfo_sycl.dir/deviceinfo_sycl.cpp.o -c /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/deviceinfo_sycl.cpp",
+  "file": "/home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/deviceinfo_sycl.cpp"
 }
 ]

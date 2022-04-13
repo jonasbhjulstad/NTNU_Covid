@@ -23,3 +23,5 @@ target_link_libraries(SIR_serial PUBLIC SUNDIALS::cvode SUNDIALS::nvecserial)
 
 add_executable(SIR_sycl SIR_sycl.cpp)
 target_link_libraries(SIR_sycl PUBLIC SUNDIALS::cvode SUNDIALS::nvecsycl)
+
+add_executable(deviceinfo_sycl deviceinfo_sycl.cpp)

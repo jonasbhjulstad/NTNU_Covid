@@ -18,7 +18,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -36,7 +37,8 @@
 						0,
 						1,
 						2,
-						3
+						3,
+						4
 					]
 				}
 			],
@@ -61,6 +63,13 @@
 					"id" : "SIR_sycl::@6890427a1f51a3e7e1df",
 					"jsonFile" : "target-SIR_sycl-Debug-7cf822a86e25a127855e.json",
 					"name" : "SIR_sycl",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "deviceinfo_sycl::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-deviceinfo_sycl-Debug-136a4c3c9eb867ceaf20.json",
+					"name" : "deviceinfo_sycl",
 					"projectIndex" : 0
 				},
 				{

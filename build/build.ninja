@@ -172,6 +172,38 @@ build SIR_sycl: CXX_EXECUTABLE_LINKER__SIR_sycl_Debug CMakeFiles/SIR_sycl.dir/SI
   TARGET_FILE = SIR_sycl
   TARGET_PDB = SIR_sycl.dbg
 
+# =============================================================================
+# Object build statements for EXECUTABLE target deviceinfo_sycl
+
+
+#############################################
+# Order-only phony target for deviceinfo_sycl
+
+build cmake_object_order_depends_target_deviceinfo_sycl: phony || CMakeFiles/deviceinfo_sycl.dir
+
+build CMakeFiles/deviceinfo_sycl.dir/deviceinfo_sycl.cpp.o: CXX_COMPILER__deviceinfo_sycl_Debug /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/deviceinfo_sycl.cpp || cmake_object_order_depends_target_deviceinfo_sycl
+  DEP_FILE = CMakeFiles/deviceinfo_sycl.dir/deviceinfo_sycl.cpp.o.d
+  FLAGS = -fsycl  -g -fsycl
+  INCLUDES = -I/opt/intel/oneapi/compiler/latest/linux/include
+  OBJECT_DIR = CMakeFiles/deviceinfo_sycl.dir
+  OBJECT_FILE_DIR = CMakeFiles/deviceinfo_sycl.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target deviceinfo_sycl
+
+
+#############################################
+# Link the executable deviceinfo_sycl
+
+build deviceinfo_sycl: CXX_EXECUTABLE_LINKER__deviceinfo_sycl_Debug CMakeFiles/deviceinfo_sycl.dir/deviceinfo_sycl.cpp.o
+  FLAGS = -fsycl  -g
+  OBJECT_DIR = CMakeFiles/deviceinfo_sycl.dir
+  POST_BUILD = :
+  PRE_LINK = :
+  TARGET_FILE = deviceinfo_sycl
+  TARGET_PDB = deviceinfo_sycl.dbg
+
 
 #############################################
 # Utility command for edit_cache
@@ -206,7 +238,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /home/deb/sycl_workspace/test/sundials/examples/cvode/CXX_sycl/build
 
-build all: phony syclTest SIR SIR_serial SIR_sycl
+build all: phony syclTest SIR SIR_serial SIR_sycl deviceinfo_sycl
 
 # =============================================================================
 # Built-in targets
