@@ -5,6 +5,7 @@
  *
  * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
  */
+#define KTX_OPENGL_ES3 1
 
 #include <imgui.h>
 #include "vulkanexamplebase.h"
@@ -17,6 +18,8 @@
 #include "NV_glTFBasicInstance.hpp"
 #include "NV_Node.hpp"
 #include "NV_Bezier.hpp"
+#include <igraph/igraph.h>
+#include <igraph/igraph_games.h>
 
 
 
@@ -181,6 +184,14 @@ public:
 		std::uniform_real_distribution<float> distX(limits[0], limits[1]);
 		std::uniform_real_distribution<float> distY(limits[2], limits[3]);
 		std::uniform_real_distribution<float> distZ(limits[4], limits[5]);
+
+		igraph_t graph;
+		igraph_vector_t component_sizes;
+		igraph_rng_seed(igraph_rng_default(), 42);
+
+		int N_nodes = 100;
+		double ER_p = .7;
+		igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, ER_p, IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
 		std::uniform_real_distribution<float> distScale(.2f, 2.0f);
 		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
 		{

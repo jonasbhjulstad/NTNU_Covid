@@ -1,0 +1,274 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "libktx.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_compile_definitions",
+			"add_compile_definitions",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 6,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 19,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "KTX_OPENGL_ES3"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "VK_USE_PLATFORM_XCB_KHR"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG=0"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "/home/deb/Documents/Vulkan/examples/imgui/../../external/ktx/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/deb/Documents/Vulkan/examples/imgui/../../external/ktx/other_include"
+				}
+			],
+			"language" : "C",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "KTX_OPENGL_ES3"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "VK_USE_PLATFORM_XCB_KHR"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG=0"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "/home/deb/Documents/Vulkan/examples/imgui/../../external/ktx/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/deb/Documents/Vulkan/examples/imgui/../../external/ktx/other_include"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				2,
+				3
+			]
+		}
+	],
+	"id" : "ktx::@6890427a1f51a3e7e1df",
+	"name" : "ktx",
+	"nameOnDisk" : "libktx.a",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/checkheader.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/errstr.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/etcdec.cxx",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/etcunpack.cxx",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/filestream.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/glloader.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/hashlist.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/hashtable.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/memstream.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/swap.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/texture.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/vk_funcs.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/vkloader.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/writer.c",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "/home/deb/Documents/Vulkan/external/ktx/lib/writer_v1.c",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

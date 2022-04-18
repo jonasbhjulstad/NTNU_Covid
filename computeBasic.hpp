@@ -5,6 +5,7 @@
 #include <array>
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
+#include "NV_Assets.hpp"
 
 namespace BasicCompute
 
@@ -17,6 +18,8 @@ namespace BasicCompute
         uint32_t queueFamilyIndex;
         uint32_t N_particles;
         VkPipelineCache pipelineCache = nullptr;
+        vks::Buffer* uniformBuffer;
+        vks::Buffer* storageBuffer;
     };
 
     struct BasicComputePipelineData
@@ -30,11 +33,6 @@ namespace BasicCompute
         VkDeviceSize *offset;
         uint32_t N_particles;
     };
-
-    static const std::array getPoolSizes()
-    {
-        return {{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1}};
-    }
 
     VkDescriptorSetLayout setupDescriptorSetLayout(VkDevice device)
     {
@@ -57,7 +55,7 @@ namespace BasicCompute
         return descriptorSetLayout;
     }
 
-    VkPipelineLayout setupPipelineLayout(VkDevice device)
+    VkPipelineLayout setupPipelineLayout(VkDescriptorSetLayout descriptorSetLayout, VkDevice device)
     {
 
         VkPipelineLayoutCreateInfo pipelineCI = {VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO};
@@ -70,7 +68,11 @@ namespace BasicCompute
         return pipelineLayout;
     }
 
-    VkDescriptorSet setupDescriptorSets(VkDescriptorPool descriptorPool, VkDevice device)
+    VkDescriptorSet setupDescriptorSets(VkDescriptorPool descriptorPool, 
+                                        VkDescriptorSetLayout descriptorSetLayout,
+                                        vks::Buffer* uniformParameterBuffer,
+                                        vks::Buffer* storageBuffer, 
+                                        VkDevice device)
     {
         VkDescriptorSetAllocateInfo allocInfo = {VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO};
         allocInfo.descriptorPool = descriptorPool;
@@ -81,19 +83,19 @@ namespace BasicCompute
         VK_CHECK_RESULT(vkAllocateDescriptorSets(device, &allocInfo, &descriptorSet));
 
         std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-            vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformParameterBuffer.descriptor),
-            vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, &storageBuffer.descriptor)};
+            vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 0, &uniformParameterBuffer->descriptor),
+            vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1, &storageBuffer->descriptor)};
 
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
         return descriptorSet;
     }
 
-    VkPipeline preparePipeline(VkDevice device, VkPipelineCache pipelineCache = VK_NULL_HANDLE)
+    VkPipeline preparePipeline(VkDevice device, const std::string& computeShaderPath, VkPipelineLayout pipelineLayout, VkPipelineCache pipelineCache = VK_NULL_HANDLE)
     {
         VkComputePipelineCreateInfo pipelineCI = {VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO};
         VkPipeline pipeline;
-        pipelineCI.stage = loadShader(computeShaderPath, VK_SHADER_STAGE_COMPUTE_BIT);
+        pipelineCI.stage = loadShader(device, computeShaderPath, VK_SHADER_STAGE_COMPUTE_BIT);
         pipelineCI.layout = pipelineLayout;
         VK_CHECK_RESULT(vkCreateComputePipelines(device, pipelineCache, 1, &pipelineCI, nullptr, &pipeline));
 
@@ -111,23 +113,20 @@ namespace BasicCompute
         return commandPool;
     }
 
-    void createCommandBuffer(vks::VulkanDevice *vulkanDevice, VkCommandPool commandPool)
+    VkCommandBuffer createCommandBuffer(vks::VulkanDevice *vulkanDevice, VkCommandPool commandPool)
     {
+        VkCommandBuffer commandBuffer;
         commandBuffer = vulkanDevice->createCommandBuffer(VK_COMMAND_BUFFER_LEVEL_PRIMARY, commandPool);
+        return commandBuffer;
     }
 
-    VkPipelineShaderStageCreateInfo loadShader(std::string fileName, VkShaderStageFlagBits stage)
-    {
-        VkPipelineShaderStageCreateInfo shaderStage = {};
-        shaderStage.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-        shaderStage.stage = stage;
-        shaderStage.module = vks::tools::loadShader(fileName.c_str(), device);
-        shaderStage.pName = "main";
-        assert(shaderStage.module != VK_NULL_HANDLE);
-        return shaderStage;
-    }
-
-    void buildCommandBuffer(VkCommandBuffer drawCmdBuffer, VkDeviceSize *offsets)
+    void buildCommandBuffer(VkCommandBuffer drawCmdBuffer, 
+    VkCommandBuffer commandBuffer, 
+    VkPipelineLayout pipelineLayout,
+    VkDescriptorSet descriptorSet, 
+    VkPipeline pipeline,  
+    uint32_t N_particles,
+    VkDeviceSize *offsets)
     {
         VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
@@ -145,16 +144,15 @@ namespace BasicCompute
 
         std::unique_ptr<BasicComputePipelineData> BC_data = std::make_unique<BasicComputePipelineData>();
 
-        p.commandPool = createCommandPool(computeQueueFamilyIdx, device);
+        BC_data->commandPool = createCommandPool(computeQueueFamilyIdx, device);
 
         BC_data->descriptorSetLayout = setupDescriptorSetLayout(device);
-        BC_data->pipelineLayout = setupPipelineLayout(device);
+        BC_data->pipelineLayout = setupPipelineLayout(BC_data->descriptorSetLayout, device);
 
-        BC_data->descriptorSet =  setupDescriptorSets(p.descriptorPool,device);
-        BC_data->pipeline = preparePipeline(device, p.pipelineCache);
+        BC_data->descriptorSet =  setupDescriptorSets(p.descriptorPool,BC_data->descriptorSetLayout, p.uniformBuffer, p.storageBuffer, device);
+        BC_data->pipeline = preparePipeline(device, p.computeShaderPath, BC_data->pipelineLayout, p.pipelineCache);
         BC_data->commandPool = createCommandPool(computeQueueFamilyIdx, device);
-        BC_data->commandBuffer = createCommandBuffer(p.vulkanDevice, commandPool);
-
+        BC_data->commandBuffer = createCommandBuffer(p.vulkanDevice, BC_data->commandPool);
         return BC_data;
     }
 };
