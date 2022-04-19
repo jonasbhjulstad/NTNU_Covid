@@ -7,6 +7,7 @@ add_compile_definitions("VK_USE_PLATFORM_XCB_KHR")
 
 
 find_package(Vulkan REQUIRED)
+find_package(igraph REQUIRED)
 # find_package(XCB REQUIRED)
 set(VULKAN_EXTERNAL_LIB_PATH "../../external/")
 file(GLOB IMGUI_SRC "${VULKAN_EXTERNAL_LIB_PATH}/imgui/*.cpp")
@@ -39,11 +40,11 @@ set(VULKAN_BASE_INCLUDE_PATH "../../base/")
 
 
 add_executable(main main.cpp)
-target_link_libraries(main PUBLIC imgui ktx Vulkan::Vulkan Vulkan_Base)
+target_link_libraries(main PUBLIC imgui ktx Vulkan::Vulkan Vulkan_Base igraph::igraph)
 target_include_directories(main PUBLIC ${VULKAN_BASE_INCLUDE_PATH} ${TINYGLTF_INCLUDE})
 
-add_executable(SIR SIR.cpp)
-target_link_libraries(SIR PUBLIC imgui ktx Vulkan::Vulkan Vulkan_Base)
-target_include_directories(SIR PUBLIC ${VULKAN_BASE_INCLUDE_PATH} ${TINYGLTF_INCLUDE})
+# add_executable(SIR SIR.cpp)
+# target_link_libraries(SIR PUBLIC imgui ktx Vulkan::Vulkan Vulkan_Base)
+# target_include_directories(SIR PUBLIC ${VULKAN_BASE_INCLUDE_PATH} ${TINYGLTF_INCLUDE})
 
-add_subdirectory(examples)
+# add_subdirectory(examples)

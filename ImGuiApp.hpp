@@ -344,6 +344,7 @@ public:
 		ImGui::Checkbox("Display nodes", &uiSettings.displayNodes);
 		ImGui::Checkbox("Display edges", &uiSettings.displayEdges);
 		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
+		ImGui::SliderFloat("Movement speed", &example->camera.movementSpeed, 1.0f, 100.0f);
 		ImGui::SliderFloat("Light speed", &uiSettings.lightSpeed, 0.1f, 1.0f);
 		ImGui::End();
 

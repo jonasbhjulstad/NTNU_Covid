@@ -1,5 +1,5 @@
 /*
- * Vulkan Example - imGui (https://github.com/ocornut/imgui)
+ * Vulkan |- imGui (https://github.com/ocornut/imgui)
  *
  * Copyright (C) 2017 by Sascha Willems - www.saschawillems.de
  *
@@ -20,6 +20,7 @@
 #include "NV_Bezier.hpp"
 #include <igraph/igraph.h>
 #include <igraph/igraph_games.h>
+#include <igraph/igraph_layout.h>
 
 
 
@@ -29,7 +30,7 @@
 // ----------------------------------------------------------------------------
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
-#define NODE_INSTANCE_COUNT 3
+#define NODE_INSTANCE_COUNT 4
 class VulkanExample : public VulkanExampleBase
 {
 
@@ -61,6 +62,7 @@ public:
 		glm::mat4 projection;
 		glm::mat4 modelview;
 		glm::vec4 lightPos;
+		float theta;
 	} uboVS;
 
 	struct {
@@ -74,12 +76,33 @@ public:
 	VulkanExample() : VulkanExampleBase(ENABLE_VALIDATION)
 	{
 		title = "Vulkan Example - ImGui";
-		camera.type = Camera::CameraType::lookat;
+		camera.type = Camera::CameraType::firstperson;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.8f));
 		camera.setRotation(glm::vec3(4.5f, 380.0f, 0.0f));
 		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
+	}
+
+	void keyPressed(uint32_t key)
+	{
+
+		// switch(key)
+		// {
+		// 	case :
+		// 	break;
+
+		// 	case KEY_S:
+		// 	break;
+
+		// 	case KEY_D:
+		// 	break;
+
+		// 	case KEY_W:
+				
+		// 	break;
+		// }
+		std::cout << "key:\t" << key << std::endl;
 	}
 
 	~VulkanExample()
@@ -92,7 +115,7 @@ public:
 		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
 
 		VkClearValue clearValues[2];
-		clearValues[0].color = {{.0f,.94f/255.f,232.f/255.f, .4f}};
+		clearValues[0].color = {{162./255., 157./255., 160./255., 0.5}};
 		clearValues[1].depthStencil = {1.0f, 0};
 
 		VkRenderPassBeginInfo renderPassBeginInfo = vks::initializers::renderPassBeginInfo();
@@ -178,24 +201,37 @@ public:
 	{
 
 		instanceData.node.reserve(NODE_INSTANCE_COUNT);
-		// float limits[] = {-100., 100., -100., 100., -100., 100.};
-		float limits[] = {-10., 10., -10., 10., -10., 10.};
-		std::random_device rnd;
-		std::uniform_real_distribution<float> distX(limits[0], limits[1]);
-		std::uniform_real_distribution<float> distY(limits[2], limits[3]);
-		std::uniform_real_distribution<float> distZ(limits[4], limits[5]);
-
 		igraph_t graph;
 		igraph_vector_t component_sizes;
 		igraph_rng_seed(igraph_rng_default(), 42);
 
-		int N_nodes = 100;
+		int N_nodes = NODE_INSTANCE_COUNT;
 		double ER_p = .7;
 		igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, ER_p, IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
+		igraph_vector_t minB, maxB;
+		igraph_vector_init(&minB, N_nodes);
+		igraph_vector_init(&maxB, N_nodes);
+
+
+		long int width = 100;
+		long int height = 100;
+		igraph_matrix_t mat;
+		igraph_matrix_init(&mat, N_nodes, 3);
+		igraph_vector_init(&minB, N_nodes);
+		igraph_vector_init(&maxB, N_nodes);
+		igraph_vector_fill(&minB, -100.);
+		igraph_vector_fill(&maxB, 100.);
+		igraph_layout_grid_3d(&graph, &mat, 0, 0);
+		igraph_matrix_scale(&mat, 50);
+		// igraph_layout_kamada_kawai_3d(&graph, &mat, 1, 10*N_nodes, 0, igraph_ecount(&graph), nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
+		// igraph_layout_fruchterman_reingold_3d(&graph, &mat, 1, 500, 10000., nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
+		std::cout << "Matrix size: " << igraph_matrix_nrow(&mat) << "x" << igraph_matrix_ncol(&mat) << std::endl;
+		// igraph_layout_grid_3d(&graph, &mat, width, height);
 		std::uniform_real_distribution<float> distScale(.2f, 2.0f);
 		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
 		{
-			instanceData.node.push_back({glm::vec3(distX(rnd), distY(rnd), distZ(rnd)), distScale(rnd)});
+			std::cout << "Position: " << igraph_matrix_e(&mat, i, 0) << " " << igraph_matrix_e(&mat, i, 1) << " " << igraph_matrix_e(&mat, i, 2) << std::endl;
+			instanceData.node.push_back({glm::vec3(igraph_matrix_e(&mat, i, 0), igraph_matrix_e(&mat, i, 1), igraph_matrix_e(&mat, i, 2)), 1.0f});
 		}
 
 	}
@@ -209,7 +245,7 @@ public:
 		{
 			for (uint32_t j = i+1; j < N_nodes; j++)
 			{
-				instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos});
+				instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos, {1.0f,1.0f,1.0f}});
 			}
 		}
 	}
@@ -323,10 +359,11 @@ public:
 
 	void updateUniformBuffers()
 	{
+		uint32_t time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()%3600;
 		// Vertex shader
 		uboVS.projection = camera.matrices.perspective;
 		uboVS.modelview = camera.matrices.view * glm::mat4(1.0f);
-
+		uboVS.theta = (float)(time)/3600.*2*M_PI;
 		// Light source
 		if (uiSettings.animateLight) {
 			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
