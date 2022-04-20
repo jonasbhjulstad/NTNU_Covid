@@ -39,11 +39,13 @@ class VulkanExample : public VulkanExampleBase
 	const std::string shadersPath = assetPath + "shaders\\";
 	const std::string modelPath = assetPath + "models\\";
 	const std::string texturePath = assetPath + "textures\\";
+	const std::string fontPath = assetPath + "fonts\\DroidSansMono.ttf";
 #else
 	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
 	const std::string shadersPath = assetPath + "shaders/";
 	const std::string modelPath = assetPath + "models/";
 	const std::string texturePath = assetPath + "textures/";
+	const std::string fontPath = assetPath + "fonts/DroidSansMono.ttf";
 #endif
 
 public:
@@ -80,8 +82,13 @@ public:
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.8f));
 		camera.setRotation(glm::vec3(4.5f, 380.0f, 0.0f));
 		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
+		camera.movementSpeed = 20.0f;
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
+		uint32_t propCount;
+		width = 2736;
+		height = 1824; 
+
 	}
 
 	void keyPressed(uint32_t key)
@@ -193,7 +200,8 @@ public:
 	void prepareImGui()
 	{
 		imGui = new ImGUI(this);
-		imGui->init((float)width, (float)height);
+		uiSettings.fontPath = fontPath;
+		imGui->init((float)width, (float)height, uiSettings);
 		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
@@ -324,6 +332,8 @@ public:
 		io.MousePos = ImVec2(mousePos.x, mousePos.y);
 		io.MouseDown[0] = mouseButtons.left;
 		io.MouseDown[1] = mouseButtons.right;
+
+		uiSettings.popup = uiSettings.popup || io.MouseDown[1];
 
 		draw();
 

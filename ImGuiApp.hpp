@@ -5,7 +5,8 @@
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
 // Options and values to display/toggle from the UI
-struct UISettings {
+struct UISettings
+{
 	bool displayNodes = true;
 	bool displayEdges = true;
 	bool animateLight = false;
@@ -13,11 +14,16 @@ struct UISettings {
 	std::array<float, 50> frameTimes{};
 	float frameTimeMin = 9999.0f, frameTimeMax = 0.0f;
 	float lightTimer = 0.0f;
+	bool popup = false;
+	float fontPixels = 64.0;
+	float fontSize = .5*(fontPixels)/64.0;
+	std::string fontPath;
 };
 // ----------------------------------------------------------------------------
 // ImGUI class
 // ----------------------------------------------------------------------------
-class ImGUI {
+class ImGUI
+{
 private:
 	// Vulkan resources for rendering the UI
 	VkSampler sampler;
@@ -36,9 +42,11 @@ private:
 	VkDescriptorSet descriptorSet;
 	vks::VulkanDevice *device;
 	VulkanExampleBase *example;
+
 public:
 	// UI params are set via push constants
-	struct PushConstBlock {
+	struct PushConstBlock
+	{
 		glm::vec2 scale;
 		glm::vec2 translate;
 	} pushConstBlock;
@@ -67,31 +75,34 @@ public:
 	}
 
 	// Initialize styles, keys, etc.
-	void init(float width, float height)
+	void init(float width, float height, const UISettings& uiSettings)
 	{
 		// Color scheme
-		ImGuiStyle& style = ImGui::GetStyle();
+		ImGuiStyle &style = ImGui::GetStyle();
 		style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.6f);
 		style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.0f, 0.0f, 0.0f, 0.8f);
 		style.Colors[ImGuiCol_MenuBarBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
 		style.Colors[ImGuiCol_Header] = ImVec4(1.0f, 0.0f, 0.0f, 0.4f);
 		style.Colors[ImGuiCol_CheckMark] = ImVec4(0.0f, 1.0f, 0.0f, 1.0f);
 		// Dimensions
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO &io = ImGui::GetIO();
 		io.DisplaySize = ImVec2(width, height);
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
+		io.FontGlobalScale = uiSettings.fontSize;
+		io.Fonts->AddFontFromFileTTF(uiSettings.fontPath.c_str(), 64.0f);
+
 	}
 
 	// Initialize all Vulkan resources used by the ui
-	void initResources(VkRenderPass& renderPass, VkQueue copyQueue, const std::string& shadersPath)
+	void initResources(VkRenderPass &renderPass, VkQueue copyQueue, const std::string &shadersPath)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO &io = ImGui::GetIO();
 
 		// Create font texture
-		unsigned char* fontData;
+		unsigned char *fontData;
 		int texWidth, texHeight;
 		io.Fonts->GetTexDataAsRGBA32(&fontData, &texWidth, &texHeight);
-		VkDeviceSize uploadSize = texWidth*texHeight * 4 * sizeof(char);
+		VkDeviceSize uploadSize = texWidth * texHeight * 4 * sizeof(char);
 
 		// Create target image for copy
 		VkImageCreateInfo imageInfo = vks::initializers::imageCreateInfo();
@@ -134,7 +145,6 @@ public:
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			&stagingBuffer,
 			uploadSize));
-
 		stagingBuffer.map();
 		memcpy(stagingBuffer.mapped, fontData, uploadSize);
 		stagingBuffer.unmap();
@@ -166,8 +176,7 @@ public:
 			fontImage,
 			VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
 			1,
-			&bufferCopyRegion
-		);
+			&bufferCopyRegion);
 
 		// Prepare for shader read
 		vks::tools::setImageLayout(
@@ -196,8 +205,7 @@ public:
 
 		// Descriptor pool
 		std::vector<VkDescriptorPoolSize> poolSizes = {
-			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)
-		};
+			vks::initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = vks::initializers::descriptorPoolCreateInfo(poolSizes, 2);
 		VK_CHECK_RESULT(vkCreateDescriptorPool(device->logicalDevice, &descriptorPoolInfo, nullptr, &descriptorPool));
 
@@ -214,11 +222,9 @@ public:
 		VkDescriptorImageInfo fontDescriptor = vks::initializers::descriptorImageInfo(
 			sampler,
 			fontView,
-			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-		);
+			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &fontDescriptor)
-		};
+			vks::initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &fontDescriptor)};
 		vkUpdateDescriptorSets(device->logicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 		// Pipeline cache
@@ -266,8 +272,7 @@ public:
 
 		std::vector<VkDynamicState> dynamicStateEnables = {
 			VK_DYNAMIC_STATE_VIEWPORT,
-			VK_DYNAMIC_STATE_SCISSOR
-		};
+			VK_DYNAMIC_STATE_SCISSOR};
 		VkPipelineDynamicStateCreateInfo dynamicState =
 			vks::initializers::pipelineDynamicStateCreateInfo(dynamicStateEnables);
 
@@ -290,9 +295,9 @@ public:
 			vks::initializers::vertexInputBindingDescription(0, sizeof(ImDrawVert), VK_VERTEX_INPUT_RATE_VERTEX),
 		};
 		std::vector<VkVertexInputAttributeDescription> vertexInputAttributes = {
-			vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, pos)),	// Location 0: Position
-			vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, uv)),	// Location 1: UV
-			vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, col)),	// Location 0: Color
+			vks::initializers::vertexInputAttributeDescription(0, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, pos)),  // Location 0: Position
+			vks::initializers::vertexInputAttributeDescription(0, 1, VK_FORMAT_R32G32_SFLOAT, offsetof(ImDrawVert, uv)),   // Location 1: UV
+			vks::initializers::vertexInputAttributeDescription(0, 2, VK_FORMAT_R8G8B8A8_UNORM, offsetof(ImDrawVert, col)), // Location 0: Color
 		};
 		VkPipelineVertexInputStateCreateInfo vertexInputState = vks::initializers::pipelineVertexInputStateCreateInfo();
 		vertexInputState.vertexBindingDescriptionCount = static_cast<uint32_t>(vertexInputBindings.size());
@@ -309,11 +314,32 @@ public:
 	}
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings& uiSettings)
+	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings &uiSettings)
 	{
 		ImGui::NewFrame();
 
-		// Init imGui windows and elements
+		if (uiSettings.popup)
+		{
+			if (ImGui::IsMouseClicked(1))
+			{
+				ImGui::SetNextWindowPos(ImGui::GetMousePos());
+			}
+			else if (ImGui::IsMouseClicked(0))
+			{
+				uiSettings.popup=false;
+			}
+			if (ImGui::Begin("popup", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
+			{
+				ImGui::Text("test");
+				// click ok when finished adjusting
+				if (ImGui::InvisibleButton("OK finished adjusting", ImVec2(200, 10)))
+				{
+					uiSettings.popup = false;
+				}
+
+				ImGui::End();
+			}
+		}
 
 		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
@@ -321,14 +347,17 @@ public:
 		ImGui::TextUnformatted(device->properties.deviceName);
 
 		// Update frame time display
-		if (updateFrameGraph) {
+		if (updateFrameGraph)
+		{
 			std::rotate(uiSettings.frameTimes.begin(), uiSettings.frameTimes.begin() + 1, uiSettings.frameTimes.end());
 			float frameTime = 1000.0f / (example->frameTimer * 1000.0f);
 			uiSettings.frameTimes.back() = frameTime;
-			if (frameTime < uiSettings.frameTimeMin) {
+			if (frameTime < uiSettings.frameTimeMin)
+			{
 				uiSettings.frameTimeMin = frameTime;
 			}
-			if (frameTime > uiSettings.frameTimeMax) {
+			if (frameTime > uiSettings.frameTimeMax)
+			{
 				uiSettings.frameTimeMax = frameTime;
 			}
 		}
@@ -340,38 +369,49 @@ public:
 		ImGui::InputFloat3("rotation", &example->camera.rotation.x, 2);
 
 		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiSetCond_FirstUseEver);
-		ImGui::Begin("Example settings");
+		ImGui::Begin("Example settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Checkbox("Display nodes", &uiSettings.displayNodes);
 		ImGui::Checkbox("Display edges", &uiSettings.displayEdges);
 		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
 		ImGui::SliderFloat("Movement speed", &example->camera.movementSpeed, 1.0f, 100.0f);
+		float fontSize_old = uiSettings.fontSize;
+		ImGui::SliderFloat("Font size", &uiSettings.fontSize, .1f, 10.0f);
+		if (fontSize_old != uiSettings.fontSize)
+		{
+			ImGui::GetIO().FontGlobalScale = uiSettings.fontSize;
+		}
 		ImGui::SliderFloat("Light speed", &uiSettings.lightSpeed, 0.1f, 1.0f);
 		ImGui::End();
 
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiSetCond_FirstUseEver);
 		ImGui::ShowDemoWindow();
 
+		// }
+
 		// Render to generate draw buffers
 		ImGui::Render();
 	}
 
 	// Update vertex and index buffer containing the imGui elements when required
-	void updateBuffers()
+	void
+	updateBuffers()
 	{
-		ImDrawData* imDrawData = ImGui::GetDrawData();
+		ImDrawData *imDrawData = ImGui::GetDrawData();
 
 		// Note: Alignment is done inside buffer creation
 		VkDeviceSize vertexBufferSize = imDrawData->TotalVtxCount * sizeof(ImDrawVert);
 		VkDeviceSize indexBufferSize = imDrawData->TotalIdxCount * sizeof(ImDrawIdx);
 
-		if ((vertexBufferSize == 0) || (indexBufferSize == 0)) {
+		if ((vertexBufferSize == 0) || (indexBufferSize == 0))
+		{
 			return;
 		}
 
 		// Update buffers only if vertex or index count has been changed compared to current buffer size
 
 		// Vertex buffer
-		if ((vertexBuffer.buffer == VK_NULL_HANDLE) || (vertexCount != imDrawData->TotalVtxCount)) {
+		if ((vertexBuffer.buffer == VK_NULL_HANDLE) || (vertexCount != imDrawData->TotalVtxCount))
+		{
 			vertexBuffer.unmap();
 			vertexBuffer.destroy();
 			VK_CHECK_RESULT(device->createBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &vertexBuffer, vertexBufferSize));
@@ -380,7 +420,8 @@ public:
 		}
 
 		// Index buffer
-		if ((indexBuffer.buffer == VK_NULL_HANDLE) || (indexCount < imDrawData->TotalIdxCount)) {
+		if ((indexBuffer.buffer == VK_NULL_HANDLE) || (indexCount < imDrawData->TotalIdxCount))
+		{
 			indexBuffer.unmap();
 			indexBuffer.destroy();
 			VK_CHECK_RESULT(device->createBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, &indexBuffer, indexBufferSize));
@@ -389,11 +430,12 @@ public:
 		}
 
 		// Upload data
-		ImDrawVert* vtxDst = (ImDrawVert*)vertexBuffer.mapped;
-		ImDrawIdx* idxDst = (ImDrawIdx*)indexBuffer.mapped;
+		ImDrawVert *vtxDst = (ImDrawVert *)vertexBuffer.mapped;
+		ImDrawIdx *idxDst = (ImDrawIdx *)indexBuffer.mapped;
 
-		for (int n = 0; n < imDrawData->CmdListsCount; n++) {
-			const ImDrawList* cmd_list = imDrawData->CmdLists[n];
+		for (int n = 0; n < imDrawData->CmdListsCount; n++)
+		{
+			const ImDrawList *cmd_list = imDrawData->CmdLists[n];
 			memcpy(vtxDst, cmd_list->VtxBuffer.Data, cmd_list->VtxBuffer.Size * sizeof(ImDrawVert));
 			memcpy(idxDst, cmd_list->IdxBuffer.Data, cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx));
 			vtxDst += cmd_list->VtxBuffer.Size;
@@ -408,7 +450,7 @@ public:
 	// Draw current imGui frame into a command buffer
 	void drawFrame(VkCommandBuffer commandBuffer)
 	{
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO &io = ImGui::GetIO();
 
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
@@ -422,22 +464,23 @@ public:
 		vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstBlock), &pushConstBlock);
 
 		// Render commands
-		ImDrawData* imDrawData = ImGui::GetDrawData();
+		ImDrawData *imDrawData = ImGui::GetDrawData();
 		int32_t vertexOffset = 0;
 		int32_t indexOffset = 0;
 
-		if (imDrawData->CmdListsCount > 0) {
+		if (imDrawData->CmdListsCount > 0)
+		{
 
-			VkDeviceSize offsets[1] = { 0 };
+			VkDeviceSize offsets[1] = {0};
 			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.buffer, offsets);
 			vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
 			for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
 			{
-				const ImDrawList* cmd_list = imDrawData->CmdLists[i];
+				const ImDrawList *cmd_list = imDrawData->CmdLists[i];
 				for (int32_t j = 0; j < cmd_list->CmdBuffer.Size; j++)
 				{
-					const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[j];
+					const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[j];
 					VkRect2D scissorRect;
 					scissorRect.offset.x = std::max((int32_t)(pcmd->ClipRect.x), 0);
 					scissorRect.offset.y = std::max((int32_t)(pcmd->ClipRect.y), 0);
@@ -451,7 +494,6 @@ public:
 			}
 		}
 	}
-
 };
 
 #endif
