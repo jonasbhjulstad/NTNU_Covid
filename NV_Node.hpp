@@ -1,12 +1,13 @@
 #ifndef NV_NODE_HPP
 #define NV_NODE_HPP
+#include <vector>
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 struct NodeInstanceData
 {
     glm::vec3 pos;
+    glm::vec4 color;
     float scale;
-
     // Per-Instance attributes
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(uint32_t bind_ID, uint32_t layoutOffset)
     {

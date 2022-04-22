@@ -48,16 +48,16 @@ void main()
 
 	vec3 bezierDirection = endNodePos - startNodePos;
 
-	float theta = acos(dot(normalize(bezierDirection),vec3(.0,.0,1.0)));
-	vec3 u = cross(vec3(.0,.0,1.0),bezierDirection);
+	float theta = acos(dot(bezierDirection,vec3(.0,.0,1.0))/(distance(bezierDirection, vec3(.0,.0,.0))));
+	vec3 u = cross(bezierDirection, vec3(.0,.0,1.0));
 
 	vec4 centerPos = vec4((endNodePos - startNodePos)/2 + startNodePos, 1.0);
 	mat3 rotMat = rotationMatrix(u, theta);
 	
 	vec4 locPos = vec4(inPos.xyz*scale, 1.0);
 	locPos.z = locPos.z*abs(distance(startNodePos, endNodePos))/2;
-	locPos.x *=.1;
-	locPos.y *=.1;
+	locPos.x *=.01;
+	locPos.y *=.01;
 	vec4 pos = ubo.modelview*vec4(rotMat*locPos.xyz + centerPos.xyz, 1.0);
 	gl_Position = ubo.projection * pos;
 	outNormal = mat3(ubo.modelview) * inNormal;

@@ -21,6 +21,7 @@
 #include <igraph/igraph.h>
 #include <igraph/igraph_games.h>
 #include <igraph/igraph_layout.h>
+#include <igraph/igraph_epidemics.h>
 
 
 
@@ -30,7 +31,7 @@
 // ----------------------------------------------------------------------------
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
-#define NODE_INSTANCE_COUNT 4
+#define NODE_INSTANCE_COUNT 100
 class VulkanExample : public VulkanExampleBase
 {
 
@@ -81,7 +82,7 @@ public:
 		camera.type = Camera::CameraType::firstperson;
 		camera.setPosition(glm::vec3(0.0f, 0.0f, -4.8f));
 		camera.setRotation(glm::vec3(4.5f, 380.0f, 0.0f));
-		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 256.0f);
+		camera.setPerspective(45.0f, (float)width / (float)height, 0.1f, 4*256.0f);
 		camera.movementSpeed = 20.0f;
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
@@ -94,27 +95,14 @@ public:
 	void keyPressed(uint32_t key)
 	{
 
-		// switch(key)
-		// {
-		// 	case :
-		// 	break;
-
-		// 	case KEY_S:
-		// 	break;
-
-		// 	case KEY_D:
-		// 	break;
-
-		// 	case KEY_W:
-				
-		// 	break;
-		// }
-		std::cout << "key:\t" << key << std::endl;
+		// std::cout << "key:\t" << key << std::endl;
 	}
 
 	~VulkanExample()
 	{
 		delete imGui;
+		uniformBufferVS.destroy();
+
 	}
 
 	void buildCommandBuffers()
@@ -205,20 +193,23 @@ public:
 		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
-	void prepareNodeInstanceData()
+	void prepareNodeInstanceData(igraph_t& graph)
 	{
 
 		instanceData.node.reserve(NODE_INSTANCE_COUNT);
-		igraph_t graph;
 		igraph_vector_t component_sizes;
 		igraph_rng_seed(igraph_rng_default(), 42);
 
 		int N_nodes = NODE_INSTANCE_COUNT;
-		double ER_p = .7;
+		double ER_p = .1;
 		igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, ER_p, IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
+		igraph_barabasi_aging_game(&graph, NODE_INSTANCE_COUNT)
+		
 		igraph_vector_t minB, maxB;
 		igraph_vector_init(&minB, N_nodes);
 		igraph_vector_init(&maxB, N_nodes);
+
+
 
 
 		long int width = 100;
@@ -229,38 +220,69 @@ public:
 		igraph_vector_init(&maxB, N_nodes);
 		igraph_vector_fill(&minB, -100.);
 		igraph_vector_fill(&maxB, 100.);
-		igraph_layout_grid_3d(&graph, &mat, 0, 0);
+		// igraph_layout_grid_3d(&graph, &mat, 0, 0);
+		igraph_layout_random_3d(&graph, &mat);
 		igraph_matrix_scale(&mat, 50);
-		// igraph_layout_kamada_kawai_3d(&graph, &mat, 1, 10*N_nodes, 0, igraph_ecount(&graph), nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
-		// igraph_layout_fruchterman_reingold_3d(&graph, &mat, 1, 500, 10000., nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
+		igraph_layout_kamada_kawai_3d(&graph, &mat, 1, 10*N_nodes, 0, igraph_ecount(&graph), nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
+		// igraph_layout_fruchterman_reingold_3d(&graph, &mat, 1, 50, 1000., nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
 		std::cout << "Matrix size: " << igraph_matrix_nrow(&mat) << "x" << igraph_matrix_ncol(&mat) << std::endl;
 		// igraph_layout_grid_3d(&graph, &mat, width, height);
 		std::uniform_real_distribution<float> distScale(.2f, 2.0f);
+
 		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
 		{
-			std::cout << "Position: " << igraph_matrix_e(&mat, i, 0) << " " << igraph_matrix_e(&mat, i, 1) << " " << igraph_matrix_e(&mat, i, 2) << std::endl;
-			instanceData.node.push_back({glm::vec3(igraph_matrix_e(&mat, i, 0), igraph_matrix_e(&mat, i, 1), igraph_matrix_e(&mat, i, 2)), 1.0f});
+			instanceData.node.push_back({glm::vec3(igraph_matrix_e(&mat, i, 0), 
+			igraph_matrix_e(&mat, i, 1), 
+			igraph_matrix_e(&mat, i, 2)),
+			glm::vec4(1.0f,1.0f,1.0f, 1.0f), 1.0f});
 		}
+		igraph_vector_ptr_t p_sir_sim;
+		uint32_t N_sims = 1;
+		igraph_vector_ptr_init(&p_sir_sim, N_sims);
+		igraph_real_t beta = .3;
+		igraph_real_t gamma = .15;
+		igraph_sir(&graph, beta, gamma, 1, &p_sir_sim);
+		for (int i = 0; i < N_sims; i++)
+		{
+
+			igraph_sir_destroy((igraph_sir_t*)igraph_vector_ptr_e(&p_sir_sim, i));
+		}
+		igraph_vector_ptr_destroy_all(&p_sir_sim);
 
 	}
 
-	void prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData)
+	void prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData, const igraph_t& graph)
 	{
 		const uint32_t N_nodes = static_cast<uint32_t>(nodeInstanceData.size());
 
-		instanceData.bezier.reserve(N_nodes * N_nodes);
-		for (uint32_t i = 0; i < N_nodes; i++)
+		igraph_es_t edgeSelector;
+		igraph_es_all(&edgeSelector, IGRAPH_EDGEORDER_ID);
+
+		igraph_eit_t edgeIterator;
+		igraph_eit_create(&graph, edgeSelector, &edgeIterator);
+		
+		instanceData.bezier.reserve(IGRAPH_EIT_SIZE(edgeIterator));
+		igraph_integer_t node_source, node_target;
+		while(!IGRAPH_EIT_END(edgeIterator))
 		{
-			for (uint32_t j = i+1; j < N_nodes; j++)
-			{
-				instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos, {1.0f,1.0f,1.0f}});
-			}
+			igraph_edge(&graph, IGRAPH_EIT_GET(edgeIterator), &node_source, &node_target);
+			instanceData.bezier.push_back({nodeInstanceData[node_source].pos, nodeInstanceData[node_target].pos, {1.0f,1.0f,1.0f}});
+
+			IGRAPH_EIT_NEXT(edgeIterator);
 		}
+
+		// for (uint32_t i = 0; i < N_nodes; i++)
+		// {
+		// 	for (uint32_t j = i+1; j < N_nodes; j++)
+		// 	{
+		// 		instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos, {1.0f,1.0f,1.0f}});
+		// 	}
+		// }
 	}
 
-	void prepareNode()
+	void prepareNode(igraph_t& graph)
 	{
-		prepareNodeInstanceData();
+		prepareNodeInstanceData(graph);
 
 		BasicInstancedRenderingParams nodeParam;
 
@@ -281,16 +303,16 @@ public:
 	}
 
 
-	void prepareBezier()
+	void prepareBezier(const igraph_t& graph)
 	{
-		prepareBezierInstanceData(instanceData.node);
+		prepareBezierInstanceData(instanceData.node, graph);
 
 
 		BasicInstancedRenderingParams bezierParam;
 
 		bezierParam.vertexShaderPath = shadersPath + "bezier.vert.spv";
 		bezierParam.fragmentShaderPath = shadersPath + "bezier.frag.spv";
-		bezierParam.modelPath = modelPath + "bezier.gltf";
+		bezierParam.modelPath = modelPath + "cube.gltf";
 
 		bezierParam.vulkanDevice = vulkanDevice;
 		bezierParam.uniformProjectionBuffer = &uniformBufferVS;
@@ -310,9 +332,9 @@ public:
 		prepareUniformBuffers();
 		setupDescriptorPool();
 		prepareImGui();
-
-		prepareNode();
-		prepareBezier();
+		igraph_t graph;
+		prepareNode(graph);
+		prepareBezier(graph);
 
 		buildCommandBuffers();
 		prepared = true;
@@ -377,8 +399,8 @@ public:
 		// Light source
 		if (uiSettings.animateLight) {
 			uiSettings.lightTimer += frameTimer * uiSettings.lightSpeed;
-			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
-			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 15.0f;
+			uboVS.lightPos.x = sin(glm::radians(uiSettings.lightTimer * 360.0f)) * 256.0f;
+			uboVS.lightPos.z = cos(glm::radians(uiSettings.lightTimer * 360.0f)) * 256.0f;
 		};
 
 		VK_CHECK_RESULT(uniformBufferVS.map());

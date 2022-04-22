@@ -14,7 +14,7 @@ enum glTFBasicInstanceBindIDs
 struct BasicInstancePipelineData
 {
     std::unique_ptr<vkglTF::Model> model;
-    std::unique_ptr<vks::Texture2D> texture;
+    std::unique_ptr<vks::Texture2D> texture = nullptr;
     vks::Buffer instanceBuffer;
     VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;
@@ -22,6 +22,30 @@ struct BasicInstancePipelineData
     VkPipeline pipeline;
     VkDeviceSize* offset;
     uint32_t N_instances;
+    VkDevice device;
+    std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
+
+    BasicInstancePipelineData(VkDevice _device): device(_device)
+    {
+        shaderStages.reserve(2);
+    }
+
+    ~BasicInstancePipelineData()
+    {
+        vkDestroyPipeline(device, pipeline, nullptr);
+        vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+        vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
+        if (texture != nullptr)
+        {
+            texture->destroy();
+        }
+        
+        for (auto& stage: shaderStages)
+        {
+            vkDestroyShaderModule(device, stage.module, nullptr);
+        }
+        // instanceBuffer.destroy();
+    }
 };
 
 struct BasicInstancedRenderingParams
@@ -161,11 +185,11 @@ template <typename InstanceData>
 VkPipeline setupPipeline(const std::string &vertexShaderPath,
                          const std::string &fragmentShaderPath,
                          VkPipelineLayout pipelineLayout,
+                         std::vector<VkPipelineShaderStageCreateInfo>& shaderStages,
                          VkDevice device,
                          VkRenderPass renderPass,
                          VkPipelineCache pipelineCache = VK_NULL_HANDLE)
 {
-    std::vector<VkPipelineShaderStageCreateInfo> shaderStages(2);
     VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = vks::initializers::pipelineInputAssemblyStateCreateInfo(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 0, VK_FALSE);
     VkPipelineRasterizationStateCreateInfo rasterizationState = vks::initializers::pipelineRasterizationStateCreateInfo(VK_POLYGON_MODE_FILL, VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE);
     VkPipelineColorBlendAttachmentState blendAttachmentState = vks::initializers::pipelineColorBlendAttachmentState(0xf, VK_FALSE);
@@ -213,8 +237,8 @@ VkPipeline setupPipeline(const std::string &vertexShaderPath,
     inputState.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
     pipelineCI.pVertexInputState = &inputState;
 
-    shaderStages[0] = loadShader(device, vertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT);
-    shaderStages[1] = loadShader(device, fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT);
+    shaderStages.push_back(loadShader(device, vertexShaderPath, VK_SHADER_STAGE_VERTEX_BIT));
+    shaderStages.push_back(loadShader(device, fragmentShaderPath, VK_SHADER_STAGE_FRAGMENT_BIT));
 
     VkPipeline pipeline;
     VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, nullptr, 1, &pipelineCI, nullptr, &pipeline));
@@ -241,7 +265,7 @@ std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::v
 
     VkDevice device = p.vulkanDevice->logicalDevice;
 
-    std::unique_ptr<BasicInstancePipelineData> BI_data = std::make_unique<BasicInstancePipelineData>();
+    std::unique_ptr<BasicInstancePipelineData> BI_data = std::make_unique<BasicInstancePipelineData>(device);
 
     BI_data->model = loadModel(p.modelPath, p.vulkanDevice, p.queue);
     BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
@@ -256,7 +280,7 @@ std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::v
     }
     BI_data->pipelineLayout = setupPipelineLayout(device, BI_data->descriptorSetLayout);
     BI_data->descriptorSet = setupDescriptorSets(device, BI_data->descriptorSetLayout, p.descriptorPool, p.uniformProjectionBuffer);
-    BI_data->pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data->pipelineLayout, device, p.renderPass, p.pipelineCache);
+    BI_data->pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data->pipelineLayout, BI_data->shaderStages, device, p.renderPass, p.pipelineCache);
     BI_data->N_instances = instanceData.size();
 
     return BI_data;

@@ -4,21 +4,10 @@
 #include <imgui.h>
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
+#include "NV_Menu.hpp"
+#include "NV_PopupMenu.hpp"
+#include "NV_UISettings.hpp"
 // Options and values to display/toggle from the UI
-struct UISettings
-{
-	bool displayNodes = true;
-	bool displayEdges = true;
-	bool animateLight = false;
-	float lightSpeed = 0.25f;
-	std::array<float, 50> frameTimes{};
-	float frameTimeMin = 9999.0f, frameTimeMax = 0.0f;
-	float lightTimer = 0.0f;
-	bool popup = false;
-	float fontPixels = 64.0;
-	float fontSize = .5*(fontPixels)/64.0;
-	std::string fontPath;
-};
 // ----------------------------------------------------------------------------
 // ImGUI class
 // ----------------------------------------------------------------------------
@@ -318,33 +307,20 @@ public:
 	{
 		ImGui::NewFrame();
 
-		if (uiSettings.popup)
-		{
-			if (ImGui::IsMouseClicked(1))
-			{
-				ImGui::SetNextWindowPos(ImGui::GetMousePos());
-			}
-			else if (ImGui::IsMouseClicked(0))
-			{
-				uiSettings.popup=false;
-			}
-			if (ImGui::Begin("popup", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
-			{
-				ImGui::Text("test");
-				// click ok when finished adjusting
-				if (ImGui::InvisibleButton("OK finished adjusting", ImVec2(200, 10)))
-				{
-					uiSettings.popup = false;
-				}
-
-				ImGui::End();
-			}
-		}
+		createTopMenu(uiSettings);
+		createPopupMenu(uiSettings.popup);
 
 		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
 		ImGui::TextUnformatted(example->title.c_str());
 		ImGui::TextUnformatted(device->properties.deviceName);
+
+		if (uiSettings.prefMenu)
+		{
+			createPreferencesMenu(uiSettings.nodeStateColors);
+
+		}
+
 
 		// Update frame time display
 		if (updateFrameGraph)

@@ -29,42 +29,6 @@ void main()
 {
 	outColor = inColor;
 	outUV = vec3(inUV, .0);
-
-	// mat3 mx, my, mz;
-	
-	// // rotate around x
-	// float s = sin(instanceRot.x);
-	// float c = cos(instanceRot.x);
-
-	// mx[0] = vec3(c, s, 0.0);
-	// mx[1] = vec3(-s, c, 0.0);
-	// mx[2] = vec3(0.0, 0.0, 1.0);
-	
-	// // rotate around y
-	// s = sin(instanceRot.y);
-	// c = cos(instanceRot.y);
-
-	// my[0] = vec3(c, 0.0, s);
-	// my[1] = vec3(0.0, 1.0, 0.0);
-	// my[2] = vec3(-s, 0.0, c);
-	
-	// // rot around z
-	// s = sin(instanceRot.z);
-	// c = cos(instanceRot.z);	
-	
-	// mz[0] = vec3(1.0, 0.0, 0.0);
-	// mz[1] = vec3(0.0, c, s);
-	// mz[2] = vec3(0.0, -s, c);
-	
-	// mat3 rotMat = mz * my * mx;
-
-	// mat4 gRotMat;
-	// s = sin(instanceRot.y);
-	// c = cos(instanceRot.y);
-	// gRotMat[0] = vec4(c, 0.0, s, 0.0);
-	// gRotMat[1] = vec4(0.0, 1.0, 0.0, 0.0);
-	// gRotMat[2] = vec4(-s, 0.0, c, 0.0);
-	// gRotMat[3] = vec4(0.0, 0.0, 0.0, 1.0);	
 	
 	vec4 locPos = vec4(inPos.xyz, 1.0);
 	vec4 pos = vec4((locPos.xyz) + instancePos, 1.0);
