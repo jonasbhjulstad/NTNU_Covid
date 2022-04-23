@@ -1,8 +1,13 @@
 #ifndef NV_MENU_HPP
 #define NV_MENU_HPP
+#include <map>
+#include <unordered_set>
+#include <vector>
 #include "imgui.h"
 #include "NV_UISettings.hpp"
 #include "NV_Graph_Designer.hpp"
+
+
 void createPreferencesMenu(ImVec4* nodeStateColors)
 {
     if(ImGui::Begin("Preferences"))
@@ -13,25 +18,49 @@ void createPreferencesMenu(ImVec4* nodeStateColors)
         ImGui::End();
     }
 }
+void dispatchMenuWindows(const std::unordered_set<std::string>& activeMenus)
+{
+    for (auto& menu : activeMenus)
+    {
+        if (menu == "New")
+        {
 
-void createTopMenu(UISettings& uiSettings)
+        }
+        else if(menu == "Open")
+        {
+        }
+        else if(menu == "Save")
+        {
+        }
+        else if(menu == "New Network")
+        {
+            createGraphDesignerMenu();
+        }
+        else if(menu == "Import")
+        {
+
+        }
+        else if(menu == "Preferences")
+        {
+
+        }
+    }
+}
+
+
+void createTopMenu(UISettings& uiSettings, std::unordered_set<std::string>& activeMenus)
 {
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
-        {
-
-            ImGui::MenuItem("New");
-            ImGui::MenuItem("Open");
-            ImGui::MenuItem("Save");
-            if (ImGui::MenuItem("New Network"))
+       {
+            const std::vector<std::string> menuNames = {"New", "Open", "Save", "New Network", "Import", "Preferences"};        
+            for (const auto& menuName: menuNames)
             {
-                createGraphDesignerMenu();
-            }
-            ImGui::MenuItem("Import");
-            if(ImGui::MenuItem("Preferences"))
-            {
-                uiSettings.prefMenu = true;
+                if (ImGui::MenuItem(menuName.c_str()))
+                {
+                    activeMenus.insert(menuName.c_str());
+                }
             }
             ImGui::EndMenu();
         }

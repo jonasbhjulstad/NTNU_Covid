@@ -143,6 +143,8 @@ public:
 
 			VkDeviceSize offset = 0;
 
+			if (graphicsPipelines.node != nullptr)
+			{
 			graphicsPipelines.node->offset = &offset;
 			if (uiSettings.displayNodes)
 			{
@@ -153,7 +155,7 @@ public:
 			{
 				buildCommandBuffer(*graphicsPipelines.bezier, drawCmdBuffers[i]);
 			}
-
+			}
 			// Render imGui
 			imGui->drawFrame(drawCmdBuffers[i]);
 
@@ -203,7 +205,7 @@ public:
 		int N_nodes = NODE_INSTANCE_COUNT;
 		double ER_p = .1;
 		igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, ER_p, IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
-		igraph_barabasi_aging_game(&graph, NODE_INSTANCE_COUNT)
+		// igraph_barabasi_aging_game(&graph, NODE_INSTANCE_COUNT, 1, )
 		
 		igraph_vector_t minB, maxB;
 		igraph_vector_init(&minB, N_nodes);
@@ -332,10 +334,9 @@ public:
 		prepareUniformBuffers();
 		setupDescriptorPool();
 		prepareImGui();
-		igraph_t graph;
-		prepareNode(graph);
-		prepareBezier(graph);
-
+		// igraph_t graph;
+		// prepareNode(graph);
+		// prepareBezier(graph);
 		buildCommandBuffers();
 		prepared = true;
 	}

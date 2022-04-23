@@ -2,6 +2,7 @@
 #define IMGUI_APP_HPP
 
 #include <imgui.h>
+#include <unordered_set>
 #include "vulkanexamplebase.h"
 #include "VulkanglTFModel.h"
 #include "NV_Menu.hpp"
@@ -31,6 +32,8 @@ private:
 	VkDescriptorSet descriptorSet;
 	vks::VulkanDevice *device;
 	VulkanExampleBase *example;
+	std::unordered_set<std::string> activeMenus;
+
 
 public:
 	// UI params are set via push constants
@@ -64,8 +67,10 @@ public:
 	}
 
 	// Initialize styles, keys, etc.
-	void init(float width, float height, const UISettings& uiSettings)
+	void init(float width, float height, const UISettings &uiSettings)
 	{
+		// to rgb #6D6D6D
+
 		// Color scheme
 		ImGuiStyle &style = ImGui::GetStyle();
 		style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.0f, 0.0f, 0.6f);
@@ -79,7 +84,6 @@ public:
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 		io.FontGlobalScale = uiSettings.fontSize;
 		io.Fonts->AddFontFromFileTTF(uiSettings.fontPath.c_str(), 64.0f);
-
 	}
 
 	// Initialize all Vulkan resources used by the ui
@@ -302,24 +306,22 @@ public:
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device->logicalDevice, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
 	}
 
+
 	// Starts a new imGui frame and sets up windows and ui elements
 	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings &uiSettings)
 	{
 		ImGui::NewFrame();
 
-		createTopMenu(uiSettings);
+
+		createTopMenu(uiSettings, activeMenus);
 		createPopupMenu(uiSettings.popup);
+
+		dispatchMenuWindows(activeMenus);
 
 		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
 		ImGui::TextUnformatted(example->title.c_str());
 		ImGui::TextUnformatted(device->properties.deviceName);
-
-		if (uiSettings.prefMenu)
-		{
-			createPreferencesMenu(uiSettings.nodeStateColors);
-
-		}
 
 
 		// Update frame time display
@@ -369,8 +371,7 @@ public:
 	}
 
 	// Update vertex and index buffer containing the imGui elements when required
-	void
-	updateBuffers()
+	void updateBuffers()
 	{
 		ImDrawData *imDrawData = ImGui::GetDrawData();
 
