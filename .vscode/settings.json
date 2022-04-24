@@ -1,0 +1,8 @@
+{
+    "C_Cpp.default.configurationProvider": "go2sh.cmake-integration",
+    "files.associations": {
+        "cfloat": "cpp",
+        "cmath": "cpp",
+        "limits": "cpp"
+    }
+}

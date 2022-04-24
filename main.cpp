@@ -13,11 +13,11 @@
 #include <random>
 #include <chrono>
 #define ENABLE_VALIDATION true
-
 #include "ImGuiApp.hpp"
 #include "NV_glTFBasicInstance.hpp"
 #include "NV_Node.hpp"
-#include "NV_Bezier.hpp"
+#include "NV_Edge.hpp"
+#include "KeyNumberInput.hpp"
 #include <igraph/igraph.h>
 #include <igraph/igraph_games.h>
 #include <igraph/igraph_layout.h>
@@ -31,7 +31,7 @@
 // ----------------------------------------------------------------------------
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
-#define NODE_INSTANCE_COUNT 100
+#define NODE_INSTANCE_COUNT 1000
 class VulkanExample : public VulkanExampleBase
 {
 
@@ -57,7 +57,7 @@ public:
 	struct
 	{
 		std::unique_ptr<BasicInstancePipelineData> node;
-		std::unique_ptr<BasicInstancePipelineData> bezier;
+		std::unique_ptr<BasicInstancePipelineData> edge;
 	} graphicsPipelines;
 
 	vks::Buffer uniformBufferVS;
@@ -70,7 +70,7 @@ public:
 
 	struct {
 		std::vector<NodeInstanceData> node;
-		std::vector<BezierInstanceData> bezier;
+		std::vector<EdgeInstanceData> edge;
 	} instanceData;
 
 	const uint32_t glTFLoadingFlags = vkglTF::FileLoadingFlags::PreTransformVertices | vkglTF::FileLoadingFlags::PreMultiplyVertexColors | vkglTF::FileLoadingFlags::FlipY;
@@ -94,8 +94,7 @@ public:
 
 	void keyPressed(uint32_t key)
 	{
-
-		// std::cout << "key:\t" << key << std::endl;
+		uiSettings.activeNumKey = getKeyNumberInput(key);
 	}
 
 	~VulkanExample()
@@ -146,14 +145,14 @@ public:
 			if (graphicsPipelines.node != nullptr)
 			{
 			graphicsPipelines.node->offset = &offset;
-			if (uiSettings.displayNodes)
+			if (uiSettings.display.nodes)
 			{
 				buildCommandBuffer(*graphicsPipelines.node, drawCmdBuffers[i]);
 			}
-			graphicsPipelines.bezier->offset = &offset;
-			if (uiSettings.displayEdges)
+			graphicsPipelines.edge->offset = &offset;
+			if (uiSettings.display.edges)
 			{
-				buildCommandBuffer(*graphicsPipelines.bezier, drawCmdBuffers[i]);
+				buildCommandBuffer(*graphicsPipelines.edge, drawCmdBuffers[i]);
 			}
 			}
 			// Render imGui
@@ -195,96 +194,9 @@ public:
 		imGui->initResources(renderPass, queue, shadersPath);
 	}
 
-	void prepareNodeInstanceData(igraph_t& graph)
+	void createNodePipeline()
 	{
-
-		instanceData.node.reserve(NODE_INSTANCE_COUNT);
-		igraph_vector_t component_sizes;
-		igraph_rng_seed(igraph_rng_default(), 42);
-
-		int N_nodes = NODE_INSTANCE_COUNT;
-		double ER_p = .1;
-		igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, ER_p, IGRAPH_UNDIRECTED, IGRAPH_NO_LOOPS);
-		// igraph_barabasi_aging_game(&graph, NODE_INSTANCE_COUNT, 1, )
-		
-		igraph_vector_t minB, maxB;
-		igraph_vector_init(&minB, N_nodes);
-		igraph_vector_init(&maxB, N_nodes);
-
-
-
-
-		long int width = 100;
-		long int height = 100;
-		igraph_matrix_t mat;
-		igraph_matrix_init(&mat, N_nodes, 3);
-		igraph_vector_init(&minB, N_nodes);
-		igraph_vector_init(&maxB, N_nodes);
-		igraph_vector_fill(&minB, -100.);
-		igraph_vector_fill(&maxB, 100.);
-		// igraph_layout_grid_3d(&graph, &mat, 0, 0);
-		igraph_layout_random_3d(&graph, &mat);
-		igraph_matrix_scale(&mat, 50);
-		igraph_layout_kamada_kawai_3d(&graph, &mat, 1, 10*N_nodes, 0, igraph_ecount(&graph), nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
-		// igraph_layout_fruchterman_reingold_3d(&graph, &mat, 1, 50, 1000., nullptr, &minB, &maxB, &minB, &maxB, &minB, &maxB);
-		std::cout << "Matrix size: " << igraph_matrix_nrow(&mat) << "x" << igraph_matrix_ncol(&mat) << std::endl;
-		// igraph_layout_grid_3d(&graph, &mat, width, height);
-		std::uniform_real_distribution<float> distScale(.2f, 2.0f);
-
-		for (int i = 0; i < NODE_INSTANCE_COUNT; i++)
-		{
-			instanceData.node.push_back({glm::vec3(igraph_matrix_e(&mat, i, 0), 
-			igraph_matrix_e(&mat, i, 1), 
-			igraph_matrix_e(&mat, i, 2)),
-			glm::vec4(1.0f,1.0f,1.0f, 1.0f), 1.0f});
-		}
-		igraph_vector_ptr_t p_sir_sim;
-		uint32_t N_sims = 1;
-		igraph_vector_ptr_init(&p_sir_sim, N_sims);
-		igraph_real_t beta = .3;
-		igraph_real_t gamma = .15;
-		igraph_sir(&graph, beta, gamma, 1, &p_sir_sim);
-		for (int i = 0; i < N_sims; i++)
-		{
-
-			igraph_sir_destroy((igraph_sir_t*)igraph_vector_ptr_e(&p_sir_sim, i));
-		}
-		igraph_vector_ptr_destroy_all(&p_sir_sim);
-
-	}
-
-	void prepareBezierInstanceData(std::vector<NodeInstanceData> &nodeInstanceData, const igraph_t& graph)
-	{
-		const uint32_t N_nodes = static_cast<uint32_t>(nodeInstanceData.size());
-
-		igraph_es_t edgeSelector;
-		igraph_es_all(&edgeSelector, IGRAPH_EDGEORDER_ID);
-
-		igraph_eit_t edgeIterator;
-		igraph_eit_create(&graph, edgeSelector, &edgeIterator);
-		
-		instanceData.bezier.reserve(IGRAPH_EIT_SIZE(edgeIterator));
-		igraph_integer_t node_source, node_target;
-		while(!IGRAPH_EIT_END(edgeIterator))
-		{
-			igraph_edge(&graph, IGRAPH_EIT_GET(edgeIterator), &node_source, &node_target);
-			instanceData.bezier.push_back({nodeInstanceData[node_source].pos, nodeInstanceData[node_target].pos, {1.0f,1.0f,1.0f}});
-
-			IGRAPH_EIT_NEXT(edgeIterator);
-		}
-
-		// for (uint32_t i = 0; i < N_nodes; i++)
-		// {
-		// 	for (uint32_t j = i+1; j < N_nodes; j++)
-		// 	{
-		// 		instanceData.bezier.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos, {1.0f,1.0f,1.0f}});
-		// 	}
-		// }
-	}
-
-	void prepareNode(igraph_t& graph)
-	{
-		prepareNodeInstanceData(graph);
+		// prepareNodeInstanceData(graph);
 
 		BasicInstancedRenderingParams nodeParam;
 
@@ -300,30 +212,29 @@ public:
 		nodeParam.pipelineCache = pipelineCache;
 		nodeParam.renderPass = renderPass;
 
-		graphicsPipelines.node = prepareBasicInstancedRendering(instanceData.node, nodeParam);
+		graphicsPipelines.node = prepareBasicInstancedRendering<NodeInstanceData>(nodeParam);
 
 	}
 
 
-	void prepareBezier(const igraph_t& graph)
+	void createEdgePipeline(const igraph_t& graph)
 	{
-		prepareBezierInstanceData(instanceData.node, graph);
+		// prepareEdgeInstanceData(instanceData.node, graph);
 
+		BasicInstancedRenderingParams edgeParam;
 
-		BasicInstancedRenderingParams bezierParam;
+		edgeParam.vertexShaderPath = shadersPath + "edge.vert.spv";
+		edgeParam.fragmentShaderPath = shadersPath + "edge.frag.spv";
+		edgeParam.modelPath = modelPath + "cube.gltf";
 
-		bezierParam.vertexShaderPath = shadersPath + "bezier.vert.spv";
-		bezierParam.fragmentShaderPath = shadersPath + "bezier.frag.spv";
-		bezierParam.modelPath = modelPath + "cube.gltf";
+		edgeParam.vulkanDevice = vulkanDevice;
+		edgeParam.uniformProjectionBuffer = &uniformBufferVS;
+		edgeParam.queue = queue;
+		edgeParam.descriptorPool = descriptorPool;
+		edgeParam.pipelineCache = pipelineCache;
+		edgeParam.renderPass = renderPass;
 
-		bezierParam.vulkanDevice = vulkanDevice;
-		bezierParam.uniformProjectionBuffer = &uniformBufferVS;
-		bezierParam.queue = queue;
-		bezierParam.descriptorPool = descriptorPool;
-		bezierParam.pipelineCache = pipelineCache;
-		bezierParam.renderPass = renderPass;
-
-		graphicsPipelines.bezier = prepareBasicInstancedRendering(instanceData.bezier, bezierParam);
+		graphicsPipelines.edge = prepareBasicInstancedRendering<EdgeInstanceData>(edgeParam);
 
 	}
 
@@ -334,9 +245,6 @@ public:
 		prepareUniformBuffers();
 		setupDescriptorPool();
 		prepareImGui();
-		// igraph_t graph;
-		// prepareNode(graph);
-		// prepareBezier(graph);
 		buildCommandBuffers();
 		prepared = true;
 	}

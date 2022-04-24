@@ -21,7 +21,7 @@ struct BasicInstancePipelineData
     VkDescriptorSet descriptorSet;
     VkPipeline pipeline;
     VkDeviceSize* offset;
-    uint32_t N_instances;
+    uint32_t N_instances = 0;
     VkDevice device;
     std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 
@@ -44,7 +44,6 @@ struct BasicInstancePipelineData
         {
             vkDestroyShaderModule(device, stage.module, nullptr);
         }
-        // instanceBuffer.destroy();
     }
 };
 
@@ -259,8 +258,7 @@ void buildCommandBuffer(BasicInstancePipelineData& BI_data, VkCommandBuffer comm
 }
 
 template <typename InstanceData>
-std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::vector<InstanceData> &instanceData,
-                                                         BasicInstancedRenderingParams &p)
+std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(BasicInstancedRenderingParams &p)
 {
 
     VkDevice device = p.vulkanDevice->logicalDevice;
@@ -268,7 +266,7 @@ std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::v
     std::unique_ptr<BasicInstancePipelineData> BI_data = std::make_unique<BasicInstancePipelineData>(device);
 
     BI_data->model = loadModel(p.modelPath, p.vulkanDevice, p.queue);
-    BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
+    // BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
     if (!p.texturePath.empty())
     {
         BI_data->texture = loadTexture(p.texturePath, p.vulkanDevice, p.queue);
@@ -281,7 +279,6 @@ std::unique_ptr<BasicInstancePipelineData> prepareBasicInstancedRendering(std::v
     BI_data->pipelineLayout = setupPipelineLayout(device, BI_data->descriptorSetLayout);
     BI_data->descriptorSet = setupDescriptorSets(device, BI_data->descriptorSetLayout, p.descriptorPool, p.uniformProjectionBuffer);
     BI_data->pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data->pipelineLayout, BI_data->shaderStages, device, p.renderPass, p.pipelineCache);
-    BI_data->N_instances = instanceData.size();
 
     return BI_data;
 }

@@ -1,6 +1,6 @@
 #ifndef NV_POPUP_MENU_HPP
 #define NV_POPUP_MENU_HPP
-#include "imgui.h"
+#include <imgui.h>
 
 void createPopupMenu(bool &p_active)
 {
@@ -23,16 +23,6 @@ void createPopupMenu(bool &p_active)
                     selected_fish = i;
             ImGui::EndPopup();
         }
-
-        // if (ImGui::Begin("popup", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar))
-        // {
-        //     if (ImGui::MenuItem("Test"))
-        //     {
-        //         p_active = false;
-        //     }
-
-        //     ImGui::End();
-        // }
     }
 }
 

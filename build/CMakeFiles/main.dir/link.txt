@@ -1,1 +1,3 @@
-/usr/lib/ccache/c++ CMakeFiles/main.dir/main.cpp.o -o main  libimgui.a libktx.a /usr/lib/x86_64-linux-gnu/libvulkan.so libVulkan_Base.a /usr/local/lib/libigraph.a libimgui.a libktx.a /usr/lib/x86_64-linux-gnu/libSM.so /usr/lib/x86_64-linux-gnu/libICE.so /usr/lib/x86_64-linux-gnu/libX11.so /usr/lib/x86_64-linux-gnu/libXext.so -lxcb -lm /usr/lib/x86_64-linux-gnu/libopenblas.so -lpthread -lm -ldl /usr/lib/x86_64-linux-gnu/libxml2.so /usr/lib/x86_64-linux-gnu/libgmp.so /usr/lib/gcc/x86_64-linux-gnu/11/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.so 
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\main.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\main.dir/objects.a @CMakeFiles\main.dir\objects1.rsp
+C:\msys64\mingw64\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\main.dir/objects.a -Wl,--no-whole-archive -o main.exe -Wl,--out-implib,libmain.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\main.dir\linklibs.rsp

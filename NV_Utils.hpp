@@ -1,6 +1,6 @@
 #ifndef NV_UTILS_HPP
 #define NV_UTILS_HPP
-#include "imgui.h"
+#include <imgui.h>
 
 ImVec4 rgbNormalize(const ImVec4& color)
 {

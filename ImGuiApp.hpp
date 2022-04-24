@@ -32,8 +32,7 @@ private:
 	VkDescriptorSet descriptorSet;
 	vks::VulkanDevice *device;
 	VulkanExampleBase *example;
-	std::unordered_set<std::string> activeMenus;
-
+	std::map<NV_Menu_Window, bool> activeMenus;
 
 public:
 	// UI params are set via push constants
@@ -84,6 +83,8 @@ public:
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 		io.FontGlobalScale = uiSettings.fontSize;
 		io.Fonts->AddFontFromFileTTF(uiSettings.fontPath.c_str(), 64.0f);
+        io.WantCaptureKeyboard = true;
+
 	}
 
 	// Initialize all Vulkan resources used by the ui
@@ -348,8 +349,8 @@ public:
 
 		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Example settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Checkbox("Display nodes", &uiSettings.displayNodes);
-		ImGui::Checkbox("Display edges", &uiSettings.displayEdges);
+		ImGui::Checkbox("Display nodes", &uiSettings.display.nodes);
+		ImGui::Checkbox("Display edges", &uiSettings.display.edges);
 		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
 		ImGui::SliderFloat("Movement speed", &example->camera.movementSpeed, 1.0f, 100.0f);
 		float fontSize_old = uiSettings.fontSize;

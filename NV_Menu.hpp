@@ -3,63 +3,90 @@
 #include <map>
 #include <unordered_set>
 #include <vector>
-#include "imgui.h"
+#include <imgui.h>
 #include "NV_UISettings.hpp"
 #include "NV_Graph_Designer.hpp"
 
-
-void createPreferencesMenu(ImVec4* nodeStateColors)
+enum NV_Menu_Window
 {
-    if(ImGui::Begin("Preferences"))
+    NV_MENU_WINDOW_NEW,
+    NV_MENU_WINDOW_OPEN,
+    NV_MENU_WINDOW_SAVE,
+    NV_MENU_WINDOW_NEW_GRAPH,
+    NV_MENU_WINDOW_IMPORT,
+    NV_MENU_WINDOW_PREFERENCES
+};
+
+const std::map<NV_Menu_Window, std::string> NV_Menu_Window_Names = {
+    {NV_MENU_WINDOW_NEW, "New"},
+    {NV_MENU_WINDOW_OPEN, "Open"},
+    {NV_MENU_WINDOW_SAVE, "Save"},
+    {NV_MENU_WINDOW_NEW_GRAPH, "New Graph"},
+    {NV_MENU_WINDOW_IMPORT, "Import"},
+    {NV_MENU_WINDOW_PREFERENCES, "Preferences"}
+};
+
+void createPreferencesMenu(ImVec4 *nodeStateColors)
+{
+    if (ImGui::Begin("Preferences"))
     {
-        ImGui::ColorEdit4("Suceptible", (float*)&nodeStateColors[0], ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit4("Infected", (float*)&nodeStateColors[1], ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit4("Recovered", (float*)&nodeStateColors[2], ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit4("Suceptible", (float *)&nodeStateColors[0], ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit4("Infected", (float *)&nodeStateColors[1], ImGuiColorEditFlags_Float);
+        ImGui::ColorEdit4("Recovered", (float *)&nodeStateColors[2], ImGuiColorEditFlags_Float);
         ImGui::End();
     }
 }
-void dispatchMenuWindows(const std::unordered_set<std::string>& activeMenus)
+void dispatchMenuWindows(std::map<NV_Menu_Window, bool> &activeMenus)
 {
-    for (auto& menu : activeMenus)
+    for (auto p_menu = activeMenus.begin(); p_menu != activeMenus.end();)
     {
-        if (menu == "New")
+        bool erase_entry = false;
+        if (p_menu->second)
         {
+            if (p_menu->first == NV_MENU_WINDOW_NEW)
+            {
+            }
+            else if (p_menu->first == NV_MENU_WINDOW_OPEN)
+            {
+            }
+            else if (p_menu->first == NV_MENU_WINDOW_SAVE)
+            {
+            }
+            else if (p_menu->first == NV_MENU_WINDOW_NEW_GRAPH)
+            {
+                std::unique_ptr<igraph_t> graph;
+                erase_entry = createGraphDesignerMenu(graph);
+            }
+            else if (p_menu->first == NV_MENU_WINDOW_IMPORT)
+            {
+            }
+            else if (p_menu->first == NV_MENU_WINDOW_PREFERENCES)
+            {
+            }
 
-        }
-        else if(menu == "Open")
-        {
-        }
-        else if(menu == "Save")
-        {
-        }
-        else if(menu == "New Network")
-        {
-            createGraphDesignerMenu();
-        }
-        else if(menu == "Import")
-        {
-
-        }
-        else if(menu == "Preferences")
-        {
-
+            if (erase_entry)
+            {
+                p_menu = activeMenus.erase(p_menu);
+            }
+            else
+            {
+                p_menu++;
+            }
         }
     }
 }
 
-
-void createTopMenu(UISettings& uiSettings, std::unordered_set<std::string>& activeMenus)
+void createTopMenu(UISettings &uiSettings, std::map<NV_Menu_Window, bool> &activeMenus)
 {
     if (ImGui::BeginMainMenuBar())
     {
         if (ImGui::BeginMenu("File"))
-       {
-            const std::vector<std::string> menuNames = {"New", "Open", "Save", "New Network", "Import", "Preferences"};        
-            for (const auto& menuName: menuNames)
+        {
+            for (const auto &menu : NV_Menu_Window_Names)
             {
-                if (ImGui::MenuItem(menuName.c_str()))
+                if (ImGui::MenuItem(menu.second.c_str()))
                 {
-                    activeMenus.insert(menuName.c_str());
+                    activeMenus[menu.first] = true;
                 }
             }
             ImGui::EndMenu();
@@ -76,9 +103,6 @@ void createTopMenu(UISettings& uiSettings, std::unordered_set<std::string>& acti
         }
         ImGui::EndMainMenuBar();
     }
-
 }
-
-
 
 #endif

@@ -2,11 +2,14 @@
 #define NV_UISETTINGS_HPP
 #include <string>
 #include <array>
-#include "imgui.h"
+#include <imgui.h>
 struct UISettings
 {
-	bool displayNodes = true;
-	bool displayEdges = true;
+	struct
+	{
+		bool nodes = true;
+		bool edges = true;
+	} display;
 	bool animateLight = false;
 	float lightSpeed = 0.25f;
 	std::array<float, 50> frameTimes{};
@@ -18,6 +21,7 @@ struct UISettings
 	std::string fontPath;
 	ImVec4 nodeStateColors[3] = {ImVec4{1.0,1.0,.0,1.0}, ImVec4{1.0,.0,.0,1.0}, ImVec4{.0,.0,1.0,1.0}};
 	bool prefMenu = false;
+	int activeNumKey = -1;
 };
 
 #endif

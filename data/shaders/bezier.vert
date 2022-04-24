@@ -46,10 +46,10 @@ void main()
 	outUV = vec3(inUV, .0);
 
 
-	vec3 bezierDirection = endNodePos - startNodePos;
+	vec3 edgeDirection = endNodePos - startNodePos;
 
-	float theta = acos(dot(bezierDirection,vec3(.0,.0,1.0))/(distance(bezierDirection, vec3(.0,.0,.0))));
-	vec3 u = cross(bezierDirection, vec3(.0,.0,1.0));
+	float theta = acos(dot(edgeDirection,vec3(.0,.0,1.0))/(distance(edgeDirection, vec3(.0,.0,.0))));
+	vec3 u = cross(edgeDirection, vec3(.0,.0,1.0));
 
 	vec4 centerPos = vec4((endNodePos - startNodePos)/2 + startNodePos, 1.0);
 	mat3 rotMat = rotationMatrix(u, theta);
