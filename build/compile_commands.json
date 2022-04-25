@@ -1,157 +1,162 @@
 [
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DVK_USE_PLATFORM_WIN32_KHR @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\external\\imgui\\imgui.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\imgui\\imgui.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/imgui/imgui.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DVK_USE_PLATFORM_XCB_KHR -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DVK_USE_PLATFORM_WIN32_KHR @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\external\\imgui\\imgui_demo.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\imgui\\imgui_demo.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/imgui/imgui_demo.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DVK_USE_PLATFORM_XCB_KHR -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_demo.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_demo.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_demo.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DVK_USE_PLATFORM_WIN32_KHR @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\external\\imgui\\imgui_draw.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\imgui\\imgui_draw.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/imgui/imgui_draw.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DVK_USE_PLATFORM_XCB_KHR -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_draw.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_draw.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_draw.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DVK_USE_PLATFORM_WIN32_KHR @CMakeFiles/imgui.dir/includes_CXX.rsp -g -o CMakeFiles\\imgui.dir\\external\\imgui\\imgui_widgets.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\imgui\\imgui_widgets.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/imgui/imgui_widgets.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DVK_USE_PLATFORM_XCB_KHR -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_tables.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_tables.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_tables.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\checkheader.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\checkheader.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/checkheader.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DVK_USE_PLATFORM_XCB_KHR -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_widgets.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_widgets.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/imgui_widgets.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\errstr.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\errstr.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/errstr.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/checkheader.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/checkheader.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/checkheader.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_CXX.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\etcdec.cxx.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\etcdec.cxx",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/etcdec.cxx"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/errstr.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/errstr.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/errstr.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_CXX.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\etcunpack.cxx.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\etcunpack.cxx",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/etcunpack.cxx"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/etcdec.cxx.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/etcdec.cxx",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/etcdec.cxx"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\filestream.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\filestream.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/filestream.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/etcunpack.cxx.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/etcunpack.cxx",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/etcunpack.cxx"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\glloader.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\glloader.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/glloader.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/filestream.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/filestream.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/filestream.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\hashlist.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\hashlist.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/hashlist.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/glloader.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/glloader.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/glloader.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\hashtable.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\hashtable.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/hashtable.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/hashlist.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/hashlist.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/hashlist.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\memstream.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\memstream.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/memstream.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/hashtable.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/hashtable.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/hashtable.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\swap.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\swap.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/swap.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/memstream.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/memstream.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/memstream.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\texture.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\texture.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/texture.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/swap.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/swap.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/swap.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\vk_funcs.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\vk_funcs.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/vk_funcs.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/texture.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/texture.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/texture.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\vkloader.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\vkloader.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/vkloader.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/vk_funcs.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/vk_funcs.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/vk_funcs.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\writer.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\writer.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/writer.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/vkloader.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/vkloader.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/vkloader.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\gcc.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/ktx.dir/includes_C.rsp -g -o CMakeFiles\\ktx.dir\\external\\ktx\\lib\\writer_v1.c.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\external\\ktx\\lib\\writer_v1.c",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/external/ktx/lib/writer_v1.c"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/writer.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/writer.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/writer.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanAndroid.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanAndroid.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanAndroid.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/gcc -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -g -o CMakeFiles/ktx.dir/external/ktx/lib/writer_v1.c.o -c /home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/writer_v1.c",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/external/ktx/lib/writer_v1.c"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanBuffer.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanBuffer.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanBuffer.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanAndroid.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanAndroid.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanAndroid.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanDebug.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanDebug.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanDebug.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanBuffer.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanBuffer.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanBuffer.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanDevice.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanDevice.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanDevice.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanDebug.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanDebug.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanDebug.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanRaytracingSample.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanRaytracingSample.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanRaytracingSample.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanDevice.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanDevice.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanDevice.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanSwapChain.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanSwapChain.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanSwapChain.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanRaytracingSample.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanRaytracingSample.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanRaytracingSample.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanTexture.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanTexture.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanTexture.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanSwapChain.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanSwapChain.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanSwapChain.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanTools.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanTools.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanTools.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanTexture.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanTexture.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanTexture.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanUIOverlay.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanUIOverlay.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanUIOverlay.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanTools.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanTools.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanTools.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\VulkanglTFModel.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\VulkanglTFModel.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/VulkanglTFModel.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanUIOverlay.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanUIOverlay.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanUIOverlay.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/Vulkan_Base.dir/includes_CXX.rsp -g -o CMakeFiles\\Vulkan_Base.dir\\base\\vulkanexamplebase.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\base\\vulkanexamplebase.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/base/vulkanexamplebase.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/VulkanglTFModel.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/VulkanglTFModel.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/VulkanglTFModel.cpp"
 },
 {
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_WIN32_KHR -D_DEBUG=0 @CMakeFiles/main.dir/includes_CXX.rsp -g -o CMakeFiles\\main.dir\\main.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\main.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/main.cpp"
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -g -o CMakeFiles/Vulkan_Base.dir/base/vulkanexamplebase.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/base/vulkanexamplebase.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/base/vulkanexamplebase.cpp"
+},
+{
+  "directory": "/home/deb/Documents/Vulkan/examples/imgui/build",
+  "command": "/usr/lib/ccache/g++ -DKTX_OPENGL_ES3 -DVK_USE_PLATFORM_XCB_KHR -D_DEBUG=0 -I/home/deb/Documents/Vulkan/examples/imgui/base -I/home/deb/Documents/Vulkan/examples/imgui/external/tinygltf -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src -I/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src/backends -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/include -I/home/deb/Documents/Vulkan/examples/imgui/external/ktx/other_include -isystem /usr/local/include/igraph -g -o CMakeFiles/main.dir/main.cpp.o -c /home/deb/Documents/Vulkan/examples/imgui/main.cpp",
+  "file": "/home/deb/Documents/Vulkan/examples/imgui/main.cpp"
 }
 ]

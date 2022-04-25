@@ -17,7 +17,6 @@
 #include "NV_glTFBasicInstance.hpp"
 #include "NV_Node.hpp"
 #include "NV_Edge.hpp"
-#include "KeyNumberInput.hpp"
 #include <igraph/igraph.h>
 #include <igraph/igraph_games.h>
 #include <igraph/igraph_layout.h>
@@ -32,6 +31,8 @@
 #define NODE_VERTEX_BIND_ID 0
 #define NODE_INSTANCE_BIND_ID 1
 #define NODE_INSTANCE_COUNT 1000
+
+
 class VulkanExample : public VulkanExampleBase
 {
 
@@ -86,7 +87,6 @@ public:
 		camera.movementSpeed = 20.0f;
 		// Don't use the ImGui overlay of the base framework in this sample
 		settings.overlay = false;
-		uint32_t propCount;
 		width = 2736;
 		height = 1824; 
 
@@ -94,7 +94,6 @@ public:
 
 	void keyPressed(uint32_t key)
 	{
-		uiSettings.activeNumKey = getKeyNumberInput(key);
 	}
 
 	~VulkanExample()
@@ -188,7 +187,7 @@ public:
 	}
 	void prepareImGui()
 	{
-		imGui = new ImGUI(this);
+		imGui = new ImGUI(vulkanDevice, "Network Viewport");
 		uiSettings.fontPath = fontPath;
 		imGui->init((float)width, (float)height, uiSettings);
 		imGui->initResources(renderPass, queue, shadersPath);

@@ -3,11 +3,14 @@
 
 #include <imgui.h>
 #include <unordered_set>
+#include <GLFW/glfw3.h>
 #include "vulkanexamplebase.h"
+#include "vulkan/vulkan.hpp"
 #include "VulkanglTFModel.h"
 #include "NV_Menu.hpp"
 #include "NV_PopupMenu.hpp"
 #include "NV_UISettings.hpp"
+#include "NV_Assets.hpp"
 // Options and values to display/toggle from the UI
 // ----------------------------------------------------------------------------
 // ImGUI class
@@ -31,8 +34,8 @@ private:
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorSet descriptorSet;
 	vks::VulkanDevice *device;
-	VulkanExampleBase *example;
 	std::map<NV_Menu_Window, bool> activeMenus;
+	std::string title;
 
 public:
 	// UI params are set via push constants
@@ -42,9 +45,9 @@ public:
 		glm::vec2 translate;
 	} pushConstBlock;
 
-	ImGUI(VulkanExampleBase *example) : example(example)
+	ImGUI(vks::VulkanDevice* _device, const std::string& _title): device(_device),title(_title) 
 	{
-		device = example->vulkanDevice;
+
 		ImGui::CreateContext();
 	};
 
@@ -83,7 +86,6 @@ public:
 		io.DisplayFramebufferScale = ImVec2(1.0f, 1.0f);
 		io.FontGlobalScale = uiSettings.fontSize;
 		io.Fonts->AddFontFromFileTTF(uiSettings.fontPath.c_str(), 64.0f);
-        io.WantCaptureKeyboard = true;
 
 	}
 
@@ -301,15 +303,20 @@ public:
 
 		pipelineCreateInfo.pVertexInputState = &vertexInputState;
 
-		shaderStages[0] = example->loadShader(shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-		shaderStages[1] = example->loadShader(shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+		
+		shaderStages[0] = loadShader(device->logicalDevice, shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+		shaderStages[1] = loadShader(device->logicalDevice, shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
+
+
+		// shaderStages[0] = example->loadShader(shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
+		// shaderStages[1] = example->loadShader(shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(device->logicalDevice, pipelineCache, 1, &pipelineCreateInfo, nullptr, &pipeline));
 	}
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings &uiSettings)
+	void newFrame(VulkanExampleBase *example, bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera)
 	{
 		ImGui::NewFrame();
 
@@ -321,7 +328,7 @@ public:
 
 		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
-		ImGui::TextUnformatted(example->title.c_str());
+		ImGui::TextUnformatted(title.c_str());
 		ImGui::TextUnformatted(device->properties.deviceName);
 
 
@@ -329,7 +336,6 @@ public:
 		if (updateFrameGraph)
 		{
 			std::rotate(uiSettings.frameTimes.begin(), uiSettings.frameTimes.begin() + 1, uiSettings.frameTimes.end());
-			float frameTime = 1000.0f / (example->frameTimer * 1000.0f);
 			uiSettings.frameTimes.back() = frameTime;
 			if (frameTime < uiSettings.frameTimeMin)
 			{
@@ -344,15 +350,15 @@ public:
 		ImGui::PlotLines("Frame Times", &uiSettings.frameTimes[0], 50, 0, "", uiSettings.frameTimeMin, uiSettings.frameTimeMax, ImVec2(0, 80));
 
 		ImGui::Text("Camera");
-		ImGui::InputFloat3("position", &example->camera.position.x, 2);
-		ImGui::InputFloat3("rotation", &example->camera.rotation.x, 2);
+		ImGui::InputFloat3("position", &camera.position.x, 2);
+		ImGui::InputFloat3("rotation", &camera.rotation.x, 2);
 
 		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiSetCond_FirstUseEver);
 		ImGui::Begin("Example settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Checkbox("Display nodes", &uiSettings.display.nodes);
 		ImGui::Checkbox("Display edges", &uiSettings.display.edges);
 		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
-		ImGui::SliderFloat("Movement speed", &example->camera.movementSpeed, 1.0f, 100.0f);
+		ImGui::SliderFloat("Movement speed", &camera.movementSpeed, 1.0f, 100.0f);
 		float fontSize_old = uiSettings.fontSize;
 		ImGui::SliderFloat("Font size", &uiSettings.fontSize, .1f, 10.0f);
 		if (fontSize_old != uiSettings.fontSize)

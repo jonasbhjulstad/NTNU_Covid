@@ -54,8 +54,17 @@ void dispatchMenuWindows(std::map<NV_Menu_Window, bool> &activeMenus)
             }
             else if (p_menu->first == NV_MENU_WINDOW_NEW_GRAPH)
             {
-                std::unique_ptr<igraph_t> graph;
-                erase_entry = createGraphDesignerMenu(graph);
+                igraph_t graph;
+                switch(createGraphDesignerMenu(&graph))
+                {
+                    case GRAPH_DESIGN_STATUS_CANCELED:
+                        erase_entry = true;
+                        break;
+                    case GRAPH_DESIGN_STATUS_GRAPH_CREATED:
+                        igraph_destroy(&graph);
+                        erase_entry = true;
+                        break;
+                }
             }
             else if (p_menu->first == NV_MENU_WINDOW_IMPORT)
             {

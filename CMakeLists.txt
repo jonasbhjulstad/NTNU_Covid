@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(NetworkViewport)
+include(FetchContent)
 set(CMAKE_CXX_STANDARD_REQUIRED 17)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(FindOpenCL)
@@ -13,10 +14,24 @@ find_package(Vulkan REQUIRED)
 find_package(igraph REQUIRED)
 # find_package(XCB REQUIRED)
 set(VULKAN_EXTERNAL_LIB_PATH "${CMAKE_SOURCE_DIR}/external/")
-file(GLOB IMGUI_SRC "${VULKAN_EXTERNAL_LIB_PATH}/imgui/*.cpp")
-add_library(imgui STATIC ${IMGUI_SRC})
-target_include_directories(imgui PUBLIC "${VULKAN_EXTERNAL_LIB_PATH}/imgui/" ${VULKAN_INCLUDE_DIRS})
+# file(GLOB IMGUI_SRC "${VULKAN_EXTERNAL_LIB_PATH}/imgui/*.cpp")
+# add_library(imgui STATIC ${IMGUI_SRC})
+# target_include_directories(imgui PUBLIC "${VULKAN_EXTERNAL_LIB_PATH}/imgui/" ${VULKAN_INCLUDE_DIRS})
+# target_link_libraries(imgui PUBLIC Vulkan::Vulkan "-lvulkan")
+
+FetchContent_Declare(
+    imgui_repo
+    GIT_REPOSITORY https://github.com/ocornut/imgui
+)
+
+FetchContent_MakeAvailable(imgui_repo)
+file(GLOB IMGUI_SRC "${imgui_repo_SOURCE_DIR}/*.cpp")
+file(GLOB IMGUI_BACKEND "${imgui_repo_SOURCE_DIR}/examples/imgui_impl_vulkan.cpp" "${imgui_repo_SOURCE_DIR}/examples/imgui_impl_glfw.cpp")
+add_library(imgui STATIC ${IMGUI_SRC} ${IMGUI_BACKEND})
+target_include_directories(imgui PUBLIC ${imgui_repo_SOURCE_DIR} "${imgui_repo_SOURCE_DIR}/backends" ${VULKAN_INCLUDE_DIRS})
 target_link_libraries(imgui PUBLIC Vulkan::Vulkan "-lvulkan")
+
+
 
 file(GLOB KTX_SRC "${VULKAN_EXTERNAL_LIB_PATH}/ktx/lib/*.cxx" "${VULKAN_EXTERNAL_LIB_PATH}/ktx/lib/*.c")
 add_library(ktx ${KTX_SRC})
