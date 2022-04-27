@@ -3,6 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
+#include "Vulkan/NV_VulkanInitializers.hpp"
 struct NodeInstanceData
 {
     glm::vec3 pos;
@@ -12,8 +13,8 @@ struct NodeInstanceData
     static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions(uint32_t bind_ID, uint32_t layoutOffset)
     {
         return {
-            vks::initializers::vertexInputAttributeDescription(bind_ID, layoutOffset, VK_FORMAT_R32G32B32_SFLOAT, 0),// Position
-            vks::initializers::vertexInputAttributeDescription(bind_ID, layoutOffset + 1, VK_FORMAT_R32_SFLOAT, sizeof(float)*3),// scale
+            initializers::vertexInputAttributeDescription(bind_ID, layoutOffset, VK_FORMAT_R32G32B32_SFLOAT, 0),// Position
+            initializers::vertexInputAttributeDescription(bind_ID, layoutOffset + 1, VK_FORMAT_R32_SFLOAT, sizeof(float)*3),// scale
         };
     }
 

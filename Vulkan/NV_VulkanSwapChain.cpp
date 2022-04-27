@@ -7,19 +7,15 @@
 *
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
-
-#include "NV_VulkanSwapChain.h"
+#include "NV_VulkanSwapChain.hpp"
 
 /** @brief Creates the platform specific surface abstraction of the native platform window used for presentation */	
-void VulkanSwapChain::initSurface(uint32_t width, uint32_t height)
+void VulkanSwapChain::initSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR surface, uint32_t width, uint32_t height)
 {
 	VkResult err = VK_SUCCESS;
 
 	//TODO: glfw-surface
-
-	if (err != VK_SUCCESS) {
-		vks::tools::exitFatal("Could not create surface!", err);
-	}
+	glfwCreateWindowSurface(instance, window, NULL, &surface);
 
 	// Get available queue family properties
 	uint32_t queueCount;
@@ -76,13 +72,13 @@ void VulkanSwapChain::initSurface(uint32_t width, uint32_t height)
 	// Exit if either a graphics or a presenting queue hasn't been found
 	if (graphicsQueueNodeIndex == UINT32_MAX || presentQueueNodeIndex == UINT32_MAX) 
 	{
-		vks::tools::exitFatal("Could not find a graphics and/or presenting queue!", -1);
+		std::cerr << "Could not find a graphics and/or presenting queue" << std::endl;
 	}
 
 	// todo : Add support for separate graphics and presenting queue
 	if (graphicsQueueNodeIndex != presentQueueNodeIndex) 
 	{
-		vks::tools::exitFatal("Separate graphics and presenting queues are not supported yet!", -1);
+		std::cerr << "Separate graphics and presenting queues are not supported yet!" << std::endl;
 	}
 
 	queueNodeIndex = graphicsQueueNodeIndex;

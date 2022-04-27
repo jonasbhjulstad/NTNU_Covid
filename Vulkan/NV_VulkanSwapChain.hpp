@@ -16,9 +16,14 @@
 #include <assert.h>
 #include <stdio.h>
 #include <vector>
+#include <iostream>
 
-#include <vulkan/vulkan.h>
-#include "VulkanTools.h"
+#include <vulkan/vulkan.hpp>
+#include "NV_Vulkan.hpp"
+#include <GLFW/glfw3.h>
+#include "NV_Vulkan.hpp"
+#include "NV_VulkanInitializers.hpp"
+
 
 
 typedef struct _SwapChainBuffers {
@@ -52,9 +57,7 @@ public:
 	std::vector<SwapChainBuffer> buffers;
 	uint32_t queueNodeIndex = UINT32_MAX;
 
-	// TODO initSurface()
-	void initSurface(uint32_t, uint32_t);
-
+	void initSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR surface, uint32_t width, uint32_t height);
 	void connect(VkInstance instance, VkPhysicalDevice physicalDevice, VkDevice device);
 	void create(uint32_t* width, uint32_t* height, bool vsync = false);
 	VkResult acquireNextImage(VkSemaphore presentCompleteSemaphore, uint32_t* imageIndex);

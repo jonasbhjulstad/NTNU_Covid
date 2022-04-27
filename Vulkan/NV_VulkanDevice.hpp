@@ -4,7 +4,8 @@
 #include <chrono>
 #include "NV_Vulkan.hpp"
 #include "NV_VulkanBuffer.hpp"
-#include "NV_VulkanSwapChain.hpp"
+#include "NV_VulkanInitializers.hpp"
+#include <limits>
 
 struct VulkanDevice
 {

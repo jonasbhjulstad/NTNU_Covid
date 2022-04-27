@@ -2,6 +2,7 @@
 #define NV_VULKAN_INSTANCE_HPP
 #include <vector>
 #include <vulkan/vulkan.hpp>
+#include <GLFW/glfw3.h>
 #include "NV_VulkanDevice.hpp"
 #include "NV_VulkanSwapChain.hpp"
 
@@ -17,7 +18,7 @@ struct VulkanInstance
 	// Depth buffer format (selected during Vulkan initialization)
 	VkFormat depthFormat;
 
-	VulkanDevice vulkanDevice;
+	VulkanDevice* vulkanDevice;
 
     /** @brief Pipeline stages used to wait at for graphics queue submissions */
 	VkPipelineStageFlags submitPipelineStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -42,7 +43,7 @@ struct VulkanInstance
 	// Synchronization semaphores
 
     // Vulkan instance, stores all per-application states
-	VkInstance instance;
+	VkInstance instance = nullptr;
 	std::vector<std::string> supportedInstanceExtensions;
 	struct {
 		// Swap chain image presentation
@@ -51,14 +52,17 @@ struct VulkanInstance
 		VkSemaphore renderComplete;
 	} semaphores;
 	std::vector<VkFence> waitFences;
+		struct {
+		VkImage image;
+		VkDeviceMemory mem;
+		VkImageView view;
+	} depthStencil;
+	GLFWwindow* window;
+	VkSurfaceKHR surface;
 };
 	// // Frame counter to display fps
 	// uint32_t frameCounter = 0;
 	// uint32_t lastFPS = 0;
 	// std::chrono::time_point<std::chrono::high_resolution_clock> lastTimestamp;
-
-
-
-
 
 #endif

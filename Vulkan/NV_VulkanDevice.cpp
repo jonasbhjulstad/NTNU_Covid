@@ -9,8 +9,6 @@
  */
 
 #include "NV_VulkanDevice.hpp"
-#include <unordered_set>
-
 /**
  * Default constructor
  *
@@ -314,13 +312,13 @@ VkResult VulkanDevice::createLogicalDevice(VkPhysicalDeviceFeatures enabledFeatu
 VkResult VulkanDevice::createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPropertyFlags memoryPropertyFlags, VkDeviceSize size, VkBuffer *buffer, VkDeviceMemory *memory, void *data)
 {
 	// Create the buffer handle
-	VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo(usageFlags, size);
+	VkBufferCreateInfo bufferCreateInfo = initializers::bufferCreateInfo(usageFlags, size);
 	bufferCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	VK_CHECK_RESULT(vkCreateBuffer(logicalDevice, &bufferCreateInfo, nullptr, buffer));
 
 	// Create the memory backing up the buffer handle
 	VkMemoryRequirements memReqs;
-	VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+	VkMemoryAllocateInfo memAlloc = initializers::memoryAllocateInfo();
 	vkGetBufferMemoryRequirements(logicalDevice, *buffer, &memReqs);
 	memAlloc.allocationSize = memReqs.size;
 	// Find a memory type index that fits the properties of the buffer
@@ -344,7 +342,7 @@ VkResult VulkanDevice::createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPrope
 		// If host coherency hasn't been requested, do a manual flush to make writes visible
 		if ((memoryPropertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
 		{
-			VkMappedMemoryRange mappedRange = vks::initializers::mappedMemoryRange();
+			VkMappedMemoryRange mappedRange = initializers::mappedMemoryRange();
 			mappedRange.memory = *memory;
 			mappedRange.offset = 0;
 			mappedRange.size = size;
@@ -375,12 +373,12 @@ VkResult VulkanDevice::createBuffer(VkBufferUsageFlags usageFlags, VkMemoryPrope
 	buffer->device = logicalDevice;
 
 	// Create the buffer handle
-	VkBufferCreateInfo bufferCreateInfo = vks::initializers::bufferCreateInfo(usageFlags, size);
+	VkBufferCreateInfo bufferCreateInfo = initializers::bufferCreateInfo(usageFlags, size);
 	VK_CHECK_RESULT(vkCreateBuffer(logicalDevice, &bufferCreateInfo, nullptr, &buffer->buffer));
 
 	// Create the memory backing up the buffer handle
 	VkMemoryRequirements memReqs;
-	VkMemoryAllocateInfo memAlloc = vks::initializers::memoryAllocateInfo();
+	VkMemoryAllocateInfo memAlloc = initializers::memoryAllocateInfo();
 	vkGetBufferMemoryRequirements(logicalDevice, buffer->buffer, &memReqs);
 	memAlloc.allocationSize = memReqs.size;
 	// Find a memory type index that fits the properties of the buffer
@@ -480,13 +478,13 @@ VkCommandPool VulkanDevice::createCommandPool(uint32_t queueFamilyIndex, VkComma
  */
 VkCommandBuffer VulkanDevice::createCommandBuffer(VkCommandBufferLevel level, VkCommandPool pool, bool begin)
 {
-	VkCommandBufferAllocateInfo cmdBufAllocateInfo = vks::initializers::commandBufferAllocateInfo(pool, level, 1);
+	VkCommandBufferAllocateInfo cmdBufAllocateInfo = initializers::commandBufferAllocateInfo(pool, level, 1);
 	VkCommandBuffer cmdBuffer;
 	VK_CHECK_RESULT(vkAllocateCommandBuffers(logicalDevice, &cmdBufAllocateInfo, &cmdBuffer));
 	// If requested, also start recording for the new command buffer
 	if (begin)
 	{
-		VkCommandBufferBeginInfo cmdBufInfo = vks::initializers::commandBufferBeginInfo();
+		VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 		VK_CHECK_RESULT(vkBeginCommandBuffer(cmdBuffer, &cmdBufInfo));
 	}
 	return cmdBuffer;
@@ -517,17 +515,17 @@ void VulkanDevice::flushCommandBuffer(VkCommandBuffer commandBuffer, VkQueue que
 
 	VK_CHECK_RESULT(vkEndCommandBuffer(commandBuffer));
 
-	VkSubmitInfo submitInfo = vks::initializers::submitInfo();
+	VkSubmitInfo submitInfo = initializers::submitInfo();
 	submitInfo.commandBufferCount = 1;
 	submitInfo.pCommandBuffers = &commandBuffer;
 	// Create fence to ensure that the command buffer has finished executing
-	VkFenceCreateInfo fenceInfo = vks::initializers::fenceCreateInfo(VK_FLAGS_NONE);
+	VkFenceCreateInfo fenceInfo = initializers::fenceCreateInfo(0);
 	VkFence fence;
 	VK_CHECK_RESULT(vkCreateFence(logicalDevice, &fenceInfo, nullptr, &fence));
 	// Submit to the queue
 	VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, fence));
 	// Wait for the fence to signal that command buffer has finished executing
-	VK_CHECK_RESULT(vkWaitForFences(logicalDevice, 1, &fence, VK_TRUE, DEFAULT_FENCE_TIMEOUT));
+	VK_CHECK_RESULT(vkWaitForFences(logicalDevice, 1, &fence, VK_TRUE, std::numeric_limits<uint64_t>::max()));
 	vkDestroyFence(logicalDevice, fence, nullptr);
 	if (free)
 	{
