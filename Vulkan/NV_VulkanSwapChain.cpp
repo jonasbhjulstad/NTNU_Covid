@@ -10,12 +10,10 @@
 #include "NV_VulkanSwapChain.hpp"
 
 /** @brief Creates the platform specific surface abstraction of the native platform window used for presentation */	
-void VulkanSwapChain::initSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR surface, uint32_t width, uint32_t height)
+void VulkanSwapChain::initSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR _surface, uint32_t width, uint32_t height)
 {
+	this->surface = _surface;
 	VkResult err = VK_SUCCESS;
-
-	//TODO: glfw-surface
-	glfwCreateWindowSurface(instance, window, NULL, &surface);
 
 	// Get available queue family properties
 	uint32_t queueCount;
@@ -157,10 +155,10 @@ void VulkanSwapChain::connect(VkInstance instance, VkPhysicalDevice physicalDevi
 * @param height Pointer to the height of the swapchain (may be adjusted to fit the requirements of the swapchain)
 * @param vsync (Optional) Can be used to force vsync-ed rendering (by using VK_PRESENT_MODE_FIFO_KHR as presentation mode)
 */
-void VulkanSwapChain::create(uint32_t *width, uint32_t *height, bool vsync)
+void VulkanSwapChain::create(ImGui_ImplVulkanH_Window* wd, uint32_t *width, uint32_t *height, bool vsync)
 {
 	// Store the current swap chain handle so we can use it later on to ease up recreation
-	VkSwapchainKHR oldSwapchain = swapChain;
+	VkSwapchainKHR oldSwapchain = wd->Swapchain;
 
 	// Get physical device surface properties and formats
 	VkSurfaceCapabilitiesKHR surfCaps;

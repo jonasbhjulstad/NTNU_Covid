@@ -136,7 +136,7 @@ void setupVulkanPhysicalDevice(VulkanInstance &vulkanInstance, bool enableValida
 	// Vulkan device creation
 	// This is handled by a separate class that gets a logical device representation
 	// and encapsulates functions related to a device
-	if (vulkanDevice->createLogicalDevice(vulkanDevice->enabledFeatures, vulkanInstance.enabledDeviceExtensions, nullptr) != VK_SUCCESS)
+	if (vulkanDevice->createLogicalDevice(vulkanInstance.enabledFeatures, vulkanInstance.enabledDeviceExtensions, nullptr) != VK_SUCCESS)
 	{
 		std::cerr << "Failed to create logical device!" << std::endl;
 	}
@@ -175,8 +175,9 @@ void setupVulkanPhysicalDevice(VulkanInstance &vulkanInstance, bool enableValida
 void prepareVulkan(VulkanInstance &vulkanInstance, uint32_t width, uint32_t height)
 {
 	VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
-	vulkanInstance.swapChain.initSurface(vulkanInstance.instance, vulkanInstance.window, vulkanInstance.surface, width, height);
+	vulkanInstance.swapChain.initSurface(vulkanInstance.instance, vulkanInstance.glfwWindow, vulkanInstance.surface, width, height);
 	initializers::createCommandPool(logicalDevice, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
+	vulkanInstance.swapChain.create(&vulkanInstance.ImGuiWindow, &width, &height);
 	initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
 	initializers::createWaitFences(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.waitFences);
 	initializers::setupDepthStencil(vulkanInstance, width, height);

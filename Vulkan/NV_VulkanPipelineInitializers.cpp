@@ -79,7 +79,7 @@ namespace initializers
 		VK_CHECK_RESULT(vkCreateImageView(device, &imageViewCI, nullptr, &vulkanInstance.depthStencil.view));
 	}
 
-	void setupRenderPass(VkDevice device, VulkanSwapChain &swapChain,VkRenderPass renderPass, VkFormat depthFormat)
+	void setupRenderPass(VkDevice device, VulkanSwapChain &swapChain,VkRenderPass& renderPass, VkFormat depthFormat)
 	{
 		std::array<VkAttachmentDescription, 2> attachments = {};
 		// Color attachment

@@ -27,10 +27,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(imgui_repo)
 file(GLOB IMGUI_SRC "${imgui_repo_SOURCE_DIR}/*.cpp")
-file(GLOB IMGUI_BACKEND "${imgui_repo_SOURCE_DIR}/examples/imgui_impl_vulkan.cpp" "${imgui_repo_SOURCE_DIR}/examples/imgui_impl_glfw.cpp")
+set(IMGUI_BACKEND "${imgui_repo_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp" "${imgui_repo_SOURCE_DIR}/backends/imgui_impl_glfw.cpp")
 add_library(imgui STATIC ${IMGUI_SRC} ${IMGUI_BACKEND})
 target_include_directories(imgui PUBLIC ${imgui_repo_SOURCE_DIR} "${imgui_repo_SOURCE_DIR}/backends")
-target_link_libraries(imgui PUBLIC Vulkan::Vulkan "-lvulkan")
+target_link_libraries(imgui PUBLIC Vulkan::Vulkan)
+
+
 
 
 
@@ -64,10 +66,7 @@ add_subdirectory(Vulkan)
 
 add_executable(main main.cpp)
 target_include_directories(main PUBLIC ${TINYGLTF_INCLUDE} ${VULKAN_INCLUDE_DIRS} "${CMAKE_SOURCE_DIR}/Vulkan" ${IMGUI_SRC})
-target_link_libraries(main PUBLIC imgui ktx Vulkan::Vulkan igraph::igraph glfw NV_Vulkan)
+target_link_libraries(main PUBLIC imgui ktx Vulkan::Vulkan igraph::igraph glfw NV_VulkanSetup NV_VulkanWindow)
 add_compile_options("-Wfatal-errors")
-# add_executable(SIR SIR.cpp)
-# target_link_libraries(SIR PUBLIC imgui ktx Vulkan::Vulkan Vulkan_Base)
-# target_include_directories(SIR PUBLIC ${VULKAN_BASE_INCLUDE_PATH} ${TINYGLTF_INCLUDE})
 
 # add_subdirectory(examples)

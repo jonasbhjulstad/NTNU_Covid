@@ -2,14 +2,15 @@
 #define NV_VULKAN_WINDOW_HPP
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
-#include <backends/imgui_impl_vulkan.h>
+#include <imgui.h>
+#include <imgui_impl_vulkan.h>
+#include <imgui_impl_glfw.h>
 #include "NV_VulkanInstance.hpp"
 
 
 
-void SetupGLFWVulkanWindow(ImGui_ImplVulkanH_Window *wd,
-                       VkSurfaceKHR surface,
-                       const VulkanInstance &vulkanInstance,
+void setupGLFWVulkanWindow(
+                       VulkanInstance &vulkanInstance,
                        int width,
                        int height,
                        uint32_t minImageCount = 2);

@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc libimgui.a "CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_demo.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_draw.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_tables.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/imgui_widgets.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/backends/imgui_impl_vulkan.cpp.obj" "CMakeFiles/imgui.dir/_deps/imgui_repo-src/backends/imgui_impl_glfw.cpp.obj"
+C:\msys64\mingw64\bin\ranlib.exe libimgui.a

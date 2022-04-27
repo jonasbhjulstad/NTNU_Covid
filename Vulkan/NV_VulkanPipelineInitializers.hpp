@@ -13,7 +13,7 @@ namespace initializers
 
 	void setupDepthStencil(VulkanInstance &vulkanInstance, uint32_t width, uint32_t height);
 
-	void setupRenderPass(VkDevice device, VulkanSwapChain &swapChain, VkRenderPass renderPass, VkFormat depthFormat);
+	void setupRenderPass(VkDevice device, VulkanSwapChain &swapChain, VkRenderPass& renderPass, VkFormat depthFormat);
 
 	void createPipelineCache(VkDevice device, VkPipelineCache pipelineCache);
 

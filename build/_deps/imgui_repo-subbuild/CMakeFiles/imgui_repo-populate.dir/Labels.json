@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/CMakeFiles/imgui_repo-populate"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/CMakeFiles/imgui_repo-populate.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/CMakeFiles/imgui_repo-populate-complete.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-build.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-configure.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-download.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-install.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-patch.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-test.rule"
+		},
+		{
+			"file" : "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/src/imgui_repo-populate-stamp/imgui_repo-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"imgui_repo-populate"
+		],
+		"name" : "imgui_repo-populate"
+	}
+}

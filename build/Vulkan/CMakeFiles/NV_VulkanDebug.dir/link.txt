@@ -1,0 +1,2 @@
+C:\msys64\mingw64\bin\ar.exe qc libNV_VulkanDebug.a CMakeFiles/NV_VulkanDebug.dir/NV_VulkanDebug.cpp.obj
+C:\msys64\mingw64\bin\ranlib.exe libNV_VulkanDebug.a

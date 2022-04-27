@@ -3,6 +3,7 @@
 #include <vector>
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
+#include <imgui_impl_vulkan.h>
 #include "NV_VulkanDevice.hpp"
 #include "NV_VulkanSwapChain.hpp"
 
@@ -42,6 +43,8 @@ struct VulkanInstance
 	VulkanSwapChain swapChain;
 	// Synchronization semaphores
 
+	VkPhysicalDeviceFeatures enabledFeatures{};
+
     // Vulkan instance, stores all per-application states
 	VkInstance instance = nullptr;
 	std::vector<std::string> supportedInstanceExtensions;
@@ -57,7 +60,8 @@ struct VulkanInstance
 		VkDeviceMemory mem;
 		VkImageView view;
 	} depthStencil;
-	GLFWwindow* window;
+	GLFWwindow* glfwWindow;
+	ImGui_ImplVulkanH_Window ImGuiWindow;
 	VkSurfaceKHR surface;
 };
 	// // Frame counter to display fps

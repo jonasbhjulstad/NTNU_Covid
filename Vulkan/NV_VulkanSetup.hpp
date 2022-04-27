@@ -5,7 +5,6 @@
 #include "NV_Vulkan.hpp"
 #include "NV_VulkanInstance.hpp"
 #include "NV_VulkanDebug.hpp"
-#include "NV_VulkanSwapChain.hpp"
 #include "NV_VulkanInitializers.hpp"
 #include "NV_VulkanPipelineInitializers.hpp"
 #include "NV_VulkanUtils.hpp"

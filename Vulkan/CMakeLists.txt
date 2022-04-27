@@ -26,8 +26,22 @@
 # target_include_directories(${LIB} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" ${NV_VULKAN_INCLUDE_DIRECTORIES})
 # endforeach()
 
-
 file(GLOB NV_VULKAN_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-add_library(NV_Vulkan STATIC ${NV_VULKAN_SRC_FILES})
-target_include_directories(NV_Vulkan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(NV_Vulkan PRIVATE glfw3 imgui Vulkan::Vulkan)
+
+foreach(NV_VULKAN_SRC ${NV_VULKAN_SRC_FILES})
+get_filename_component(libname "${NV_VULKAN_SRC}" NAME_WE)
+add_library(${libname} STATIC ${NV_VULKAN_SRC})
+target_link_libraries(${libname} PRIVATE Vulkan::Vulkan glfw3 imgui)
+list(APPEND NV_VULKAN_LIBRARIES ${libname})
+endforeach()
+
+target_link_libraries(NV_VulkanDevice PRIVATE NV_Vulkan NV_VulkanInitializers NV_VulkanBuffer)
+target_link_libraries(NV_VulkanInstance PRIVATE NV_VulkanDevice NV_VulkanSwapChain)
+target_link_libraries(NV_VulkanSetup PRIVATE NV_Vulkan NV_VulkanInstance NV_VulkanDebug NV_VulkanInitializers NV_VulkanPipelineInitializers NV_VulkanUtils)
+target_link_libraries(NV_VulkanWindow PRIVATE NV_VulkanInstance)
+target_link_libraries(NV_VulkanSwapChain PRIVATE NV_Vulkan NV_VulkanInitializers)
+target_link_libraries(NV_VulkanPipelineInitializers PRIVATE NV_VulkanInstance NV_Vulkan)
+# file(GLOB NV_VULKAN_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+# add_library(NV_Vulkan STATIC ${NV_VULKAN_SRC_FILES})
+# target_include_directories(NV_Vulkan PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+# target_link_libraries(NV_Vulkan PUBLIC glfw3 imgui Vulkan::Vulkan)

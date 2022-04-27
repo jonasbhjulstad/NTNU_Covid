@@ -1,12 +1,11 @@
 #include "NV_VulkanWindow.hpp"
-void SetupGLFWVulkanWindow(ImGui_ImplVulkanH_Window *wd,
-                       VkSurfaceKHR surface,
-                       const VulkanInstance &vulkanInstance,
+void setupGLFWVulkanWindow(VulkanInstance &vulkanInstance,
                        int width,
                        int height,
                        uint32_t minImageCount)
 {
-    wd->Surface = surface;
+    ImGui_ImplVulkanH_Window* wd = &vulkanInstance.ImGuiWindow;
+    wd->Surface = vulkanInstance.surface;
     VkPhysicalDevice physicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
     VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
     uint32_t queueFamily = vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
