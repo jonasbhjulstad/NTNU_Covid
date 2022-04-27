@@ -116,57 +116,112 @@
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_Vulkan.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_Vulkan.dir\\NV_Vulkan.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_Vulkan.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_Vulkan.cpp"
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInitializers.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanInitializers.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanInitializers.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx.cxx"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanBuffer.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanBuffer.dir\\NV_VulkanBuffer.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanBuffer.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanBuffer.cpp"
-},
-{
-  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInitializers.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanInitializers.dir\\NV_VulkanInitializers.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanInitializers.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInitializers.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanInitializers.dir\\NV_VulkanInitializers.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanInitializers.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanInitializers.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDevice.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanDevice.dir\\NV_VulkanDevice.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanDevice.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanDevice.cpp"
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_Vulkan.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx -o CMakeFiles\\NV_Vulkan.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_Vulkan.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx.cxx"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDebug.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanDebug.dir\\NV_VulkanDebug.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanDebug.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanDebug.cpp"
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_Vulkan.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx -o CMakeFiles\\NV_Vulkan.dir\\NV_Vulkan.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_Vulkan.cpp",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_Vulkan.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSwapChain.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanSwapChain.dir\\NV_VulkanSwapChain.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanSwapChain.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSwapChain.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanSwapChain.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanSwapChain.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSwapChain.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanSwapChain.dir\\NV_VulkanSwapChain.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanSwapChain.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanSwapChain.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInstance.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanInstance.dir\\NV_VulkanInstance.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanInstance.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanBuffer.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanBuffer.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanBuffer.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanBuffer.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanBuffer.dir\\NV_VulkanBuffer.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanBuffer.cpp",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanBuffer.cpp"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDevice.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanDevice.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanDevice.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDevice.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanDevice.dir\\NV_VulkanDevice.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanDevice.cpp",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanDevice.cpp"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInstance.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanInstance.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanInstance.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanInstance.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanInstance.dir\\NV_VulkanInstance.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanInstance.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanInstance.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanUtils.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanUtils.dir\\NV_VulkanUtils.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanUtils.cpp",
-  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanUtils.cpp"
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanPipelineInitializers.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanPipelineInitializers.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanPipelineInitializers.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx.cxx"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanPipelineInitializers.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanPipelineInitializers.dir\\NV_VulkanPipelineInitializers.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanPipelineInitializers.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanPipelineInitializers.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanPipelineInitializers.dir\\NV_VulkanPipelineInitializers.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanPipelineInitializers.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanPipelineInitializers.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSetup.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanSetup.dir\\NV_VulkanSetup.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanSetup.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanUtils.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanUtils.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanUtils.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanUtils.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanUtils.dir\\NV_VulkanUtils.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanUtils.cpp",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanUtils.cpp"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDebug.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanDebug.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanDebug.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanDebug.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanDebug.dir\\NV_VulkanDebug.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanDebug.cpp",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanDebug.cpp"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSetup.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanSetup.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanSetup.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanSetup.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanSetup.dir\\NV_VulkanSetup.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanSetup.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanSetup.cpp"
 },
 {
   "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
-  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanWindow.dir/includes_CXX.rsp -g -o CMakeFiles\\NV_VulkanWindow.dir\\NV_VulkanWindow.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanWindow.cpp",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanWindow.dir/includes_CXX.rsp -g -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanWindow.dir\\cmake_pch.hxx.gch -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\build\\Vulkan\\CMakeFiles\\NV_VulkanWindow.dir\\cmake_pch.hxx.cxx",
+  "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.cxx"
+},
+{
+  "directory": "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan",
+  "command": "C:\\msys64\\mingw64\\bin\\g++.exe  @CMakeFiles/NV_VulkanWindow.dir/includes_CXX.rsp -g -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -o CMakeFiles\\NV_VulkanWindow.dir\\NV_VulkanWindow.cpp.obj -c C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\Vulkan\\NV_VulkanWindow.cpp",
   "file": "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanWindow.cpp"
 }
 ]

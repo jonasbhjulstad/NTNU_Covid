@@ -9,6 +9,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "C:/Users/jonas/Documents/Vulkan/examples/imgui/Vulkan/NV_VulkanWindow.cpp" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj" "gcc" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj.d"
+  "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj" "gcc" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj.d"
+  "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.cxx" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch" "gcc" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch.d"
+  "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch" "gcc" "Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch.d"
   )
 
 # Targets to which this target links.

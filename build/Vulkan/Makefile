@@ -533,6 +533,51 @@ NV_VulkanWindow.cpp.s:
 	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.s
 .PHONY : NV_VulkanWindow.cpp.s
 
+# target to build an object file
+cmake_pch.hxx.gch:
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_Vulkan.dir\build.make Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanBuffer.dir\build.make Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDebug.dir\build.make Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDevice.dir\build.make Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInstance.dir\build.make Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanPipelineInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSetup.dir\build.make Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSwapChain.dir\build.make Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanUtils.dir\build.make Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx.gch
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch
+.PHONY : cmake_pch.hxx.gch
+
+# target to preprocess a source file
+cmake_pch.hxx.i:
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_Vulkan.dir\build.make Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanBuffer.dir\build.make Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDebug.dir\build.make Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDevice.dir\build.make Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInstance.dir\build.make Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanPipelineInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSetup.dir\build.make Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSwapChain.dir\build.make Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanUtils.dir\build.make Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.i
+.PHONY : cmake_pch.hxx.i
+
+# target to generate assembly for a file
+cmake_pch.hxx.s:
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_Vulkan.dir\build.make Vulkan/CMakeFiles/NV_Vulkan.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanBuffer.dir\build.make Vulkan/CMakeFiles/NV_VulkanBuffer.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDebug.dir\build.make Vulkan/CMakeFiles/NV_VulkanDebug.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDevice.dir\build.make Vulkan/CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanInitializers.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInstance.dir\build.make Vulkan/CMakeFiles/NV_VulkanInstance.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanPipelineInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSetup.dir\build.make Vulkan/CMakeFiles/NV_VulkanSetup.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSwapChain.dir\build.make Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanUtils.dir\build.make Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build && $(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.s
+.PHONY : cmake_pch.hxx.s
+
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -585,6 +630,9 @@ help:
 	@echo ... NV_VulkanWindow.obj
 	@echo ... NV_VulkanWindow.i
 	@echo ... NV_VulkanWindow.s
+	@echo ... cmake_pch.hxx.gch
+	@echo ... cmake_pch.hxx.i
+	@echo ... cmake_pch.hxx.s
 .PHONY : help
 
 

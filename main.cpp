@@ -54,6 +54,11 @@ int main()
     }
     createVulkanInstance(ENABLE_VALIDATION, "Network Viewport", vulkanInstance.instance, vulkanInstance.supportedInstanceExtensions, vulkanInstance.enabledInstanceExtensions, VK_API_VERSION_1_0);
     setupVulkanPhysicalDevice(vulkanInstance, ENABLE_VALIDATION);
+    // Descriptor pool
+    std::vector<VkDescriptorPoolSize> poolSizes = {
+        initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
+    VkDescriptorPoolCreateInfo descriptorPoolInfo = initializers::descriptorPoolCreateInfo(poolSizes, 2);
+    VK_CHECK_RESULT(vkCreateDescriptorPool(vulkanDevice->logicalDevice, &descriptorPoolInfo, nullptr, &vulkanInstance.descriptorPool));
 
     // TODO: glfw-surface
     VK_CHECK_RESULT(glfwCreateWindowSurface(vulkanInstance.instance, vulkanInstance.glfwWindow, NULL, &vulkanInstance.surface));
@@ -61,11 +66,6 @@ int main()
     setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
     prepareVulkan(vulkanInstance, width, height);
 
-    // Descriptor pool
-    std::vector<VkDescriptorPoolSize> poolSizes = {
-        initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
-    VkDescriptorPoolCreateInfo descriptorPoolInfo = initializers::descriptorPoolCreateInfo(poolSizes, 2);
-    VK_CHECK_RESULT(vkCreateDescriptorPool(vulkanDevice->logicalDevice, &descriptorPoolInfo, nullptr, &vulkanInstance.descriptorPool));
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();

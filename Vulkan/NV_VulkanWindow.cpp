@@ -27,7 +27,7 @@ void setupGLFWVulkanWindow(VulkanInstance &vulkanInstance,
     wd->PresentMode = ImGui_ImplVulkanH_SelectPresentMode(physicalDevice, wd->Surface, &present_modes[0], IM_ARRAYSIZE(present_modes));
     // printf("[vulkan] Selected PresentMode = %d\n", wd->PresentMode);
 
-    ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, physicalDevice, logicalDevice, wd, queueFamily, nullptr, width, height, minImageCount);
+    ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, physicalDevice, logicalDevice, wd, queueFamily, NULL, width, height, minImageCount);
 }
 
 void cleanupGLFWVulkanWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window *wd)

@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/NV_VulkanDevice.dir/NV_VulkanDevice.cpp.obj"
   "CMakeFiles/NV_VulkanDevice.dir/NV_VulkanDevice.cpp.obj.d"
+  "CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.gch"
+  "CMakeFiles/NV_VulkanDevice.dir/cmake_pch.hxx.gch.d"
   "libNV_VulkanDevice.a"
   "libNV_VulkanDevice.pdb"
 )

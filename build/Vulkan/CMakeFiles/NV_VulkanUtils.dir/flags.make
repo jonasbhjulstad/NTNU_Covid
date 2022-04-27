@@ -8,3 +8,7 @@ CXX_INCLUDES = @CMakeFiles/NV_VulkanUtils.dir/includes_CXX.rsp
 
 CXX_FLAGS = -g
 
+# PCH options: Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx.gch_OPTIONS = -Winvalid-pch;-x;c++-header;-include;C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx
+
+# PCH options: Vulkan/CMakeFiles/NV_VulkanUtils.dir/NV_VulkanUtils.cpp.obj_OPTIONS = -Winvalid-pch;-include;C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanUtils.dir/cmake_pch.hxx
+

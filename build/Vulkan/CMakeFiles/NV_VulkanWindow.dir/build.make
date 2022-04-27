@@ -68,20 +68,38 @@ include Vulkan/CMakeFiles/NV_VulkanWindow.dir/progress.make
 # Include the compile flags for this target's objects.
 include Vulkan/CMakeFiles/NV_VulkanWindow.dir/flags.make
 
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch: Vulkan/CMakeFiles/NV_VulkanWindow.dir/flags.make
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch: Vulkan/CMakeFiles/NV_VulkanWindow.dir/includes_CXX.rsp
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch: Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.cxx
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch: Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch: Vulkan/CMakeFiles/NV_VulkanWindow.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch"
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -MD -MT Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch -MF CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.gch.d -o CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.gch -c C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan\CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.cxx
+
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.i"
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -E C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan\CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.cxx > CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.i
+
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.s"
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -x c++-header -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -S C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan\CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.cxx -o CMakeFiles\NV_VulkanWindow.dir\cmake_pch.hxx.s
+
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: Vulkan/CMakeFiles/NV_VulkanWindow.dir/flags.make
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: Vulkan/CMakeFiles/NV_VulkanWindow.dir/includes_CXX.rsp
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: ../Vulkan/NV_VulkanWindow.cpp
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj: Vulkan/CMakeFiles/NV_VulkanWindow.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj"
-	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj -MF CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.obj.d -o CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.obj -c C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj"
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -MD -MT Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj -MF CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.obj.d -o CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.obj -c C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp
 
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.i"
-	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp > CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.i
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -E C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp > CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.i
 
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.s"
-	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp -o CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.s
+	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && C:\msys64\mingw64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -Winvalid-pch -include C:/Users/jonas/Documents/Vulkan/examples/imgui/build/Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx -S C:\Users\jonas\Documents\Vulkan\examples\imgui\Vulkan\NV_VulkanWindow.cpp -o CMakeFiles\NV_VulkanWindow.dir\NV_VulkanWindow.cpp.s
 
 # Object files for target NV_VulkanWindow
 NV_VulkanWindow_OBJECTS = \
@@ -90,10 +108,11 @@ NV_VulkanWindow_OBJECTS = \
 # External object files for target NV_VulkanWindow
 NV_VulkanWindow_EXTERNAL_OBJECTS =
 
+Vulkan/libNV_VulkanWindow.a: Vulkan/CMakeFiles/NV_VulkanWindow.dir/cmake_pch.hxx.gch
 Vulkan/libNV_VulkanWindow.a: Vulkan/CMakeFiles/NV_VulkanWindow.dir/NV_VulkanWindow.cpp.obj
 Vulkan/libNV_VulkanWindow.a: Vulkan/CMakeFiles/NV_VulkanWindow.dir/build.make
 Vulkan/libNV_VulkanWindow.a: Vulkan/CMakeFiles/NV_VulkanWindow.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libNV_VulkanWindow.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libNV_VulkanWindow.a"
 	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && $(CMAKE_COMMAND) -P CMakeFiles\NV_VulkanWindow.dir\cmake_clean_target.cmake
 	cd /d C:\Users\jonas\Documents\Vulkan\examples\imgui\build\Vulkan && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\NV_VulkanWindow.dir\link.txt --verbose=$(VERBOSE)
 

@@ -27,11 +27,13 @@
 # endforeach()
 
 file(GLOB NV_VULKAN_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB NV_VULKAN_HEADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
 foreach(NV_VULKAN_SRC ${NV_VULKAN_SRC_FILES})
 get_filename_component(libname "${NV_VULKAN_SRC}" NAME_WE)
 add_library(${libname} STATIC ${NV_VULKAN_SRC})
 target_link_libraries(${libname} PRIVATE Vulkan::Vulkan glfw3 imgui)
+target_precompile_headers(${libname} PRIVATE ${NV_VULKAN_HEADER_FILES})
 list(APPEND NV_VULKAN_LIBRARIES ${libname})
 endforeach()
 

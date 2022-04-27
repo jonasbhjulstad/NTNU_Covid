@@ -121,7 +121,7 @@ Vulkan/clean: Vulkan/CMakeFiles/NV_VulkanWindow.dir/clean
 CMakeFiles/imgui.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\imgui.dir\build.make CMakeFiles/imgui.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=23,24,25,26,27,28,29,30 "Built target imgui"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=34,35,36,37,38,39,40,41 "Built target imgui"
 .PHONY : CMakeFiles/imgui.dir/all
 
 # Build rule for subdir invocation for target.
@@ -147,7 +147,7 @@ CMakeFiles/imgui.dir/clean:
 CMakeFiles/ktx.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\ktx.dir\build.make CMakeFiles/ktx.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\ktx.dir\build.make CMakeFiles/ktx.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46 "Built target ktx"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57 "Built target ktx"
 .PHONY : CMakeFiles/ktx.dir/all
 
 # Build rule for subdir invocation for target.
@@ -172,25 +172,25 @@ CMakeFiles/ktx.dir/clean:
 # All Build rule for target.
 CMakeFiles/main.dir/all: CMakeFiles/imgui.dir/all
 CMakeFiles/main.dir/all: CMakeFiles/ktx.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
 CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
-CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
 CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all
 CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanSetup.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
 CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanWindow.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+CMakeFiles/main.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=47,48 "Built target main"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=58,59 "Built target main"
 .PHONY : CMakeFiles/main.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/main.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 48
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 59
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/main.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : CMakeFiles/main.dir/rule
@@ -211,12 +211,12 @@ CMakeFiles/main.dir/clean:
 Vulkan/CMakeFiles/NV_Vulkan.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_Vulkan.dir\build.make Vulkan/CMakeFiles/NV_Vulkan.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_Vulkan.dir\build.make Vulkan/CMakeFiles/NV_Vulkan.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=1,2 "Built target NV_Vulkan"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=1,2,3 "Built target NV_Vulkan"
 .PHONY : Vulkan/CMakeFiles/NV_Vulkan.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_Vulkan.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_Vulkan.dir/rule
@@ -237,12 +237,12 @@ Vulkan/CMakeFiles/NV_Vulkan.dir/clean:
 Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanBuffer.dir\build.make Vulkan/CMakeFiles/NV_VulkanBuffer.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanBuffer.dir\build.make Vulkan/CMakeFiles/NV_VulkanBuffer.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=3,4 "Built target NV_VulkanBuffer"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=4,5,6 "Built target NV_VulkanBuffer"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanBuffer.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanBuffer.dir/rule
@@ -263,12 +263,12 @@ Vulkan/CMakeFiles/NV_VulkanBuffer.dir/clean:
 Vulkan/CMakeFiles/NV_VulkanDebug.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDebug.dir\build.make Vulkan/CMakeFiles/NV_VulkanDebug.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDebug.dir\build.make Vulkan/CMakeFiles/NV_VulkanDebug.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=5,6 "Built target NV_VulkanDebug"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=7,8,9 "Built target NV_VulkanDebug"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanDebug.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanDebug.dir/rule
@@ -287,17 +287,17 @@ Vulkan/CMakeFiles/NV_VulkanDebug.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanDevice.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanDevice.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 Vulkan/CMakeFiles/NV_VulkanDevice.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanDevice.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanDevice.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDevice.dir\build.make Vulkan/CMakeFiles/NV_VulkanDevice.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanDevice.dir\build.make Vulkan/CMakeFiles/NV_VulkanDevice.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=7,8 "Built target NV_VulkanDevice"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=10,11,12 "Built target NV_VulkanDevice"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanDevice.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 16
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 20
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanDevice.dir/rule
@@ -318,12 +318,12 @@ Vulkan/CMakeFiles/NV_VulkanDevice.dir/clean:
 Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanInitializers.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanInitializers.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=9,10 "Built target NV_VulkanInitializers"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=13,14,15 "Built target NV_VulkanInitializers"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanInitializers.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanInitializers.dir/rule
@@ -342,19 +342,19 @@ Vulkan/CMakeFiles/NV_VulkanInitializers.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
-Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
-Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
+Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
+Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanInstance.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInstance.dir\build.make Vulkan/CMakeFiles/NV_VulkanInstance.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanInstance.dir\build.make Vulkan/CMakeFiles/NV_VulkanInstance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=11,12 "Built target NV_VulkanInstance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=16,17,18 "Built target NV_VulkanInstance"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanInstance.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 20
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 26
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanInstance.dir/rule
@@ -373,20 +373,20 @@ Vulkan/CMakeFiles/NV_VulkanInstance.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
-Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
-Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
+Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
+Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanPipelineInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanPipelineInitializers.dir\build.make Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=13,14 "Built target NV_VulkanPipelineInitializers"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=19,20,21 "Built target NV_VulkanPipelineInitializers"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 29
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/rule
@@ -405,23 +405,23 @@ Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
 Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
-Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
 Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanPipelineInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanDebug.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanSetup.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSetup.dir\build.make Vulkan/CMakeFiles/NV_VulkanSetup.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSetup.dir\build.make Vulkan/CMakeFiles/NV_VulkanSetup.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=15,16 "Built target NV_VulkanSetup"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=22,23,24 "Built target NV_VulkanSetup"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanSetup.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanSetup.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 28
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 38
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanSetup.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanSetup.dir/rule
@@ -440,16 +440,16 @@ Vulkan/CMakeFiles/NV_VulkanSetup.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSwapChain.dir\build.make Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanSwapChain.dir\build.make Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=17,18 "Built target NV_VulkanSwapChain"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=25,26,27 "Built target NV_VulkanSwapChain"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 14
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 17
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/rule
@@ -470,12 +470,12 @@ Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/clean:
 Vulkan/CMakeFiles/NV_VulkanUtils.dir/all: CMakeFiles/imgui.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanUtils.dir\build.make Vulkan/CMakeFiles/NV_VulkanUtils.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanUtils.dir\build.make Vulkan/CMakeFiles/NV_VulkanUtils.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=19,20 "Built target NV_VulkanUtils"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=28,29,30 "Built target NV_VulkanUtils"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanUtils.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 11
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanUtils.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanUtils.dir/rule
@@ -494,20 +494,20 @@ Vulkan/CMakeFiles/NV_VulkanUtils.dir/clean:
 
 # All Build rule for target.
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: CMakeFiles/imgui.dir/all
-Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
-Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanInstance.dir/all
-Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanSwapChain.dir/all
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanDevice.dir/all
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanBuffer.dir/all
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_VulkanInitializers.dir/all
+Vulkan/CMakeFiles/NV_VulkanWindow.dir/all: Vulkan/CMakeFiles/NV_Vulkan.dir/all
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/depend
 	$(MAKE) $(MAKESILENT) -f Vulkan\CMakeFiles\NV_VulkanWindow.dir\build.make Vulkan/CMakeFiles/NV_VulkanWindow.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=21,22 "Built target NV_VulkanWindow"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles --progress-num=31,32,33 "Built target NV_VulkanWindow"
 .PHONY : Vulkan/CMakeFiles/NV_VulkanWindow.dir/all
 
 # Build rule for subdir invocation for target.
 Vulkan/CMakeFiles/NV_VulkanWindow.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 22
+	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 29
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 Vulkan/CMakeFiles/NV_VulkanWindow.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start C:\Users\jonas\Documents\Vulkan\examples\imgui\build\CMakeFiles 0
 .PHONY : Vulkan/CMakeFiles/NV_VulkanWindow.dir/rule
