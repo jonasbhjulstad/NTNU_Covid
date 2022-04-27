@@ -141,6 +141,13 @@ void setupVulkanPhysicalDevice(VulkanInstance &vulkanInstance, bool enableValida
 		std::cerr << "Failed to create logical device!" << std::endl;
 	}
 
+    // Descriptor pool
+    std::vector<VkDescriptorPoolSize> poolSizes = {
+        initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
+    VkDescriptorPoolCreateInfo descriptorPoolInfo = initializers::descriptorPoolCreateInfo(poolSizes, 2);
+    VK_CHECK_RESULT(vkCreateDescriptorPool(vulkanDevice->logicalDevice, &descriptorPoolInfo, nullptr, &vulkanInstance.descriptorPool));
+
+
 	VkDevice device = vulkanDevice->logicalDevice;
 
 	// Get a graphics queue from the device
@@ -182,7 +189,7 @@ void prepareVulkan(VulkanInstance &vulkanInstance, uint32_t width, uint32_t heig
 	initializers::createWaitFences(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.waitFences);
 	initializers::setupDepthStencil(vulkanInstance, width, height);
 	initializers::setupRenderPass(logicalDevice, vulkanInstance.swapChain, vulkanInstance.renderPass,vulkanInstance.depthFormat);
-	initializers::createPipelineCache(logicalDevice, vulkanInstance.pipelineCache);
+	initializers::createPipelineCache(logicalDevice, &vulkanInstance.pipelineCache);
 	initializers::setupFrameBuffer(logicalDevice, 
 	vulkanInstance.renderPass, 
 	width, 

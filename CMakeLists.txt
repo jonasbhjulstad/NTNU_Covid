@@ -24,7 +24,7 @@ FetchContent_Declare(
     imgui_repo
     GIT_REPOSITORY https://github.com/ocornut/imgui
 )
-
+set(CMAKE_BUILD_PARALLEL_LEVEL 8)
 FetchContent_MakeAvailable(imgui_repo)
 file(GLOB IMGUI_SRC "${imgui_repo_SOURCE_DIR}/*.cpp")
 set(IMGUI_BACKEND "${imgui_repo_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp" "${imgui_repo_SOURCE_DIR}/backends/imgui_impl_glfw.cpp")

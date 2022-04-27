@@ -151,11 +151,11 @@ namespace initializers
 		VK_CHECK_RESULT(vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass));
 	}
 
-	void createPipelineCache(VkDevice device, VkPipelineCache pipelineCache)
+	void createPipelineCache(VkDevice device, VkPipelineCache* pipelineCache)
 	{
 		VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
 		pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-		VK_CHECK_RESULT(vkCreatePipelineCache(device, &pipelineCacheCreateInfo, nullptr, &pipelineCache));
+		VK_CHECK_RESULT(vkCreatePipelineCache(device, &pipelineCacheCreateInfo, nullptr, pipelineCache));
 	}
 
 	void setupFrameBuffer(VkDevice device,

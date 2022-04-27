@@ -1,2 +1,0 @@
-C:\msys64\mingw64\bin\ar.exe qc libNV_VulkanSwapChain.a CMakeFiles/NV_VulkanSwapChain.dir/NV_VulkanSwapChain.cpp.obj
-C:\msys64\mingw64\bin\ranlib.exe libNV_VulkanSwapChain.a

@@ -15,7 +15,7 @@ namespace initializers
 
 	void setupRenderPass(VkDevice device, VulkanSwapChain &swapChain, VkRenderPass& renderPass, VkFormat depthFormat);
 
-	void createPipelineCache(VkDevice device, VkPipelineCache pipelineCache);
+	void createPipelineCache(VkDevice device, VkPipelineCache* pipelineCache);
 
 	void setupFrameBuffer(VkDevice device,
 						  VkRenderPass renderPass,
