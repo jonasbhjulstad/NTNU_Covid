@@ -5,6 +5,7 @@ void setupGLFWVulkanWindow(VulkanInstance &vulkanInstance,
                        uint32_t minImageCount)
 {
     ImGui_ImplVulkanH_Window* wd = &vulkanInstance.ImGuiWindow;
+    wd->Swapchain = vulkanInstance.swapChain.swapChain;
     wd->Surface = vulkanInstance.surface;
     VkPhysicalDevice physicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
     VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;

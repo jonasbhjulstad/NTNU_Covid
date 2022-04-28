@@ -185,6 +185,7 @@ void prepareVulkan(VulkanInstance &vulkanInstance, uint32_t width, uint32_t heig
 	vulkanInstance.swapChain.initSurface(vulkanInstance.instance, vulkanInstance.glfwWindow, vulkanInstance.surface, width, height);
 	initializers::createCommandPool(logicalDevice, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
 	vulkanInstance.swapChain.create(&vulkanInstance.ImGuiWindow, &width, &height);
+	vulkanInstance.ImGuiWindow.Swapchain = vulkanInstance.swapChain.swapChain;
 	initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
 	initializers::createWaitFences(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.waitFences);
 	initializers::setupDepthStencil(vulkanInstance, width, height);
