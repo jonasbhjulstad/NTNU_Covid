@@ -40,7 +40,7 @@ GraphDesignStatus createGraphDesignerMenu(igraph_t* graph)
 
         static int N_nodes = 1;
 
-        const ImGuiInputTextFlags decInputFlags = ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AlwaysInsertMode;
+        ImGuiInputTextFlags decInputFlags = ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_AlwaysInsertMode;
 
         const char *ER_types[] = {"GNM", "GNP"};
         static const char *currentERType = ER_types[0];
@@ -73,7 +73,8 @@ GraphDesignStatus createGraphDesignerMenu(igraph_t* graph)
             if (currentERType == "GNP")
             {
                 ImGui::InputInt("Nodes", &N_nodes, 1, GRAPH_CREATION_MAX_NODES, decInputFlags);
-                ImGui::InputFloat("Probability", &p, .0f, 1.f, decInputFlags);
+                ImGui::InputFloat("Probability", &p);//, 1.0f, 10.0f, -1,".3f", decInputFlags);
+            
             }
             else if (currentERType == "GNM")
             {
@@ -86,8 +87,8 @@ GraphDesignStatus createGraphDesignerMenu(igraph_t* graph)
             ImGui::InputInt("Nodes", &N_nodes, 1, GRAPH_CREATION_MAX_NODES, decInputFlags);
             ImGui::InputInt("Edges", &N_edges, 0, GRAPH_CREATION_MAX_EDGES, decInputFlags);
             ImGui::Text("p(d) ~ d^power + A");
-            ImGui::InputFloat("Preferential power", &power, .0f, 100.f, decInputFlags);
-            ImGui::InputFloat("Preferential constant A", &A, .0f, std::numeric_limits<float>::infinity(), ImGuiInputTextFlags_CharsDecimal);
+            ImGui::InputFloat("Preferential power", &power);
+            ImGui::InputFloat("Preferential constant A", &A);
             ImGui::InputInt("Outgoing edges per vertex", &m, 0, GRAPH_CREATION_MAX_EDGES, ImGuiInputTextFlags_CharsDecimal);
         }
         else if (currentGraphType == "Watts-Strogatz")
@@ -96,7 +97,7 @@ GraphDesignStatus createGraphDesignerMenu(igraph_t* graph)
             ImGui::InputInt("Dimension", &dim, 1, 1000);
             ImGui::InputInt("Nodes", &size, 1, GRAPH_CREATION_MAX_NODES);
             ImGui::InputInt("Neighborhood Size", &neigborhoodSize, 1, 1000);
-            ImGui::InputFloat("Rewiring Probability", &rewireProbability, .0f, 1.f);
+            ImGui::InputFloat("Rewiring Probability", &rewireProbability);
             ImGui::Checkbox("Loops", &loops);
             ImGui::Checkbox("Multiple Edges", &multipleEdges);
         }

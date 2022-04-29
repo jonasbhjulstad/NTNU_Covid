@@ -14,7 +14,7 @@ enum glTFBasicInstanceBindIDs
 struct BasicInstancePipelineData
 {
     std::unique_ptr<vkglTF::Model> model;
-    std::unique_ptr<vks::Texture2D> texture = nullptr;
+    std::unique_ptr<Texture2D> texture = nullptr;
     vks::Buffer instanceBuffer;
     VkDescriptorSetLayout descriptorSetLayout;
     VkPipelineLayout pipelineLayout;

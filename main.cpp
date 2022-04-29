@@ -1,4 +1,5 @@
 #define KTX_OPENGL_ES3 1
+#define ENABLE_VALIDATION true
 
 // #include "VulkanglTFModel.h"
 #include <random>
@@ -6,7 +7,6 @@
 #include <vulkan/vulkan.hpp>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
-#define ENABLE_VALIDATION true
 #include <NV_VulkanSetup.hpp>
 #include <NV_VulkanWindow.hpp>
 
@@ -17,6 +17,24 @@
 #include <igraph/igraph_layout.h>
 #include <igraph/igraph_epidemics.h>
 
+#include "ImGuiApp.hpp"
+#include "NV_UISettings.hpp"
+
+#ifdef WIN32
+	const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
+	const std::string shadersPath = assetPath + "shaders\\";
+    const std::string computeShadersPath = assetPath + "computeShaders";
+	const std::string modelPath = assetPath + "models\\";
+	const std::string texturePath = assetPath + "textures\\";
+#else
+	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
+	const std::string shadersPath = assetPath + "shaders/";
+    const std::string computeShadersPath = assetPath + "computeShaders";
+	const std::string modelPath = assetPath + "models/";
+	const std::string texturePath = assetPath + "textures/";
+#endif
+
+
 static void check_vk_result(VkResult err)
 {
     if (err == 0)
@@ -26,97 +44,12 @@ static void check_vk_result(VkResult err)
         abort();
 }
 
-static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data, VulkanDevice* vulkanDevice, VkQueue queue, bool& swapChainRebuild)
-{
-    VkResult err;
-
-    VkSemaphore image_acquired_semaphore  = wd->FrameSemaphores[wd->SemaphoreIndex].ImageAcquiredSemaphore;
-    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
-    err = vkAcquireNextImageKHR(vulkanDevice->logicalDevice, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
-    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-    {
-        swapChainRebuild = true;
-        return;
-    }
-    check_vk_result(err);
-
-    ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
-    {
-        err = vkWaitForFences(vulkanDevice->logicalDevice, 1, &fd->Fence, VK_TRUE, UINT64_MAX);    // wait indefinitely instead of periodically checking
-        check_vk_result(err);
-
-        err = vkResetFences(vulkanDevice->logicalDevice, 1, &fd->Fence);
-        check_vk_result(err);
-    }
-    {
-        err = vkResetCommandPool(vulkanDevice->logicalDevice, fd->CommandPool, 0);
-        check_vk_result(err);
-        VkCommandBufferBeginInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        err = vkBeginCommandBuffer(fd->CommandBuffer, &info);
-        check_vk_result(err);
-    }
-    {
-        VkRenderPassBeginInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        info.renderPass = wd->RenderPass;
-        info.framebuffer = fd->Framebuffer;
-        info.renderArea.extent.width = wd->Width;
-        info.renderArea.extent.height = wd->Height;
-        info.clearValueCount = 1;
-        info.pClearValues = &wd->ClearValue;
-        vkCmdBeginRenderPass(fd->CommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-    }
-
-    // Record dear imgui primitives into command buffer
-    ImGui_ImplVulkan_RenderDrawData(draw_data, fd->CommandBuffer);
-
-    // Submit command buffer
-    vkCmdEndRenderPass(fd->CommandBuffer);
-    {
-        VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        VkSubmitInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        info.waitSemaphoreCount = 1;
-        info.pWaitSemaphores = &image_acquired_semaphore;
-        info.pWaitDstStageMask = &wait_stage;
-        info.commandBufferCount = 1;
-        info.pCommandBuffers = &fd->CommandBuffer;
-        info.signalSemaphoreCount = 1;
-        info.pSignalSemaphores = &render_complete_semaphore;
-
-        err = vkEndCommandBuffer(fd->CommandBuffer);
-        check_vk_result(err);
-        err = vkQueueSubmit(queue, 1, &info, fd->Fence);
-        check_vk_result(err);
-    }
-}
-
-static void FramePresent(ImGui_ImplVulkanH_Window* wd, VkQueue queue, bool& rebuildSwapChain)
-{
-    if (rebuildSwapChain)
-        return;
-    VkSemaphore render_complete_semaphore = wd->FrameSemaphores[wd->SemaphoreIndex].RenderCompleteSemaphore;
-    VkPresentInfoKHR info = {};
-    info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    info.waitSemaphoreCount = 1;
-    info.pWaitSemaphores = &render_complete_semaphore;
-    info.swapchainCount = 1;
-    info.pSwapchains = &wd->Swapchain;
-    info.pImageIndices = &wd->FrameIndex;
-    VkResult err = vkQueuePresentKHR(queue, &info);
-    if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
-    {
-        rebuildSwapChain = true;
-        return;
-    }
-    check_vk_result(err);
-    wd->SemaphoreIndex = (wd->SemaphoreIndex + 1) % wd->ImageCount; // Now we can use the next set of semaphores
-}
 
 int main()
 {
+    UISettings uiSettings;
+
+    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
     VulkanInstance vulkanInstance;
     // Setup GLFW window
     if (!glfwInit())
@@ -170,38 +103,15 @@ int main()
     init_info.CheckVkResultFn = check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
 
+    ImGUI App(vulkanDevice, "Network Viewport");
+    App.init(width, height, uiSettings);
 
-        // Upload Fonts
+    App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
+    bool rebuildSwapChain = false;
+    
+    while(!glfwWindowShouldClose(vulkanInstance.glfwWindow))
     {
-        // Use any command queue
-        VkCommandPool command_pool = vulkanInstance.ImGuiWindow.Frames[vulkanInstance.ImGuiWindow.FrameIndex].CommandPool;
-        VkCommandBuffer command_buffer = vulkanInstance.ImGuiWindow.Frames[vulkanInstance.ImGuiWindow.FrameIndex].CommandBuffer;
-
-        // VK_CHECK_RESULT(vkResetCommandPool(vulkanDevice->logicalDevice, command_pool, 0));
-        VkCommandBufferBeginInfo begin_info = {};
-        begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-        begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-        VK_CHECK_RESULT(vkBeginCommandBuffer(command_buffer, &begin_info));
-
-        ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-
-        VkSubmitInfo end_info = {};
-        end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        end_info.commandBufferCount = 1;
-        end_info.pCommandBuffers = &command_buffer;
-        VK_CHECK_RESULT(vkEndCommandBuffer(command_buffer));
-        VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &end_info, VK_NULL_HANDLE));
-
-        VK_CHECK_RESULT(vkDeviceWaitIdle(vulkanDevice->logicalDevice));
-        ImGui_ImplVulkan_DestroyFontUploadObjects();
-    }
-    bool rebuildSwapChain = true;
-        // Main loop
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
-    while (!glfwWindowShouldClose(vulkanInstance.glfwWindow))
-    {
-        // Poll and handle events (inputs, window resize, etc.)
+                // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
         // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
@@ -216,7 +126,7 @@ int main()
             if (width > 0 && height > 0)
             {
                 ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
-                ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanDevice->physicalDevice, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
+                ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanDevice->physicalDevice, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, vulkanInstance.queue, NULL, width, height, vulkanInstance.swapChain.imageCount);
                 vulkanInstance.ImGuiWindow.FrameIndex = 0;
                 rebuildSwapChain = false;
             }
@@ -225,55 +135,8 @@ int main()
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        bool demoWindowOpen = true;
-        // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        ImGui::ShowDemoWindow(&demoWindowOpen);
-
-        // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
-        }
-
-
-
-        // Rendering
-        ImGui::Render();
-        ImDrawData* draw_data = ImGui::GetDrawData();
-        const bool is_minimized = (draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f);
-        if (!is_minimized)
-        {
-            vulkanInstance.ImGuiWindow.ClearValue.color.float32[0] = clear_color.x * clear_color.w;
-            vulkanInstance.ImGuiWindow.ClearValue.color.float32[1] = clear_color.y * clear_color.w;
-            vulkanInstance.ImGuiWindow.ClearValue.color.float32[2] = clear_color.z * clear_color.w;
-            vulkanInstance.ImGuiWindow.ClearValue.color.float32[3] = clear_color.w;
-
-            FrameRender(&vulkanInstance.ImGuiWindow, draw_data, vulkanDevice, vulkanInstance.queue, rebuildSwapChain);
-            FramePresent(&vulkanInstance.ImGuiWindow, vulkanInstance.queue, rebuildSwapChain);
-        }
+        App.newFrame(1, uiSettings, frameTime, );
     }
-
-    // Cleanup
-    VK_CHECK_RESULT(vkDeviceWaitIdle(vulkanDevice->logicalDevice));
-    ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
 
     ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, NULL);
     vkDestroyDescriptorPool(vulkanDevice->logicalDevice, vulkanInstance.descriptorPool, NULL);

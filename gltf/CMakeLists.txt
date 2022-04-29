@@ -1,0 +1,2 @@
+add_library(VulkanGLTF STATIC VulkanglTFModel.cpp)
+target_link_libraries(VulkanGLTF PRIVATE NV_Vulkan)
