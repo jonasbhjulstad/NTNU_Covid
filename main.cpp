@@ -12,6 +12,7 @@
 
 #include "NV_Node.hpp"
 #include "NV_Edge.hpp"
+#include <NV_Camera.hpp>
 #include <igraph/igraph.h>
 #include <igraph/igraph_games.h>
 #include <igraph/igraph_layout.h>
@@ -108,7 +109,15 @@ int main()
 
     App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
     bool rebuildSwapChain = false;
+    Camera camera;
+    camera.type = camera.firstperson;
+    camera.position = glm::vec3(0.0f, 0.0f, -10.0f);
+    camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
+    camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
     
+    float frameTimer;
+    auto tStart = std::chrono::high_resolution_clock::now();
+
     while(!glfwWindowShouldClose(vulkanInstance.glfwWindow))
     {
                 // Poll and handle events (inputs, window resize, etc.)
@@ -135,7 +144,10 @@ int main()
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
-        App.newFrame(1, uiSettings, frameTime, );
+        auto tEnd = std::chrono::high_resolution_clock::now();
+	    auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+	    frameTimer = (float)tDiff / 1000.0f;
+        App.newFrame(1, uiSettings, frameTimer, camera);
     }
 
     ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, NULL);

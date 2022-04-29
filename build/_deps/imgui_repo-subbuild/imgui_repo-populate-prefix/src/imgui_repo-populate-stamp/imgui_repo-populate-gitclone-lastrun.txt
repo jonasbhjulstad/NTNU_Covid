@@ -3,9 +3,9 @@
 # No other meaning or use of this file is supported.
 
 method=git
-command=/usr/bin/cmake;-P;/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/tmp/imgui_repo-populate-gitclone.cmake
-source_dir=/home/deb/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src
-work_dir=/home/deb/Documents/Vulkan/examples/imgui/build/_deps
+command=C:/msys64/mingw64/bin/cmake.exe;-P;C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-subbuild/imgui_repo-populate-prefix/tmp/imgui_repo-populate-gitclone.cmake
+source_dir=C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src
+work_dir=C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps
 repository=https://github.com/ocornut/imgui
 remote=origin
 init_submodules=TRUE
