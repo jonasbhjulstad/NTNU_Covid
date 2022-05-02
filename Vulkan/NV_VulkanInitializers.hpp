@@ -653,5 +653,10 @@ namespace initializers
 		return writeDescriptorSetAccelerationStructureKHR;
 	}
 
+	inline void destroyCommandBuffers(VkDevice device, VkCommandPool cmdPool, std::vector<VkCommandBuffer>& drawCmdBuffers)
+{
+	vkFreeCommandBuffers(device, cmdPool, static_cast<uint32_t>(drawCmdBuffers.size()), drawCmdBuffers.data());
+}
+
 }
 #endif

@@ -12,18 +12,18 @@ project(imgui_repo-populate NONE)
 
 # Pass through things we've already detected in the main project to avoid
 # paying the cost of redetecting them again in ExternalProject_Add()
-set(GIT_EXECUTABLE [==[C:/Program Files/Git/cmd/git.exe]==])
-set(GIT_VERSION_STRING [==[2.35.1.windows.2]==])
+set(GIT_EXECUTABLE [==[/usr/bin/git]==])
+set(GIT_VERSION_STRING [==[2.36.0]==])
 set_property(GLOBAL PROPERTY _CMAKE_FindGit_GIT_EXECUTABLE_VERSION
-  [==[C:/Program Files/Git/cmd/git.exe;2.35.1.windows.2]==]
+  [==[/usr/bin/git;2.36.0]==]
 )
 
 
 include(ExternalProject)
 ExternalProject_Add(imgui_repo-populate
                      "UPDATE_DISCONNECTED" "False" "GIT_REPOSITORY" "https://github.com/ocornut/imgui"
-                    SOURCE_DIR          "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-src"
-                    BINARY_DIR          "C:/Users/jonas/Documents/Vulkan/examples/imgui/build/_deps/imgui_repo-build"
+                    SOURCE_DIR          "/home/deb/Documents/NetworkViewport/build/_deps/imgui_repo-src"
+                    BINARY_DIR          "/home/deb/Documents/NetworkViewport/build/_deps/imgui_repo-build"
                     CONFIGURE_COMMAND   ""
                     BUILD_COMMAND       ""
                     INSTALL_COMMAND     ""

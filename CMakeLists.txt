@@ -9,11 +9,12 @@ include(FindOpenCL)
 find_package(Vulkan REQUIRED)
 find_package(igraph REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
-
+find_package(kompute REQUIRED)
 FetchContent_Declare(
     imgui_repo
     GIT_REPOSITORY https://github.com/ocornut/imgui
 )
+find_package(fmt REQUIRED)
 set(CMAKE_BUILD_PARALLEL_LEVEL 8)
 FetchContent_MakeAvailable(imgui_repo)
 file(GLOB IMGUI_SRC "${imgui_repo_SOURCE_DIR}/*.cpp")
@@ -35,6 +36,8 @@ target_compile_definitions(ktx PUBLIC "KTX_OPENGL_ES3")
 target_compile_options(ktx PRIVATE "-O3")
 add_subdirectory(Vulkan)
 add_subdirectory(gltf)
+add_subdirectory(kompute)
+
 
 add_executable(main main.cpp)
 target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan")

@@ -17,24 +17,24 @@
 #include <igraph/igraph_games.h>
 #include <igraph/igraph_layout.h>
 #include <igraph/igraph_epidemics.h>
+#include <functional>
 
 #include "ImGuiApp.hpp"
 #include "NV_UISettings.hpp"
 
 #ifdef WIN32
-	const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
-	const std::string shadersPath = assetPath + "shaders\\";
-    const std::string computeShadersPath = assetPath + "computeShaders";
-	const std::string modelPath = assetPath + "models\\";
-	const std::string texturePath = assetPath + "textures\\";
+const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
+const std::string shadersPath = assetPath + "shaders\\";
+const std::string computeShadersPath = assetPath + "computeShaders";
+const std::string modelPath = assetPath + "models\\";
+const std::string texturePath = assetPath + "textures\\";
 #else
-	const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
-	const std::string shadersPath = assetPath + "shaders/";
-    const std::string computeShadersPath = assetPath + "computeShaders";
-	const std::string modelPath = assetPath + "models/";
-	const std::string texturePath = assetPath + "textures/";
+const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
+const std::string shadersPath = assetPath + "shaders/";
+const std::string computeShadersPath = assetPath + "computeShaders";
+const std::string modelPath = assetPath + "models/";
+const std::string texturePath = assetPath + "textures/";
 #endif
-
 
 static void check_vk_result(VkResult err)
 {
@@ -45,19 +45,100 @@ static void check_vk_result(VkResult err)
         abort();
 }
 
+void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, uint32_t width, uint32_t height)
+{
+    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 
+    VkClearValue clearValues[2];
+    clearValues[0].color = {{0.2f, 0.2f, 0.2f, 1.0f}};
+    clearValues[1].depthStencil = {1.0f, 0};
+
+    VkRenderPassBeginInfo renderPassBeginInfo = initializers::renderPassBeginInfo();
+    renderPassBeginInfo.renderPass = vulkanInstance.renderPass;
+    renderPassBeginInfo.renderArea.offset.x = 0;
+    renderPassBeginInfo.renderArea.offset.y = 0;
+    renderPassBeginInfo.renderArea.extent.width = width;
+    renderPassBeginInfo.renderArea.extent.height = height;
+    renderPassBeginInfo.clearValueCount = 2;
+    renderPassBeginInfo.pClearValues = clearValues;
+    for (int32_t i = 0; i < vulkanInstance.drawCmdBuffers.size(); ++i)
+    {
+        // Set target frame buffer
+        renderPassBeginInfo.framebuffer = vulkanInstance.frameBuffers[i];
+
+        VK_CHECK_RESULT(vkBeginCommandBuffer(vulkanInstance.drawCmdBuffers[i], &cmdBufInfo));
+
+        vkCmdBeginRenderPass(vulkanInstance.drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+        VkViewport viewport = initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
+        vkCmdSetViewport(vulkanInstance.drawCmdBuffers[i], 0, 1, &viewport);
+
+        VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
+        vkCmdSetScissor(vulkanInstance.drawCmdBuffers[i], 0, 1, &scissor);
+
+        // Render scene
+        // vkCmdBindDescriptorSets(vulkanInstance.drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanInstance.pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
+        // vkCmdBindPipeline(vulkanInstance.drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanInstance.pipeline);
+
+        // Render imGui
+        App.drawFrame(vulkanInstance.drawCmdBuffers[i]);
+
+        vkCmdEndRenderPass(vulkanInstance.drawCmdBuffers[i]);
+
+        VK_CHECK_RESULT(vkEndCommandBuffer(vulkanInstance.drawCmdBuffers[i]));
+    }
+}
+
+void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI &App, Camera &camera, int width, int height)
+{
+    VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
+    // Ensure all operations on the device have been finished before destroying resources
+    vkDeviceWaitIdle(logicalDevice);
+    vulkanInstance.swapChain.create(&vulkanInstance.ImGuiWindow, (uint32_t *)&width, (uint32_t *)&height, false);
+    vulkanInstance.ImGuiWindow.Swapchain = vulkanInstance.swapChain.swapChain;
+    // Recreate the frame buffersqueuePresent
+    vkDestroyImageView(logicalDevice, vulkanInstance.depthStencil.view, nullptr);
+    vkDestroyImage(logicalDevice, vulkanInstance.depthStencil.image, nullptr);
+    vkFreeMemory(logicalDevice, vulkanInstance.depthStencil.mem, nullptr);
+    initializers::setupDepthStencil(vulkanInstance, width, height);
+    for (uint32_t i = 0; i < vulkanInstance.frameBuffers.size(); i++)
+    {
+        vkDestroyFramebuffer(logicalDevice, vulkanInstance.frameBuffers[i], nullptr);
+    }
+    initializers::setupFrameBuffer(logicalDevice,
+                                   vulkanInstance.renderPass,
+                                   width,
+                                   height,
+                                   vulkanInstance.depthStencil.view,
+                                   vulkanInstance.swapChain,
+                                   vulkanInstance.frameBuffers);
+
+    // Command buffers need to be recreated as they may store
+    // references to the recreated frame buffer
+    initializers::destroyCommandBuffers(logicalDevice, vulkanInstance.vulkanDevice->commandPool, vulkanInstance.drawCmdBuffers);
+    initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
+
+    buildCommandBuffers(vulkanInstance, App, width, height);
+
+    vkDeviceWaitIdle(logicalDevice);
+
+    if ((width > 0.0f) && (height > 0.0f))
+    {
+        camera.updateAspectRatio((float)width / (float)height);
+    }
+}
 int main()
 {
-    UISettings uiSettings;
 
-    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
     VulkanInstance vulkanInstance;
     // Setup GLFW window
     if (!glfwInit())
         return 1;
 
-    const uint32_t width = 1280;
-    const uint32_t height = 720;
+    uint32_t width = 1280;
+    uint32_t height = 720;
+    uint32_t width_old = width;
+    uint32_t height_old = height;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     vulkanInstance.glfwWindow = glfwCreateWindow(width, height, "Network Viewport", NULL, NULL);
@@ -78,13 +159,17 @@ int main()
     createVulkanInstance(ENABLE_VALIDATION, "Network Viewport", vulkanInstance.instance, vulkanInstance.supportedInstanceExtensions, vulkanInstance.enabledInstanceExtensions, VK_API_VERSION_1_0);
     setupVulkanPhysicalDevice(vulkanInstance, ENABLE_VALIDATION);
 
-    // TODO: glfw-surface
     VK_CHECK_RESULT(glfwCreateWindowSurface(vulkanInstance.instance, vulkanInstance.glfwWindow, NULL, &vulkanInstance.surface));
 
-    setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
-    prepareVulkan(vulkanInstance, width, height);
-
     VulkanDevice *vulkanDevice = vulkanInstance.vulkanDevice;
+    setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
+    UISettings uiSettings;
+    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
+
+    Camera camera;
+    ImGUI App(vulkanDevice, "Network Viewport");
+
+    prepareVulkan(vulkanInstance, width, height);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -104,28 +189,35 @@ int main()
     init_info.CheckVkResultFn = check_vk_result;
     ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
 
-    ImGUI App(vulkanDevice, "Network Viewport");
     App.init(width, height, uiSettings);
 
     App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
     bool rebuildSwapChain = false;
-    Camera camera;
     camera.type = camera.firstperson;
     camera.position = glm::vec3(0.0f, 0.0f, -10.0f);
     camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
     camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
-    
+
+    uint32_t currentBufferIdx;
     float frameTimer;
     auto tStart = std::chrono::high_resolution_clock::now();
 
-    while(!glfwWindowShouldClose(vulkanInstance.glfwWindow))
+    while (!glfwWindowShouldClose(vulkanInstance.glfwWindow))
     {
-                // Poll and handle events (inputs, window resize, etc.)
+        // Poll and handle events (inputs, window resize, etc.)
         // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
         // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
         // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
         // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
+
+        width_old = width;
+        height_old = height;
+        glfwGetWindowSize(vulkanInstance.glfwWindow, (int *)&width, (int *)&height);
+        if (width_old != width || height_old != height)
+        {
+            rebuildSwapChain = true;
+        }
 
         // Resize swap chain?
         if (rebuildSwapChain)
@@ -135,20 +227,34 @@ int main()
             if (width > 0 && height > 0)
             {
                 ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
-                ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanDevice->physicalDevice, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, vulkanInstance.queue, NULL, width, height, vulkanInstance.swapChain.imageCount);
+                ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanDevice->physicalDevice, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
                 vulkanInstance.ImGuiWindow.FrameIndex = 0;
                 rebuildSwapChain = false;
             }
+            rebuildBuffers(vulkanInstance, App, camera, width, height);
         }
 
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         auto tEnd = std::chrono::high_resolution_clock::now();
-	    auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
-	    frameTimer = (float)tDiff / 1000.0f;
+        auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
+        frameTimer = (float)tDiff / 1000.0f;
         App.newFrame(1, uiSettings, frameTimer, camera);
+        App.updateBuffers();
+
+        buildCommandBuffers(vulkanInstance, App, width, height);
+        VK_CHECK_RESULT(vulkanInstance.swapChain.acquireNextImage(vulkanInstance.semaphores.presentComplete, &currentBufferIdx));
+        vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+        vulkanInstance.submitInfo.commandBufferCount = 1;
+        vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
+        VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
+        VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
+        width_old = width;
+        height_old = height;
+        VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
     }
+
 
     ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, NULL);
     vkDestroyDescriptorPool(vulkanDevice->logicalDevice, vulkanInstance.descriptorPool, NULL);
@@ -158,9 +264,6 @@ int main()
     auto vkDestroyDebugReportCallbackEXT = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(g_Instance, "vkDestroyDebugReportCallbackEXT");
     vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
 #endif // IMGUI_VULKAN_DEBUG_REPORT
-
-    vkDestroyDevice(vulkanDevice->logicalDevice, NULL);
-    vkDestroyInstance(vulkanInstance.instance, NULL);
 
     glfwDestroyWindow(vulkanInstance.glfwWindow);
     glfwTerminate();

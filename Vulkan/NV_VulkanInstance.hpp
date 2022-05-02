@@ -25,6 +25,7 @@ struct VulkanInstance
 	VkPipelineStageFlags submitPipelineStages = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 	// Contains command buffers and semaphores to be presented to the queue
 	VkSubmitInfo submitInfo;
+	
 	// Command buffers used for rendering
 	std::vector<VkCommandBuffer> drawCmdBuffers;
 	// Global render pass for frame buffer writes
@@ -64,9 +65,6 @@ struct VulkanInstance
 	ImGui_ImplVulkanH_Window ImGuiWindow;
 	VkSurfaceKHR surface;
 };
-	// // Frame counter to display fps
-	// uint32_t frameCounter = 0;
-	// uint32_t lastFPS = 0;
-	// std::chrono::time_point<std::chrono::high_resolution_clock> lastTimestamp;
 
+void destroyVulkanInstance(VulkanInstance& vI);
 #endif

@@ -44,6 +44,7 @@ target_link_libraries(NV_VulkanSetup PUBLIC NV_Vulkan NV_VulkanInstance NV_Vulka
 target_link_libraries(NV_VulkanWindow PUBLIC NV_VulkanInstance)
 target_link_libraries(NV_VulkanSwapChain PUBLIC NV_Vulkan NV_VulkanInitializers)
 target_link_libraries(NV_VulkanPipelineInitializers PUBLIC NV_VulkanInstance NV_Vulkan)
+target_link_libraries(NV_WindowCallbacks PUBLIC glfw3)
 add_dependencies(NV_VulkanglTFModel NV_VulkanDevice)
 target_link_libraries(NV_VulkanglTFModel PUBLIC NV_VulkanDevice)
 else()
