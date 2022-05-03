@@ -304,7 +304,7 @@ namespace tools
 	}
 
 
-	VkShaderModule loadShader(const char *fileName, VkDevice device)
+	VkShaderModule loadShaderModule(const char *fileName, VkDevice device)
 	{
 		std::ifstream is(fileName, std::ios::binary | std::ios::in | std::ios::ate);
 

@@ -7,7 +7,7 @@
 * This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
 */
 
-#include "VulkanglTFModel.hpp"
+#include "NV_VulkanglTFModel.hpp"
 #define TINYGLTF_IMPLEMENTATION
 #include "tiny_gltf.h"
 VkDescriptorSetLayout vkglTF::descriptorSetLayoutImage = VK_NULL_HANDLE;

@@ -10,7 +10,7 @@
 #define NV_VULKAN_TOOLS_HPP
 
 #include <vulkan/vulkan.hpp>
-#include "NV_VulkanInitializers.hpp"
+#include <NV_VulkanInitializers.hpp>
 
 #include <math.h>
 #include <stdlib.h>
@@ -36,6 +36,7 @@
 
 // Macro to check and display Vulkan return results
 
+#ifndef VK_CHECK_RESULT
 #define VK_CHECK_RESULT(f)                                                                                                               \
 	{                                                                                                                                    \
 		VkResult res = (f);                                                                                                              \
@@ -45,7 +46,7 @@
 			assert(res == VK_SUCCESS);                                                                                                   \
 		}                                                                                                                                \
 	}
-
+#endif
 const std::string getAssetPath();
 
 namespace tools
@@ -103,7 +104,7 @@ namespace tools
 
 	// Load a SPIR-V shader (binary)
 
-	VkShaderModule loadShader(const char *fileName, VkDevice device);
+	VkShaderModule loadShaderModule(const char *fileName, VkDevice device);
 
 	/** @brief Checks if a file exists */
 	bool fileExists(const std::string &filename);

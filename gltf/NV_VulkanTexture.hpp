@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "vulkan/vulkan.h"
+#include <vulkan/vulkan.hpp>
 
 #include <ktx.h>
 #include <ktxvulkan.h>

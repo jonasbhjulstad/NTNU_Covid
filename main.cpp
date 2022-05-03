@@ -9,17 +9,8 @@
 #include <GLFW/glfw3.h>
 #include <NV_VulkanSetup.hpp>
 #include <NV_VulkanWindow.hpp>
-
-#include "NV_Node.hpp"
-#include "NV_Edge.hpp"
 #include <NV_Camera.hpp>
-#include <igraph/igraph.h>
-#include <igraph/igraph_games.h>
-#include <igraph/igraph_layout.h>
-#include <igraph/igraph_epidemics.h>
-#include <functional>
-
-#include "ImGuiApp.hpp"
+#include <NV_ImGuiUI.hpp>
 #include "NV_UISettings.hpp"
 
 #ifdef WIN32
@@ -45,7 +36,8 @@ static void check_vk_result(VkResult err)
         abort();
 }
 
-void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, uint32_t width, uint32_t height)
+
+void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, int width, int height)
 {
     VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 
@@ -76,9 +68,7 @@ void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, uint32_t wi
         VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
         vkCmdSetScissor(vulkanInstance.drawCmdBuffers[i], 0, 1, &scissor);
 
-        // Render scene
-        // vkCmdBindDescriptorSets(vulkanInstance.drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanInstance.pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-        // vkCmdBindPipeline(vulkanInstance.drawCmdBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, vulkanInstance.pipeline);
+
 
         // Render imGui
         App.drawFrame(vulkanInstance.drawCmdBuffers[i]);
@@ -127,23 +117,70 @@ void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI &App, Camera &camera, 
         camera.updateAspectRatio((float)width / (float)height);
     }
 }
+
+void submitBuffers(VulkanInstance &vulkanInstance, uint32_t currentBufferIdx)
+{
+    VK_CHECK_RESULT(vulkanInstance.swapChain.acquireNextImage(vulkanInstance.semaphores.presentComplete, &currentBufferIdx));
+    vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    vulkanInstance.submitInfo.commandBufferCount = 1;
+    vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
+    VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
+    VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
+    VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
+}
+
+void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI& App, Camera& camera, int& width, int& height)
+{
+    static int width_old, height_old;
+    // glfwGetWindowSize(vulkanInstance.glfwWindow, &width, &height);
+    glfwGetFramebufferSize(vulkanInstance.glfwWindow, &width, &height);
+    if (width_old != width || height_old != height)
+    {
+        ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
+        ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanInstance.vulkanDevice->physicalDevice, 
+        vulkanInstance.vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, 
+        vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
+        vulkanInstance.ImGuiWindow.FrameIndex = 0;
+        rebuildBuffers(vulkanInstance, App, camera, width, height);
+    }
+    width_old = width;
+    height_old = height;
+}
+
+void ImGui_Vulkan_Init(const VulkanInstance &vulkanInstance)
+{
+    ImGui_ImplGlfw_InitForVulkan(vulkanInstance.glfwWindow, true);
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.Instance = vulkanInstance.instance;
+    init_info.PhysicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
+    init_info.Device = vulkanInstance.vulkanDevice->logicalDevice;
+    init_info.QueueFamily = vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
+    init_info.Queue = vulkanInstance.queue;
+    init_info.PipelineCache = vulkanInstance.pipelineCache;
+    init_info.DescriptorPool = vulkanInstance.descriptorPool;
+    init_info.Allocator = NULL;
+    init_info.MinImageCount = 2;
+    init_info.ImageCount = vulkanInstance.swapChain.imageCount;
+    init_info.CheckVkResultFn = check_vk_result;
+    ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
+}
+
 int main()
 {
 
     VulkanInstance vulkanInstance;
-    // Setup GLFW window
+
+    /* Setup, Integration and Initialization of Vulkan/GLFW */
+
     if (!glfwInit())
         return 1;
 
-    uint32_t width = 1280;
-    uint32_t height = 720;
-    uint32_t width_old = width;
-    uint32_t height_old = height;
+    int width = 1280;
+    int height = 720;
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     vulkanInstance.glfwWindow = glfwCreateWindow(width, height, "Network Viewport", NULL, NULL);
 
-    // Setup Vulkan
     if (!glfwVulkanSupported())
     {
         printf("GLFW: Vulkan Not Supported\n");
@@ -163,76 +200,39 @@ int main()
 
     VulkanDevice *vulkanDevice = vulkanInstance.vulkanDevice;
     setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
-    UISettings uiSettings;
-    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
-
-    Camera camera;
-    ImGUI App(vulkanDevice, "Network Viewport");
-
     prepareVulkan(vulkanInstance, width, height);
 
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
+    /* User Interface Settings */
 
-    ImGui_ImplGlfw_InitForVulkan(vulkanInstance.glfwWindow, true);
-    ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance = vulkanInstance.instance;
-    init_info.PhysicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
-    init_info.Device = vulkanInstance.vulkanDevice->logicalDevice;
-    init_info.QueueFamily = vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
-    init_info.Queue = vulkanInstance.queue;
-    init_info.PipelineCache = vulkanInstance.pipelineCache;
-    init_info.DescriptorPool = vulkanInstance.descriptorPool;
-    init_info.Allocator = NULL;
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = vulkanInstance.swapChain.imageCount;
-    init_info.CheckVkResultFn = check_vk_result;
-    ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
-
-    App.init(width, height, uiSettings);
-
-    App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
-    bool rebuildSwapChain = false;
+    UISettings uiSettings;
+    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
+    Camera camera;
     camera.type = camera.firstperson;
     camera.position = glm::vec3(0.0f, 0.0f, -10.0f);
     camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
     camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
+    /* ImGUI App Initialization */
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    ImGui_Vulkan_Init(vulkanInstance);
+
+    ImGUI App(vulkanDevice, "Network Viewport");
+
+    App.init(width, height, uiSettings);
+    App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
+
+    /* Render-loop variables */
+    bool rebuildSwapChain = false;
     uint32_t currentBufferIdx;
     float frameTimer;
     auto tStart = std::chrono::high_resolution_clock::now();
 
     while (!glfwWindowShouldClose(vulkanInstance.glfwWindow))
     {
-        // Poll and handle events (inputs, window resize, etc.)
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
         glfwPollEvents();
-
-        width_old = width;
-        height_old = height;
-        glfwGetWindowSize(vulkanInstance.glfwWindow, (int *)&width, (int *)&height);
-        if (width_old != width || height_old != height)
-        {
-            rebuildSwapChain = true;
-        }
-
-        // Resize swap chain?
-        if (rebuildSwapChain)
-        {
-            int width, height;
-            glfwGetFramebufferSize(vulkanInstance.glfwWindow, &width, &height);
-            if (width > 0 && height > 0)
-            {
-                ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
-                ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanDevice->physicalDevice, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
-                vulkanInstance.ImGuiWindow.FrameIndex = 0;
-                rebuildSwapChain = false;
-            }
-            rebuildBuffers(vulkanInstance, App, camera, width, height);
-        }
 
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
@@ -243,18 +243,13 @@ int main()
         App.newFrame(1, uiSettings, frameTimer, camera);
         App.updateBuffers();
 
-        buildCommandBuffers(vulkanInstance, App, width, height);
-        VK_CHECK_RESULT(vulkanInstance.swapChain.acquireNextImage(vulkanInstance.semaphores.presentComplete, &currentBufferIdx));
-        vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-        vulkanInstance.submitInfo.commandBufferCount = 1;
-        vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
-        VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
-        VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
-        width_old = width;
-        height_old = height;
-        VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
-    }
+        updateWindowSize(vulkanInstance, App, camera, width, height);
 
+        buildCommandBuffers(vulkanInstance, App, width, height);
+
+        submitBuffers(vulkanInstance, currentBufferIdx);
+
+    }
 
     ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance, vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, NULL);
     vkDestroyDescriptorPool(vulkanDevice->logicalDevice, vulkanInstance.descriptorPool, NULL);
