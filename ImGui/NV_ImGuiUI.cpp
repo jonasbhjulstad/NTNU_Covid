@@ -1,30 +1,6 @@
 #include "NV_ImGuiUI.hpp"
-struct ImGuiVulkanData
+namespace ImGUI_UI
 {
-	VkSampler sampler;
-	VulkanBuffer vertexBuffer;
-	VulkanBuffer indexBuffer;
-	int32_t vertexCount = 0;
-	int32_t indexCount = 0;
-	VkDeviceMemory fontMemory = VK_NULL_HANDLE;
-	VkImage fontImage = VK_NULL_HANDLE;
-	VkImageView fontView = VK_NULL_HANDLE;
-	VkPipelineCache pipelineCache;
-	VkPipelineLayout pipelineLayout;
-	VkPipeline pipeline;
-	VkDescriptorPool descriptorPool;
-	VkDescriptorSetLayout descriptorSetLayout;
-	VkDescriptorSet descriptorSet;
-	VulkanDevice *vulkanDevice;
-	std::map<NV_Menu_Window, bool> activeMenus;
-	std::string title;
-	// UI params are set via push constants
-	struct PushConstBlock
-	{
-		glm::vec2 scale;
-		glm::vec2 translate;
-	} pushConstBlock;
-}
 
 
 	void destroyImGuiVulkanData(ImGuiVulkanData& ivData)
@@ -70,6 +46,8 @@ struct ImGuiVulkanData
 	{
 		ImGuiIO &io = ImGui::GetIO();
 
+		VulkanDevice* vulkanDevice = ivData.vulkanDevice;
+
 		// Create font texture
 		unsigned char *fontData;
 		int texWidth, texHeight;
@@ -99,8 +77,8 @@ struct ImGuiVulkanData
 		VkMemoryAllocateInfo memAllocInfo = initializers::memoryAllocateInfo();
 		memAllocInfo.allocationSize = memReqs.size;
 		memAllocInfo.memoryTypeIndex = vulkanDevice->getMemoryType(memReqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		VK_CHECK_RESULT(vkAllocateMemory(logicalDevice, &memAllocInfo, nullptr, &fontMemory));
-		VK_CHECK_RESULT(vkBindImageMemory(logicalDevice, ivData.fontImage, fontMemory, 0));
+		VK_CHECK_RESULT(vkAllocateMemory(logicalDevice, &memAllocInfo, nullptr, &ivData.fontMemory));
+		VK_CHECK_RESULT(vkBindImageMemory(logicalDevice, ivData.fontImage, ivData.fontMemory, 0));
 
 		// Image view
 		VkImageViewCreateInfo viewInfo = initializers::imageViewCreateInfo();
@@ -176,13 +154,13 @@ struct ImGuiVulkanData
 		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
 		samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
-		VK_CHECK_RESULT(vkCreateSampler(logicalDevice, &samplerInfo, nullptr, &sampler));
+		VK_CHECK_RESULT(vkCreateSampler(logicalDevice, &samplerInfo, nullptr, &ivData.sampler));
 
 		// Descriptor pool
 		std::vector<VkDescriptorPoolSize> poolSizes = {
 			initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1)};
 		VkDescriptorPoolCreateInfo descriptorPoolInfo = initializers::descriptorPoolCreateInfo(poolSizes, 2);
-		VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo, nullptr, &descriptorPool));
+		VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo, nullptr, &ivData.descriptorPool));
 
 		// Descriptor set layout
 		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings = {
@@ -190,17 +168,17 @@ struct ImGuiVulkanData
 		
 		};
 		VkDescriptorSetLayoutCreateInfo descriptorLayout = initializers::descriptorSetLayoutCreateInfo(setLayoutBindings);
-		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(logicalDevice, &descriptorLayout, nullptr, &descriptorSetLayout));
+		VK_CHECK_RESULT(vkCreateDescriptorSetLayout(logicalDevice, &descriptorLayout, nullptr, &ivData.descriptorSetLayout));
 
 		// Descriptor set
-		VkDescriptorSetAllocateInfo allocInfo = initializers::descriptorSetAllocateInfo(descriptorPool, &descriptorSetLayout, 1);
-		VK_CHECK_RESULT(vkAllocateDescriptorSets(logicalDevice, &allocInfo, &descriptorSet));
+		VkDescriptorSetAllocateInfo allocInfo = initializers::descriptorSetAllocateInfo(ivData.descriptorPool, &ivData.descriptorSetLayout, 1);
+		VK_CHECK_RESULT(vkAllocateDescriptorSets(logicalDevice, &allocInfo, &ivData.descriptorSet));
 		VkDescriptorImageInfo fontDescriptor = initializers::descriptorImageInfo(
-			sampler,
+			ivData.sampler,
 			ivData.fontView,
 			VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 		std::vector<VkWriteDescriptorSet> writeDescriptorSets = {
-			initializers::writeDescriptorSet(descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &fontDescriptor, 1)};
+			initializers::writeDescriptorSet(ivData.descriptorSet, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 0, &fontDescriptor, 1)};
 		vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 		// Pipeline cache
@@ -211,7 +189,7 @@ struct ImGuiVulkanData
 		// Pipeline layout
 		// Push constants for UI rendering parameters
 		VkPushConstantRange pushConstantRange = initializers::pushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, sizeof(ivData.pushConstBlock), 0);
-		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = initializers::pipelineLayoutCreateInfo(&descriptorSetLayout, 1);
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo = initializers::pipelineLayoutCreateInfo(&ivData.descriptorSetLayout, 1);
 		pipelineLayoutCreateInfo.pushConstantRangeCount = 1;
 		pipelineLayoutCreateInfo.pPushConstantRanges = &pushConstantRange;
 		VK_CHECK_RESULT(vkCreatePipelineLayout(logicalDevice, &pipelineLayoutCreateInfo, nullptr, &ivData.pipelineLayout));
@@ -291,7 +269,7 @@ struct ImGuiVulkanData
 		// shaderStages[0] = example->loadShader(shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
 		// shaderStages[1] = example->loadShader(shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
-		VK_CHECK_RESULT(vkCreateGraphicsPipelines(logicalDevice, ivData.pipelineCache, 1, &pipelineCreateInfo, nullptr, &iv_data.pipeline));
+		VK_CHECK_RESULT(vkCreateGraphicsPipelines(logicalDevice, ivData.pipelineCache, 1, &pipelineCreateInfo, nullptr, &ivData.pipeline));
 	}
 
 
@@ -301,15 +279,15 @@ struct ImGuiVulkanData
 		ImGui::NewFrame();
 
 
-		createTopMenu(uiSettings, ivData.activeMenus);
+		createTopMenu(uiSettings);
 		createPopupMenu(uiSettings.popup);
 
-		dispatchMenuWindows(ivData.activeMenus);
+		dispatchMenuWindows(uiSettings.activeMenus);
 
 		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
-		ImGui::TextUnformatted(ivData.title.c_str());
-		ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
+		// ImGui::TextUnformatted(ivData.title.c_str());
+		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
 
 
 		// Update frame time display
@@ -358,7 +336,7 @@ struct ImGuiVulkanData
 	}
 
 	// Update vertex and index buffer containing the imGui elements when required
-	void updateBuffers()
+	void updateBuffers(VulkanDevice* vulkanDevice, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer,  int32_t& indexCount, int32_t& vertexCount)
 	{
 		ImDrawData *imDrawData = ImGui::GetDrawData();
 
@@ -412,12 +390,12 @@ struct ImGuiVulkanData
 	}
 
 	// Draw current imGui frame into a command buffer
-	void drawFrame(VkCommandBuffer commandBuffer)
+	void drawFrame(ImGuiVulkanData& ivData, VkCommandBuffer commandBuffer)
 	{
 		ImGuiIO &io = ImGui::GetIO();
 
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ivData.pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ivData.pipelineLayout, 0, 1, &ivData.descriptorSet, 0, nullptr);
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, ivData.pipeline);
 
 		VkViewport viewport = initializers::viewport(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y, 0.0f, 1.0f);
 		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -436,8 +414,8 @@ struct ImGuiVulkanData
 		{
 
 			VkDeviceSize offsets[1] = {0};
-			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer.buffer, offsets);
-			vkCmdBindIndexBuffer(commandBuffer, indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
+			vkCmdBindVertexBuffers(commandBuffer, 0, 1, &ivData.vertexBuffer.buffer, offsets);
+			vkCmdBindIndexBuffer(commandBuffer, ivData.indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT16);
 
 			for (int32_t i = 0; i < imDrawData->CmdListsCount; i++)
 			{

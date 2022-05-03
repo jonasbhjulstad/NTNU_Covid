@@ -37,7 +37,7 @@ static void check_vk_result(VkResult err)
 }
 
 
-void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, int width, int height)
+void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, int width, int height)
 {
     VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 
@@ -69,9 +69,7 @@ void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, int width, 
         vkCmdSetScissor(vulkanInstance.drawCmdBuffers[i], 0, 1, &scissor);
 
 
-
-        // Render imGui
-        App.drawFrame(vulkanInstance.drawCmdBuffers[i]);
+        ImGUI_UI::drawFrame(ivData, vulkanInstance.drawCmdBuffers[i]);
 
         vkCmdEndRenderPass(vulkanInstance.drawCmdBuffers[i]);
 
@@ -79,7 +77,7 @@ void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI &App, int width, 
     }
 }
 
-void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI &App, Camera &camera, int width, int height)
+void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, Camera &camera, int width, int height)
 {
     VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
     // Ensure all operations on the device have been finished before destroying resources
@@ -108,7 +106,7 @@ void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI &App, Camera &camera, 
     initializers::destroyCommandBuffers(logicalDevice, vulkanInstance.vulkanDevice->commandPool, vulkanInstance.drawCmdBuffers);
     initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
 
-    buildCommandBuffers(vulkanInstance, App, width, height);
+    buildCommandBuffers(vulkanInstance, ivData, width, height);
 
     vkDeviceWaitIdle(logicalDevice);
 
@@ -118,18 +116,19 @@ void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI &App, Camera &camera, 
     }
 }
 
-void submitBuffers(VulkanInstance &vulkanInstance, uint32_t currentBufferIdx)
+void submitBuffers(VulkanInstance &vulkanInstance, uint32_t& currentBufferIdx)
 {
     VK_CHECK_RESULT(vulkanInstance.swapChain.acquireNextImage(vulkanInstance.semaphores.presentComplete, &currentBufferIdx));
     vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     vulkanInstance.submitInfo.commandBufferCount = 1;
     vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
+    vulkanInstance.submitInfo.pNext = NULL;
     VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
     VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
     VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
 }
 
-void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI& App, Camera& camera, int& width, int& height)
+void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, Camera& camera, int& width, int& height)
 {
     static int width_old, height_old;
     // glfwGetWindowSize(vulkanInstance.glfwWindow, &width, &height);
@@ -141,7 +140,7 @@ void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI& App, Camera& camera
         vulkanInstance.vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, 
         vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
         vulkanInstance.ImGuiWindow.FrameIndex = 0;
-        rebuildBuffers(vulkanInstance, App, camera, width, height);
+        rebuildBuffers(vulkanInstance, ivData, camera, width, height);
     }
     width_old = width;
     height_old = height;
@@ -219,10 +218,12 @@ int main()
 
     ImGui_Vulkan_Init(vulkanInstance);
 
-    ImGUI App(vulkanDevice, "Network Viewport");
+    ImGUI_UI::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
 
-    App.init(width, height, uiSettings);
-    App.initResources(vulkanInstance.renderPass, vulkanInstance.queue, shadersPath);
+    ImGUI_UI::setupImGuiVisuals(width, height, uiSettings);
+
+    ImGUI_UI::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, assetPath + "shaders/");
+
 
     /* Render-loop variables */
     bool rebuildSwapChain = false;
@@ -240,12 +241,16 @@ int main()
         auto tEnd = std::chrono::high_resolution_clock::now();
         auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
         frameTimer = (float)tDiff / 1000.0f;
-        App.newFrame(1, uiSettings, frameTimer, camera);
-        App.updateBuffers();
 
-        updateWindowSize(vulkanInstance, App, camera, width, height);
+        void newFrame(bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera);
 
-        buildCommandBuffers(vulkanInstance, App, width, height);
+        ImGUI_UI::newFrame(true, uiSettings, frameTimer, camera);
+
+        ImGUI_UI::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
+
+        updateWindowSize(vulkanInstance, ivData, camera, width, height);
+
+        buildCommandBuffers(vulkanInstance, ivData, width, height);
 
         submitBuffers(vulkanInstance, currentBufferIdx);
 

@@ -35,7 +35,7 @@ struct EdgeInstanceData
 		
 		instanceData.reserve(IGRAPH_EIT_SIZE(edgeIterator));
 		igraph_integer_t node_source, node_target;
-        igraph_matrix_e mat;
+        igraph_matrix_t mat;
 		while(!IGRAPH_EIT_END(edgeIterator))
 		{
 			igraph_edge(&graph, IGRAPH_EIT_GET(edgeIterator), &node_source, &node_target);

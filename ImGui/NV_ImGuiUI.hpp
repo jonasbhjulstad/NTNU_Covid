@@ -10,10 +10,9 @@
 #include <NV_VulkanInitializers.hpp>
 #include <NV_VulkanPipelineInitializers.hpp>
 #include <NV_Camera.hpp>
-#include <NV_Menu.hpp>
-#include <NV_PopupMenu.hpp>
+#include "NV_Menu.hpp"
 #include "NV_UISettings.hpp"
-#include "../InstanceGraphics/NV_Assets.hpp"
+#include <NV_Assets.hpp>
 // Options and values to display/toggle from the UI
 // ----------------------------------------------------------------------------
 // ImGUI class
@@ -24,6 +23,7 @@ namespace ImGUI_UI
 
 struct ImGuiVulkanData
 {
+	ImGuiVulkanData(VulkanDevice* _vulkanDevice): vulkanDevice(_vulkanDevice){}
 	VkSampler sampler;
 	VulkanBuffer vertexBuffer;
 	VulkanBuffer indexBuffer;
@@ -39,7 +39,6 @@ struct ImGuiVulkanData
 	VkDescriptorSetLayout descriptorSetLayout;
 	VkDescriptorSet descriptorSet;
 	VulkanDevice *vulkanDevice;
-	std::map<NV_Menu_Window, bool> activeMenus;
 	std::string title;
 	// UI params are set via push constants
 	struct PushConstBlock
@@ -47,7 +46,7 @@ struct ImGuiVulkanData
 		glm::vec2 scale;
 		glm::vec2 translate;
 	} pushConstBlock;
-}
+};
 
 
 	void destroyImGuiVulkanData(ImGuiVulkanData& ivData);
@@ -61,10 +60,9 @@ struct ImGuiVulkanData
 	void newFrame(bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera);
 
 	// Update vertex and index buffer containing the imGui elements when required
-	void updateBuffers();
+	void updateBuffers(VulkanDevice* vulkanDevice, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer,  int32_t& indexCount, int32_t& vertexCount);
 	// Draw current imGui frame into a command buffer
-	void drawFrame(VkCommandBuffer commandBuffer);
-};
-
+	void drawFrame(ImGuiVulkanData& ivData, VkCommandBuffer commandBuffer);
 }
+
 #endif

@@ -25,25 +25,26 @@ target_include_directories(imgui PUBLIC ${imgui_repo_SOURCE_DIR} "${imgui_repo_S
 target_link_libraries(imgui PUBLIC Vulkan::Vulkan)
 target_compile_options(imgui PRIVATE "-O3")
 
-find_package(Ktx)
-if (NOT ${ktx_FOUND})
-    FetchContent_Declare(
-        ktx_repo
-        GIT_REPOSITORY https://github.com/KhronosGroup/KTX-Software.git
-    )
-    option(KTX_FEATURE_TESTS OFF)
-    FetchContent_MakeAvailable(ktx_repo)
-    target_compile_definitions(ktx PUBLIC "KTX_OPENGL_ES3")
-    target_compile_options(ktx PRIVATE "-O3")
-    endif()
+find_package(Ktx REQUIRED)
+# if (NOT ${ktx_FOUND})
+#     FetchContent_Declare(
+#         ktx_repo
+#         GIT_REPOSITORY https://github.com/KhronosGroup/KTX-Software.git
+#     )
+#     option(KTX_FEATURE_TESTS OFF)
+#     FetchContent_MakeAvailable(ktx_repo)
+#     target_compile_definitions(ktx PUBLIC "KTX_OPENGL_ES3")
+#     target_compile_options(ktx PRIVATE "-O3")
+#     endif()
+
+message(WARNING ${Ktx_DIR})
 add_subdirectory(Vulkan)
 add_subdirectory(gltf)
 add_subdirectory(InstanceGraphics)
-add_subdirectory(Menu)
 add_subdirectory(ImGui)
 add_executable(main main.cpp)
-target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan" "${CMAKE_SOURCE_DIR}/ImGui")
-target_link_libraries(main PUBLIC imgui ktx Vulkan::Vulkan igraph::igraph glfw glm::glm ${NV_VULKAN_LIBRARIES} ${NV_GLTF_LIBRARIES})
+target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan")
+message(WARNING ${NV_VULKAN_LIBRARIES})
+target_link_libraries(main PUBLIC imgui "libktx.a" Vulkan::Vulkan igraph::igraph glfw glm::glm NV_VulkanSetup NV_VulkanWindow NV_ImGuiUI NV_Graph_Designer)
 add_compile_options("-Wfatal-errors")
-
 # add_subdirectory(examples)
