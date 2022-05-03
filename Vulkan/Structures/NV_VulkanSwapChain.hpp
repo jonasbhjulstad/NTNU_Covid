@@ -19,9 +19,9 @@
 #include <iostream>
 
 #include <vulkan/vulkan.hpp>
-#include "NV_Vulkan.hpp"
 #include <GLFW/glfw3.h>
 #include "NV_VulkanInitializers.hpp"
+#include "NV_VulkanTools.hpp"
 #include <imgui_impl_vulkan.h>
 
 

@@ -4,8 +4,10 @@
 #include <vulkan/vulkan.hpp>
 #include <GLFW/glfw3.h>
 #include <imgui_impl_vulkan.h>
+#include <imgui_impl_glfw.h>
 #include "NV_VulkanDevice.hpp"
 #include "NV_VulkanSwapChain.hpp"
+#include "NV_VulkanTools.hpp"
 
 struct VulkanInstance
 {
@@ -66,5 +68,7 @@ struct VulkanInstance
 	VkSurfaceKHR surface;
 };
 
-void destroyVulkanInstance(VulkanInstance& vI);
+void destroyVulkanInstance(VulkanInstance& vulkanInstance);
+
+void ImGui_Vulkan_Init(const VulkanInstance& vulkanInstance);
 #endif

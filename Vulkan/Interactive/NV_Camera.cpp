@@ -1,26 +1,6 @@
-/*
-* Basic camera class
-*
-* Copyright (C) 2016 by Sascha Willems - www.saschawillems.de
-*
-* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
-*/
-#ifndef NV_CAMERA_HPP
-#define NV_CAMERA_HPP
+#include "NV_Camera.hpp"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-class Camera
-{
-private:
-	float fov;
-	float znear, zfar;
-
-	void updateViewMatrix()
+	void Camera::updateViewMatrix()
 	{
 		glm::mat4 rotM = glm::mat4(1.0f);
 		glm::mat4 transM;
@@ -48,48 +28,8 @@ private:
 
 		updated = true;
 	};
-public:
-	enum CameraType { lookat, firstperson };
-	CameraType type = CameraType::lookat;
 
-	glm::vec3 rotation = glm::vec3();
-	glm::vec3 position = glm::vec3();
-	glm::vec4 viewPos = glm::vec4();
-
-	float rotationSpeed = 1.0f;
-	float movementSpeed = 1.0f;
-
-	bool updated = false;
-	bool flipY = false;
-
-	struct
-	{
-		glm::mat4 perspective;
-		glm::mat4 view;
-	} matrices;
-
-	struct
-	{
-		bool left = false;
-		bool right = false;
-		bool up = false;
-		bool down = false;
-	} keys;
-
-	bool moving()
-	{
-		return keys.left || keys.right || keys.up || keys.down;
-	}
-
-	float getNearClip() { 
-		return znear;
-	}
-
-	float getFarClip() {
-		return zfar;
-	}
-
-	void setPerspective(float fov, float aspect, float znear, float zfar)
+	void Camera::setPerspective(float fov, float aspect, float znear, float zfar)
 	{
 		this->fov = fov;
 		this->znear = znear;
@@ -100,7 +40,7 @@ public:
 		}
 	};
 
-	void updateAspectRatio(float aspect)
+	void Camera::updateAspectRatio(float aspect)
 	{
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
 		if (flipY) {
@@ -108,47 +48,47 @@ public:
 		}
 	}
 
-	void setPosition(glm::vec3 position)
+	void Camera::setPosition(glm::vec3 position)
 	{
 		this->position = position;
 		updateViewMatrix();
 	}
 
-	void setRotation(glm::vec3 rotation)
+	void Camera::setRotation(glm::vec3 rotation)
 	{
 		this->rotation = rotation;
 		updateViewMatrix();
 	}
 
-	void rotate(glm::vec3 delta)
+	void Camera::rotate(glm::vec3 delta)
 	{
 		this->rotation += delta;
 		updateViewMatrix();
 	}
 
-	void setTranslation(glm::vec3 translation)
+	void Camera::setTranslation(glm::vec3 translation)
 	{
 		this->position = translation;
 		updateViewMatrix();
 	};
 
-	void translate(glm::vec3 delta)
+	void Camera::translate(glm::vec3 delta)
 	{
 		this->position += delta;
 		updateViewMatrix();
 	}
 
-	void setRotationSpeed(float rotationSpeed)
+	void Camera::setRotationSpeed(float rotationSpeed)
 	{
 		this->rotationSpeed = rotationSpeed;
 	}
 
-	void setMovementSpeed(float movementSpeed)
+	void Camera::setMovementSpeed(float movementSpeed)
 	{
 		this->movementSpeed = movementSpeed;
 	}
 
-	void update(float deltaTime)
+	void Camera::update(float deltaTime)
 	{
 		updated = false;
 		if (type == CameraType::firstperson)
@@ -179,7 +119,7 @@ public:
 
 	// Update camera passing separate axis data (gamepad)
 	// Returns true if view or position has been changed
-	bool updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime)
+	bool Camera::updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime)
 	{
 		bool retVal = false;
 
@@ -240,6 +180,3 @@ public:
 
 		return retVal;
 	}
-
-};
-#endif

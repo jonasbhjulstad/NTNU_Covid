@@ -2,12 +2,11 @@
 #define NV_VULKAN_SETUP_HPP
 #include <string>
 #include <iostream>
-#include "NV_Vulkan.hpp"
-#include "NV_VulkanInstance.hpp"
-#include "NV_VulkanDebug.hpp"
-#include "NV_VulkanInitializers.hpp"
-#include "NV_VulkanPipelineInitializers.hpp"
-#include "NV_VulkanUtils.hpp"
+#include <NV_VulkanInstance.hpp>
+#include <NV_VulkanDebug.hpp>
+#include <NV_VulkanInitializers.hpp>
+#include <NV_VulkanPipelineInitializers.hpp>
+#include <NV_VulkanUtils.hpp>
 
 VkResult createVulkanInstance(bool enableValidation,
 							  const std::string &name,

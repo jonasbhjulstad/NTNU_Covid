@@ -1,0 +1,1 @@
+target_link_libraries(NV_VulkanTools PUBLIC NV_VulkanInitializers)

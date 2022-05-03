@@ -48,3 +48,21 @@ void destroyVulkanInstance(VulkanInstance& vI)
     
     
 }
+
+void ImGui_Vulkan_Init(const VulkanInstance &vulkanInstance)
+{
+    ImGui_ImplGlfw_InitForVulkan(vulkanInstance.glfwWindow, true);
+    ImGui_ImplVulkan_InitInfo init_info = {};
+    init_info.Instance = vulkanInstance.instance;
+    init_info.PhysicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
+    init_info.Device = vulkanInstance.vulkanDevice->logicalDevice;
+    init_info.QueueFamily = vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
+    init_info.Queue = vulkanInstance.queue;
+    init_info.PipelineCache = vulkanInstance.pipelineCache;
+    init_info.DescriptorPool = vulkanInstance.descriptorPool;
+    init_info.Allocator = NULL;
+    init_info.MinImageCount = 2;
+    init_info.ImageCount = vulkanInstance.swapChain.imageCount;
+    init_info.CheckVkResultFn = check_vk_result;
+    ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
+}

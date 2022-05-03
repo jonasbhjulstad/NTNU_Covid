@@ -27,15 +27,6 @@ const std::string modelPath = assetPath + "models/";
 const std::string texturePath = assetPath + "textures/";
 #endif
 
-static void check_vk_result(VkResult err)
-{
-    if (err == 0)
-        return;
-    fprintf(stderr, "[vulkan] Error: VkResult = %d\n", err);
-    if (err < 0)
-        abort();
-}
-
 
 void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, int width, int height)
 {
@@ -146,24 +137,6 @@ void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData&
     height_old = height;
 }
 
-void ImGui_Vulkan_Init(const VulkanInstance &vulkanInstance)
-{
-    ImGui_ImplGlfw_InitForVulkan(vulkanInstance.glfwWindow, true);
-    ImGui_ImplVulkan_InitInfo init_info = {};
-    init_info.Instance = vulkanInstance.instance;
-    init_info.PhysicalDevice = vulkanInstance.vulkanDevice->physicalDevice;
-    init_info.Device = vulkanInstance.vulkanDevice->logicalDevice;
-    init_info.QueueFamily = vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
-    init_info.Queue = vulkanInstance.queue;
-    init_info.PipelineCache = vulkanInstance.pipelineCache;
-    init_info.DescriptorPool = vulkanInstance.descriptorPool;
-    init_info.Allocator = NULL;
-    init_info.MinImageCount = 2;
-    init_info.ImageCount = vulkanInstance.swapChain.imageCount;
-    init_info.CheckVkResultFn = check_vk_result;
-    ImGui_ImplVulkan_Init(&init_info, vulkanInstance.renderPass);
-}
-
 int main()
 {
 
@@ -223,6 +196,8 @@ int main()
     ImGUI_UI::setupImGuiVisuals(width, height, uiSettings);
 
     ImGUI_UI::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, assetPath + "shaders/");
+
+
 
 
     /* Render-loop variables */

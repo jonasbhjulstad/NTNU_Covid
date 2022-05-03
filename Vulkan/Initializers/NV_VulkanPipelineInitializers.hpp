@@ -1,7 +1,7 @@
 #ifndef NV_VULKAN_PIPELINE_INITIALIZERS_HPP
 #define NV_VULKAN_PIPELINE_INITIALIZERS_HPP
 #include <vulkan/vulkan.hpp>
-#include "NV_Vulkan.hpp"
+#include "NV_VulkanTools.hpp"
 #include "NV_VulkanInstance.hpp"
 namespace initializers
 {

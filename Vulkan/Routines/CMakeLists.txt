@@ -1,0 +1,3 @@
+target_link_libraries(NV_VulkanSetup PUBLIC NV_VulkanInstance NV_VulkanDebug NV_VulkanPipelineInitializers NV_VulkanUtils)
+target_link_libraries(NV_VulkanWindow PUBLIC NV_VulkanInstance)
+# target_precompile_headers(NV_VulkanWindow PUBLIC NV_VulkanWindow.hpp)

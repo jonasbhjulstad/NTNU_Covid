@@ -1,0 +1,2 @@
+target_link_libraries(NV_VulkanglTFModel PUBLIC NV_VulkanDevice NV_VulkanTools)
+target_link_libraries(NV_VulkanTexture PUBLIC ktx NV_VulkanBuffer NV_VulkanTools)

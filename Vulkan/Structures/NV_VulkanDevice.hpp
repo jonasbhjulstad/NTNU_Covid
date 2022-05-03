@@ -2,9 +2,9 @@
 #define NV_VULKAN_DEVICE_HPP
 #include <string>
 #include <chrono>
-#include "NV_Vulkan.hpp"
-#include "NV_VulkanBuffer.hpp"
-#include "NV_VulkanInitializers.hpp"
+#include <NV_VulkanBuffer.hpp>
+#include <NV_VulkanInitializers.hpp>
+#include "NV_VulkanTools.hpp"
 #include <limits>
 
 struct VulkanDevice
