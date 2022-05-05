@@ -1,30 +1,71 @@
 #version 450
 layout (local_size_x = 256) in;
 
-layout(set = 0, binding = 0, std430) buffer Positions
-{
-    vec2 pos[];
-} positions;
+layout(set = 0, binding = 0) uniform Theta{
+    float alpha;
+    float beta;
+} theta;
 
-layout(set = 0, binding = 1, std430) readonly buffer Velocity
-{
-    vec2 vel[];
-} velocities;
+layout(set = 0, binding = 1) readonly buffer  InputState{
+    vec3 x;
+} inState;
 
+layout(set = 0, binding = 2) buffer  OutputState{
+    vec3 x;
+} outState;
+
+
+
+uint TausStep(uint z, int S1, int S2, int S3, uint M)
+{
+    uint b = (((z << S1) ^ z) >> S2);
+    return (((z & M) << S3) ^ b);    
+}
+
+uint LCGStep(uint z, uint A, uint C)
+{
+    return (A * z + C);    
+}
+
+float Random(ivec4 state)
+{
+    state.x = TausStep(state.x, 13, 19, 12, 4294967294);
+    state.y = TausStep(state.y, 2, 25, 4, 4294967288);
+    state.z = TausStep(state.z, 3, 11, 17, 4294967280);
+    state.w = LCGStep(state.w, 1664525, 1013904223);
+    float result = 2.3283064365387e-10 * (state.x ^ state.y ^ state.z ^ state.w);
+
+    return result;
+}
+
+
+layout(set = 0, binding = 0) buffer State
+{
+    vec3 x;
+} state;
+
+layout(set = 0, binding = 1) readonly buffer Theta
+{
+    float alpha;
+    float beta;
+    float dt;
+} theta;
+
+vec3 f(vec3 x)
+{
+    return vec3(-theta.beta*x[0]*x[1], theta.beta*x[0]*x[1]-theta.alpha*x[1], theta.alpha*x[1]);
+}
+
+vec3 RK4(vec3 x, float dt)
+{
+    vec3 k1 = dt * f(x);
+    vec3 k2 = dt * f(x + 0.5f * k1);
+    vec3 k3 = dt * f(x + 0.5f * k2);
+    vec3 k4 = dt * f(x + k3);
+    return x + (k1 + 2.0f * k2 + 2.0f * k3 + k4) / 6.0f;
+}
 
 void main()
 {
-    vec2 current_pos = positions.pos[gl_GlobalInvocationID.x];
-    vec2 velocity = velocities.vel[gl_GlobalInvocationID.x];
-    current_pos += velocity;
-
-    if (current_pos.x > .95 ||
-        current_pos.x < -.95 ||
-        current_pos.y > .95 ||
-        current_pos.y < -.95)
-        {
-            current_pos = -2. * velocity + current_pos + .05;
-        }
-
-        positions.pos[gl_GlobalInvocationID.x] = current_pos;
+    state.x = RK4(state.x, theta.dt);
 }

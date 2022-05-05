@@ -20,8 +20,8 @@ namespace glTFBasicInstance
 
     struct InstancePipelineData
     {
-        std::unique_ptr<vkglTF::Model> model;
-        std::unique_ptr<Texture2D> texture = nullptr;
+        std::shared_ptr<vkglTF::Model> model;
+        std::shared_ptr<Texture2D> texture = nullptr;
         VulkanBuffer instanceBuffer;
         VkDescriptorSetLayout descriptorSetLayout;
         VkPipelineLayout pipelineLayout;
@@ -66,6 +66,7 @@ namespace glTFBasicInstance
         VkDescriptorPool descriptorPool;
         VkRenderPass renderPass;
         VkPipelineCache pipelineCache = nullptr;
+        VkDeviceSize* offset;
     };
 
     template <typename InstanceData>
@@ -201,7 +202,7 @@ namespace glTFBasicInstance
     void buildCommandBuffer(InstancePipelineData &BI_data, VkCommandBuffer commandBuffer);
 
     template <typename InstanceData>
-    std::unique_ptr<InstancePipelineData> prepareInstanceRendering(InstanceRenderingParams &p)
+    std::unique_ptr<InstancePipelineData> prepareInstanceRendering(InstanceRenderingParams &p, std::vector<InstanceData>& instanceData)
     {
 
         VkDevice device = p.vulkanDevice->logicalDevice;
@@ -209,7 +210,7 @@ namespace glTFBasicInstance
         std::unique_ptr<InstancePipelineData> BI_data = std::make_unique<InstancePipelineData>(device);
 
         BI_data->model = loadModel(p.modelPath, p.vulkanDevice, p.queue);
-        // BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
+        BI_data->instanceBuffer = prepareInstanceBuffer(instanceData, p.vulkanDevice, p.queue);
         if (!p.texturePath.empty())
         {
             BI_data->texture = loadTexture(p.texturePath, p.vulkanDevice, p.queue);
@@ -222,37 +223,11 @@ namespace glTFBasicInstance
         BI_data->pipelineLayout = setupPipelineLayout(device, BI_data->descriptorSetLayout);
         BI_data->descriptorSet = setupDescriptorSets(device, BI_data->descriptorSetLayout, p.descriptorPool, p.uniformProjectionBuffer, nullptr);
         BI_data->pipeline = setupPipeline<InstanceData>(p.vertexShaderPath, p.fragmentShaderPath, BI_data->pipelineLayout, BI_data->shaderStages, device, p.renderPass, p.pipelineCache);
+        BI_data->offset = p.offset;
+        BI_data->N_instances = instanceData.size();
 
         return BI_data;
     }
-
-    template <>
-    std::unique_ptr<InstancePipelineData> prepareInstanceRendering<NodeInstanceData>(InstanceRenderingParams &p);
-    template <>
-    std::unique_ptr<InstancePipelineData> prepareInstanceRendering<EdgeInstanceData>(InstanceRenderingParams &p);
-
-    template <>
-    VulkanBuffer prepareInstanceBuffer(std::vector<NodeInstanceData> &instanceData, VulkanDevice *vulkanDevice, VkQueue queue);
-    template <>
-    VulkanBuffer prepareInstanceBuffer(std::vector<EdgeInstanceData> &instanceData, VulkanDevice *vulkanDevice, VkQueue queue);
-
-    template <>
-    VkPipeline setupPipeline<NodeInstanceData>(const std::string &vertexShaderPath,
-                                               const std::string &fragmentShaderPath,
-                                               VkPipelineLayout pipelineLayout,
-                                               std::vector<VkPipelineShaderStageCreateInfo> &shaderStages,
-                                               VkDevice device,
-                                               VkRenderPass renderPass,
-                                               VkPipelineCache pipelineCache);
-
-    template <>
-    VkPipeline setupPipeline<EdgeInstanceData>(const std::string &vertexShaderPath,
-                                               const std::string &fragmentShaderPath,
-                                               VkPipelineLayout pipelineLayout,
-                                               std::vector<VkPipelineShaderStageCreateInfo> &shaderStages,
-                                               VkDevice device,
-                                               VkRenderPass renderPass,
-                                               VkPipelineCache pipelineCache);
 
     std::vector<VkDescriptorPoolSize> getPoolSizes()
     {

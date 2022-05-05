@@ -4,6 +4,7 @@
 // #include "VulkanglTFModel.h"
 #include <random>
 #include <chrono>
+#include <memory>
 #include <vulkan/vulkan.hpp>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
@@ -12,129 +13,76 @@
 #include <NV_Camera.hpp>
 #include <NV_ImGuiUI.hpp>
 #include "NV_UISettings.hpp"
+#include <NV_glTFBasicInstance.hpp>
+#include "SetupRoutines.hpp"
+#include <random>
+#include <NV_ProjectionBuffer.hpp>
 
 #ifdef WIN32
 const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
 const std::string shadersPath = assetPath + "shaders\\";
-const std::string computeShadersPath = assetPath + "computeShaders";
+const std::string computeShadersPath = assetPath + "computeShaders\\";
 const std::string modelPath = assetPath + "models\\";
 const std::string texturePath = assetPath + "textures\\";
 #else
-const std::string assetPath = "/home/deb/Documents/Vulkan/examples/imgui/data/";
+const std::string assetPath = "/home/deb/Documents/NetworkViewport/data/";
 const std::string shadersPath = assetPath + "shaders/";
-const std::string computeShadersPath = assetPath + "computeShaders";
+const std::string computeShadersPath = assetPath + "computeShaders/";
 const std::string modelPath = assetPath + "models/";
 const std::string texturePath = assetPath + "textures/";
 #endif
 
+#define NODE_COUNT 100
 
-void buildCommandBuffers(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, int width, int height)
+
+std::vector<NodeInstanceData> prepareNodes()
 {
-    VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-
-    VkClearValue clearValues[2];
-    clearValues[0].color = {{0.2f, 0.2f, 0.2f, 1.0f}};
-    clearValues[1].depthStencil = {1.0f, 0};
-
-    VkRenderPassBeginInfo renderPassBeginInfo = initializers::renderPassBeginInfo();
-    renderPassBeginInfo.renderPass = vulkanInstance.renderPass;
-    renderPassBeginInfo.renderArea.offset.x = 0;
-    renderPassBeginInfo.renderArea.offset.y = 0;
-    renderPassBeginInfo.renderArea.extent.width = width;
-    renderPassBeginInfo.renderArea.extent.height = height;
-    renderPassBeginInfo.clearValueCount = 2;
-    renderPassBeginInfo.pClearValues = clearValues;
-    for (int32_t i = 0; i < vulkanInstance.drawCmdBuffers.size(); ++i)
+    std::default_random_engine gen;
+    std::uniform_real_distribution<float> dst(-100.f, 100.f);
+    std::vector<NodeInstanceData> instanceData(NODE_COUNT);
+    for (int i = 0; i < NODE_COUNT; i++)
     {
-        // Set target frame buffer
-        renderPassBeginInfo.framebuffer = vulkanInstance.frameBuffers[i];
-
-        VK_CHECK_RESULT(vkBeginCommandBuffer(vulkanInstance.drawCmdBuffers[i], &cmdBufInfo));
-
-        vkCmdBeginRenderPass(vulkanInstance.drawCmdBuffers[i], &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-        VkViewport viewport = initializers::viewport((float)width, (float)height, 0.0f, 1.0f);
-        vkCmdSetViewport(vulkanInstance.drawCmdBuffers[i], 0, 1, &viewport);
-
-        VkRect2D scissor = initializers::rect2D(width, height, 0, 0);
-        vkCmdSetScissor(vulkanInstance.drawCmdBuffers[i], 0, 1, &scissor);
-
-
-        ImGUI_UI::drawFrame(ivData, vulkanInstance.drawCmdBuffers[i]);
-
-        vkCmdEndRenderPass(vulkanInstance.drawCmdBuffers[i]);
-
-        VK_CHECK_RESULT(vkEndCommandBuffer(vulkanInstance.drawCmdBuffers[i]));
+        instanceData.push_back({{dst(gen), dst(gen), dst(gen)}, {1.f,1.f,1.f, .8f},1.f});
     }
+    return instanceData;
 }
 
-void rebuildBuffers(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, Camera &camera, int width, int height)
+std::vector<EdgeInstanceData> prepareEdges(const std::vector<NodeInstanceData>& nodeInstanceData, float p)
 {
-    VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
-    // Ensure all operations on the device have been finished before destroying resources
-    vkDeviceWaitIdle(logicalDevice);
-    vulkanInstance.swapChain.create(&vulkanInstance.ImGuiWindow, (uint32_t *)&width, (uint32_t *)&height, false);
-    vulkanInstance.ImGuiWindow.Swapchain = vulkanInstance.swapChain.swapChain;
-    // Recreate the frame buffersqueuePresent
-    vkDestroyImageView(logicalDevice, vulkanInstance.depthStencil.view, nullptr);
-    vkDestroyImage(logicalDevice, vulkanInstance.depthStencil.image, nullptr);
-    vkFreeMemory(logicalDevice, vulkanInstance.depthStencil.mem, nullptr);
-    initializers::setupDepthStencil(vulkanInstance, width, height);
-    for (uint32_t i = 0; i < vulkanInstance.frameBuffers.size(); i++)
+
+    std::default_random_engine gen;
+    std::vector<EdgeInstanceData> edgeInstanceData;
+    std::uniform_real_distribution<float> dst(0.f, 1.f);
+    uint32_t N_edges = p*nodeInstanceData.size();
+    for (int i = 0; i < N_edges; i++)
     {
-        vkDestroyFramebuffer(logicalDevice, vulkanInstance.frameBuffers[i], nullptr);
+        for (int j = 0; j < N_edges; j++)
+        {
+            if ((j != i) && (dst(gen) < p))
+            {
+                edgeInstanceData.push_back({nodeInstanceData[i].pos, nodeInstanceData[j].pos, {1.f,1.f,1.f}});
+            }
+        }
     }
-    initializers::setupFrameBuffer(logicalDevice,
-                                   vulkanInstance.renderPass,
-                                   width,
-                                   height,
-                                   vulkanInstance.depthStencil.view,
-                                   vulkanInstance.swapChain,
-                                   vulkanInstance.frameBuffers);
-
-    // Command buffers need to be recreated as they may store
-    // references to the recreated frame buffer
-    initializers::destroyCommandBuffers(logicalDevice, vulkanInstance.vulkanDevice->commandPool, vulkanInstance.drawCmdBuffers);
-    initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
-
-    buildCommandBuffers(vulkanInstance, ivData, width, height);
-
-    vkDeviceWaitIdle(logicalDevice);
-
-    if ((width > 0.0f) && (height > 0.0f))
-    {
-        camera.updateAspectRatio((float)width / (float)height);
-    }
+    return edgeInstanceData;
 }
 
-void submitBuffers(VulkanInstance &vulkanInstance, uint32_t& currentBufferIdx)
+void setupDescriptorPool(VkDevice logicalDevice, VkDescriptorPool& descriptorPool)
 {
-    VK_CHECK_RESULT(vulkanInstance.swapChain.acquireNextImage(vulkanInstance.semaphores.presentComplete, &currentBufferIdx));
-    vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    vulkanInstance.submitInfo.commandBufferCount = 1;
-    vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
-    vulkanInstance.submitInfo.pNext = NULL;
-    VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
-    VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
-    VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
-}
-
-void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, Camera& camera, int& width, int& height)
-{
-    static int width_old, height_old;
-    // glfwGetWindowSize(vulkanInstance.glfwWindow, &width, &height);
-    glfwGetFramebufferSize(vulkanInstance.glfwWindow, &width, &height);
-    if (width_old != width || height_old != height)
+    // Example uses one ubo
+    std::vector<VkDescriptorPoolSize> poolSizes =
     {
-        ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
-        ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanInstance.vulkanDevice->physicalDevice, 
-        vulkanInstance.vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, 
-        vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
-        vulkanInstance.ImGuiWindow.FrameIndex = 0;
-        rebuildBuffers(vulkanInstance, ivData, camera, width, height);
-    }
-    width_old = width;
-    height_old = height;
+        initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2),
+        initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 2),
+    };
+
+    VkDescriptorPoolCreateInfo descriptorPoolInfo =
+        initializers::descriptorPoolCreateInfo(
+            poolSizes.size(),
+            poolSizes.data(),
+            2);
+
+    VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo, nullptr, &descriptorPool));
 }
 
 int main()
@@ -184,12 +132,58 @@ int main()
     camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
     camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
+    auto nodeInstanceData = prepareNodes();
+    auto edgeInstanceData = prepareEdges(nodeInstanceData, .6f);
+
+    prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera);
+
+    using namespace glTFBasicInstance;
+
+    VkDescriptorPool renderDescriptorPool;
+    setupDescriptorPool(vulkanDevice->logicalDevice, renderDescriptorPool);
+
+    VkDeviceSize offset[1] = {0};
+
+    InstanceRenderingParams nodeParams;
+    nodeParams.vertexShaderPath = shadersPath + "node.vert.spv";
+    nodeParams.fragmentShaderPath = shadersPath + "node.frag.spv";
+    nodeParams.modelPath = modelPath + "ico_node.gltf";
+    nodeParams.vulkanDevice = vulkanInstance.vulkanDevice;
+    nodeParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
+    nodeParams.queue = vulkanInstance.queue;
+    nodeParams.renderPass = vulkanInstance.renderPass;
+    nodeParams.pipelineCache = vulkanInstance.pipelineCache;
+    nodeParams.descriptorPool = renderDescriptorPool;
+    nodeParams.offset = offset;
+
+    InstanceRenderingParams edgeParams;
+    edgeParams.vertexShaderPath = shadersPath + "edge.vert.spv";
+    edgeParams.fragmentShaderPath = shadersPath + "edge.frag.spv";
+    edgeParams.modelPath = modelPath + "bezier.gltf";
+    edgeParams.vulkanDevice = vulkanInstance.vulkanDevice;
+    edgeParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
+    edgeParams.queue = vulkanInstance.queue;
+    edgeParams.renderPass = vulkanInstance.renderPass;
+    edgeParams.pipelineCache = vulkanInstance.pipelineCache;
+    edgeParams.descriptorPool = renderDescriptorPool;
+    edgeParams.offset = offset;
+
+    std::vector<std::unique_ptr<InstancePipelineData>> instancePipelines;
+    instancePipelines.push_back(prepareInstanceRendering<NodeInstanceData>(nodeParams, nodeInstanceData));
+    instancePipelines.push_back(prepareInstanceRendering<EdgeInstanceData>(edgeParams, edgeInstanceData));    
+
+
     /* ImGUI App Initialization */
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
+    ImGuiContext* g = ImGui::GetCurrentContext();
+    camera.setContext(g);
+    ImGuiIO& io = ImGui::GetIO();
+    camera.mousePos_old = {io.MousePos.x, io.MousePos.y};
     ImGui_Vulkan_Init(vulkanInstance);
+
+    // camera.setWindowID(ImGui::GetCurrentWindow());
 
     ImGUI_UI::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
 
@@ -213,19 +207,22 @@ int main()
         // Start the Dear ImGui frame
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
+        camera.update(frameTimer);
         auto tEnd = std::chrono::high_resolution_clock::now();
         auto tDiff = std::chrono::duration<double, std::milli>(tEnd - tStart).count();
         frameTimer = (float)tDiff / 1000.0f;
-
+        tStart = tEnd;
         void newFrame(bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera);
 
         ImGUI_UI::newFrame(true, uiSettings, frameTimer, camera);
 
         ImGUI_UI::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
 
-        updateWindowSize(vulkanInstance, ivData, camera, width, height);
+        updateProjectionBuffer(vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera, true);
 
-        buildCommandBuffers(vulkanInstance, ivData, width, height);
+        updateWindowSize(vulkanInstance, ivData, camera, instancePipelines, width, height);
+
+        buildCommandBuffers(vulkanInstance.drawCmdBuffers, vulkanInstance.frameBuffers, vulkanInstance.renderPass, ivData, instancePipelines, width, height);
 
         submitBuffers(vulkanInstance, currentBufferIdx);
 

@@ -1,0 +1,13 @@
+#ifndef NV_FILEPATHS_H
+#define NV_FILEPATHS_H
+#include <string>
+
+const char* NV_ROOT_DIR = "@CMAKE_SOURCE_DIRECTORY@";
+const char* NV_CL_GENERATOR_DIR = "@NV_CL_GENERATOR_DIR@";
+const char* NV_IMGUI_DIR = "@NV_IMGUI_DIR@";
+const char* NV_OPENCL_DIR = "@NV_OPENCL_DIR@";
+const char* NV_VULKAN_DIR = "@NV_VULKAN_DIR@";
+
+
+
+#endif

@@ -10,18 +10,24 @@
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <algorithm>
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 class Camera
 {
 private:
 	float fov;
 	float znear, zfar;
-
+	ImGuiWindow* window;
+	ImGuiContext* imguiContext;
 	void updateViewMatrix();
 public:
+	ImVec2 mousePos_old = {.0f,.0f};
+
 	enum CameraType { lookat, firstperson };
 	CameraType type = CameraType::lookat;
 
@@ -41,17 +47,12 @@ public:
 		glm::mat4 view;
 	} matrices;
 
-	struct
-	{
-		bool left = false;
-		bool right = false;
-		bool up = false;
-		bool down = false;
-	} keys;
+	void setContext(ImGuiContext* _context){ window = _context->NavWindow; imguiContext = _context;}
 
 	bool moving()
 	{
-		return keys.left || keys.right || keys.up || keys.down;
+		ImGuiIO& io = ImGui::GetIO();
+		return io.KeysDown[ImGuiKey_W] || io.KeysDown[ImGuiKey_A] || io.KeysDown[ImGuiKey_D] || io.KeysDown[ImGuiKey_S];
 	}
 
 	float getNearClip() { 
@@ -81,10 +82,7 @@ public:
 	void setMovementSpeed(float movementSpeed);
 
 	void update(float deltaTime);
-
-	// Update camera passing separate axis data (gamepad)
-	// Returns true if view or position has been changed
-	bool updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime);
+	void mouseUpdate(ImVec2 pos);
 
 };
 #endif

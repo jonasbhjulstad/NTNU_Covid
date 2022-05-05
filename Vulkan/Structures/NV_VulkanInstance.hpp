@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <imgui_impl_vulkan.h>
 #include <imgui_impl_glfw.h>
+#include <NV_ProjectionBuffer.hpp>
 #include "NV_VulkanDevice.hpp"
 #include "NV_VulkanSwapChain.hpp"
 #include "NV_VulkanTools.hpp"
@@ -66,6 +67,11 @@ struct VulkanInstance
 	GLFWwindow* glfwWindow;
 	ImGui_ImplVulkanH_Window ImGuiWindow;
 	VkSurfaceKHR surface;
+
+	struct {
+	VulkanBuffer buffer;
+	ProjectionData data;
+	} projection;
 };
 
 void destroyVulkanInstance(VulkanInstance& vulkanInstance);

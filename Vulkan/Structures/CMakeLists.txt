@@ -1,4 +1,4 @@
 target_link_libraries(NV_VulkanDevice PUBLIC NV_VulkanBuffer NV_VulkanTools NV_VulkanInitializers)
-target_link_libraries(NV_VulkanInstance PUBLIC NV_VulkanDevice NV_VulkanSwapChain)
+target_link_libraries(NV_VulkanInstance PUBLIC NV_VulkanDevice NV_VulkanSwapChain NV_ProjectionBuffer)
 # target_precompile_headers(NV_VulkanInstance PUBLIC NV_VulkanDevice.hpp NV_VulkanSwapChain.hpp)
 target_link_libraries(NV_VulkanSwapChain PUBLIC NV_VulkanTools)

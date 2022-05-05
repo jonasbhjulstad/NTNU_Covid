@@ -26,28 +26,39 @@ target_link_libraries(imgui PUBLIC Vulkan::Vulkan)
 target_compile_options(imgui PRIVATE "-O3")
 
 find_package(Ktx REQUIRED)
-# if (NOT ${ktx_FOUND})
-#     FetchContent_Declare(
-#         ktx_repo
-#         GIT_REPOSITORY https://github.com/KhronosGroup/KTX-Software.git
-#     )
-#     option(KTX_FEATURE_TESTS OFF)
-#     FetchContent_MakeAvailable(ktx_repo)
-#     target_compile_definitions(ktx PUBLIC "KTX_OPENGL_ES3")
-#     target_compile_options(ktx PRIVATE "-O3")
-#     endif()
-set(NV_VULKAN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Vulkan)
-set(NV_GLTF_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gltf)
-set(NV_IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ImGui)
-file(GLOB VULKAN_CXX_HEADER_FILES "${Vulkan_INCLUDE_DIRS}/vulkan/*.hpp")
 
-# target_precompile_headers(Vulkan::Vulkan INTERFACE ${VULKAN_CXX_HEADER_FILES})
+MACRO(SUBDIRLIST result curdir)
+  FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  SET(dirlist "")
+  FOREACH(child ${children})
+    IF(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dirlist ${child})
+    ENDIF()
+  ENDFOREACH()
+  SET(${result} ${dirlist})
+ENDMACRO()
+SUBDIRLIST(SUBDIRS ${CMAKE_SOURCE_DIR})
+foreach(subdir ${SUBDIRS})
+string(TOUPPER ${subdir} subdir_upper)
+set(NV_${subdir_upper}_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
+endforeach()
 
+FetchContent_Declare(randomCL_repo
+GIT_REPOSITORY https://github.com/bstatcomp/RandomCL.git
+)
+FetchContent_MakeAvailable(randomCL_repo)
+set(NV_CL_GENERATOR_DIR "${randomcl_repo_SOURCE_DIR}/generators")
+set(CL_COMPILE_DEFINITIONS "-DRANDOM_CL_GENERATOR_DIR=${RANDOM_CL_GENERATOR_DIR} -DCL_TARGET_OPENCL_VERSION=300")
+add_subdirectory(Utils)
 add_subdirectory(Vulkan)
 add_subdirectory(ImGui)
+add_subdirectory(OpenCL)
 add_executable(main main.cpp)
 # target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan")
-message(WARNING NV_VulkanDevice)
-target_link_libraries(main PUBLIC imgui "libktx.a" Vulkan::Vulkan igraph::igraph glfw glm::glm NV_VulkanSetup NV_Camera NV_ImGuiUI NV_VulkanWindow NV_VulkanInstance)
+target_link_libraries(main PUBLIC imgui "libktx.a" 
+                    Vulkan::Vulkan igraph::igraph glfw 
+                    glm::glm NV_VulkanSetup NV_Camera 
+                    NV_ImGuiUI NV_VulkanWindow NV_VulkanInstance
+                    NV_glTFBasicInstance NV_ProjectionBuffer)
 add_compile_options("-Wfatal-errors")
 # add_subdirectory(examples)

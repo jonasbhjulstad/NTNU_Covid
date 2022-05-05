@@ -283,11 +283,10 @@ namespace ImGUI_UI
 		createPopupMenu(uiSettings.popup);
 
 		dispatchMenuWindows(uiSettings.activeMenus);
-
-		ImVec4 clear_color = ImColor(114, 144, 154);
 		static float f = 0.0f;
 		// ImGui::TextUnformatted(ivData.title.c_str());
 		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
+
 
 
 		// Update frame time display

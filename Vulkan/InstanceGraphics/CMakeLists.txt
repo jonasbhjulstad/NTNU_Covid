@@ -1,7 +1,4 @@
 
 
 target_link_libraries(NV_glTFBasicInstance PUBLIC NV_VulkanBuffer NV_VulkanglTFModel)
-target_include_directories(NV_glTFBasicInstance PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
 target_link_libraries(NV_Assets PUBLIC NV_VulkanglTFModel NV_VulkanTexture)
-target_include_directories(NV_Assets PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
