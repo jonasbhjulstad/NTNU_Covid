@@ -4,13 +4,14 @@ include(FetchContent)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(CMAKE_CXX_STANDARD_REQUIRED 17)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-include(FindOpenCL)
 
 find_package(Vulkan REQUIRED)
 find_package(igraph REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
 find_package(kompute REQUIRED)
 find_package(glm REQUIRED)
+find_package(OpenCLHeaders REQUIRED)
+find_package(OpenCLICDLoader REQUIRED)
 FetchContent_Declare(
     imgui_repo
     GIT_REPOSITORY https://github.com/ocornut/imgui
@@ -47,7 +48,10 @@ FetchContent_Declare(randomCL_repo
 GIT_REPOSITORY https://github.com/bstatcomp/RandomCL.git
 )
 FetchContent_MakeAvailable(randomCL_repo)
+set(NV_EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/examples/data/")
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/examples/data")
 set(NV_CL_GENERATOR_DIR "${randomcl_repo_SOURCE_DIR}/generators")
+set(NV_CL_KERNEL_DIR "${CMAKE_BINARY_DIR}/OpenCL/Kernels/")
 set(CL_COMPILE_DEFINITIONS "-DRANDOM_CL_GENERATOR_DIR=${RANDOM_CL_GENERATOR_DIR} -DCL_TARGET_OPENCL_VERSION=300")
 add_subdirectory(Utils)
 add_subdirectory(Vulkan)

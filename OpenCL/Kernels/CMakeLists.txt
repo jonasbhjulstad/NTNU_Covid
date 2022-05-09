@@ -1,0 +1,3 @@
+set(NV_CL_PRNG_TYPE tinymt32)
+add_subdirectory(Distributions)
+add_subdirectory(Epidemiological)

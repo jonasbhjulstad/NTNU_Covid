@@ -1,0 +1,34 @@
+#include "../Distributions/Distributions.cl"
+
+void SIR_Stochastic_Binomial_f32(local float* x, local float* x_next, constant float* param, float dt, @NV_CL_PRNG_TYPE@_state* state)
+{
+    float alpha = param[0];
+    float beta = param[1];
+    float N_pop = param[2];
+
+    float S = x[0];
+    float I = x[1];
+    float R = x[2];
+
+    float p_I = 1-exp(-beta*I/N_pop*dt);
+    float p_R = 1-exp(-alpha*dt);
+
+    float k_SI;
+    // printf("Sp_i: %f\n", S*p_I);
+    PoissonSample_f32(state, S*p_I, &k_SI);
+    // printf("k_SI: %.4f ", d_k_SI);
+
+    float k_IR = 0;
+    k_IR = BinomialSample_f32(state, I, p_R);
+    // printf("k_SI: %i\n", k_SI);
+    // printf("I: %i\n", I);
+    float S_1 = S - k_SI;
+    float I_1 = I + k_SI - k_IR;
+    float R_1 = R + k_IR;
+    // printf("S: %i   I: %i   R: %i    S_1: %i   I_1: %i   R_1:%i\n", S, I, R, S_1, I_1, R_1);
+
+    x_next[0] = S - k_SI;
+    x_next[1] = I + k_SI - k_IR;
+    x_next[2] = R + k_IR;
+
+}
