@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 
 	/* Parameter/Buffer initialization */
 
-	constexpr size_t count = 512;
+	constexpr size_t count = 32;
 	ulong seeds[count];
 	std::default_random_engine rng;
 	std::uniform_int_distribution<ulong> dist(0, UINT64_MAX);
@@ -69,12 +69,12 @@ int main(int argc, char *argv[])
 	}
 
 	constexpr uint Nt = 100;
-	float dt = 5;
+	float dt = .5;
 
 	typedef std::array<float, 3> state_t;
-	float N_pop = 1e2;
+	float N_pop = 1e4;
 	state_t x0;
-	x0[1] = 10;
+	x0[1] = 1000;
 	x0[0] = N_pop - x0[1];
 	x0[2] = 0;
 
@@ -106,17 +106,17 @@ int main(int argc, char *argv[])
 	cl_mem paramBuffer = clCreateBuffer(clInstance.context, CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
 										 3*sizeof(float), (void*) param.data(), &err);
 	/*Step 8: Create kernel object */
-	cl_kernel kernel = clCreateKernel(clInstance.program, "SIR_Compute_Stochastic_f32", &err);
+	cl_kernel kernel = clCreateKernel(clInstance.program, "SIR_Compute_Stochastic", &err);
 	assert(err == CL_SUCCESS);
 	/*Step 9: Sets Kernel arguments.*/
 	// status = clSetKernelArg(kernel, 0, sizeof(size_t), &num);
 	status = clSetKernelArg(kernel, 0, sizeof(cl_mem), (void *)&seedBuffer);
 	status = clSetKernelArg(kernel, 1, sizeof(cl_mem), (void *)&x0Buffer);
 	status = clSetKernelArg(kernel, 2, sizeof(cl_mem), (void *)&outputBuffer);
-	status = clSetKernelArg(kernel, 3,  trajectorySize, NULL);
-	status = clSetKernelArg(kernel, 4, sizeof(float), (void *)&dt);
-	status = clSetKernelArg(kernel, 5, sizeof(uint), (void *)&Nt);
-	status = clSetKernelArg(kernel, 6, sizeof(cl_mem), &paramBuffer);
+	// status = clSetKernelArg(kernel, 3,  trajectorySize, NULL);
+	status = clSetKernelArg(kernel, 3, sizeof(float), (void *)&dt);
+	status = clSetKernelArg(kernel, 4, sizeof(uint), (void *)&Nt);
+	status = clSetKernelArg(kernel, 5, sizeof(cl_mem), &paramBuffer);
 
 	assert(status == CL_SUCCESS);
 

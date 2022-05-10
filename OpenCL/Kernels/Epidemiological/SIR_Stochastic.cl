@@ -1,6 +1,10 @@
+#define PRNG_STATE xorshift1024_state
+#define PRNG_SEED_FN xorshift1024_seed
+#define PRNG_FLOAT_FN xorshift1024_float
 #include "../Distributions/Distributions.cl"
+#define SIR_BINOMIAL_TOLERANCE 10
 
-void SIR_Stochastic_Binomial_f32(local float* x, local float* x_next, constant float* param, float dt, @NV_CL_PRNG_TYPE@_state* state)
+void SIR_Stochastic_Binomial(float* x, float* x_next, constant float* param, float dt, local PRNG_STATE* state)
 {
     float alpha = param[0];
     float beta = param[1];
@@ -10,16 +14,24 @@ void SIR_Stochastic_Binomial_f32(local float* x, local float* x_next, constant f
     float I = x[1];
     float R = x[2];
 
+    //print state
+    // printf("S: %f, I: %f, R: %f\n", S, I, R);
     float p_I = 1-exp(-beta*I/N_pop*dt);
     float p_R = 1-exp(-alpha*dt);
-
     float k_SI;
-    // printf("Sp_i: %f\n", S*p_I);
-    PoissonSample_f32(state, S*p_I, &k_SI);
-    // printf("k_SI: %.4f ", d_k_SI);
+
+    if (S*p_I > SIR_BINOMIAL_TOLERANCE)
+    {
+        k_SI = PoissonSample(state, S*p_I);
+    }
+    else
+    {
+        k_SI = BinomialSample(state, S, p_I);
+    }
+    // printf("k_SI: %.4f ", k_SI);
 
     float k_IR = 0;
-    k_IR = BinomialSample_f32(state, I, p_R);
+    k_IR = BinomialSample(state, I, p_R);
     // printf("k_SI: %i\n", k_SI);
     // printf("I: %i\n", I);
     float S_1 = S - k_SI;
