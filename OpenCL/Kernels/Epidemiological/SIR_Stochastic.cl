@@ -1,10 +1,13 @@
-#define PRNG_STATE xorshift1024_state
-#define PRNG_SEED_FN xorshift1024_seed
-#define PRNG_FLOAT_FN xorshift1024_float
+// #define PRNG_STATE xorshift1024_state
+// #define PRNG_SEED_FN xorshift1024_seed
+// #define PRNG_FLOAT_FN xorshift1024_float
+#define PRNG_STATE mt19937_state
+#define PRNG_SEED_FN mt19937_seed
+#define PRNG_FLOAT_FN mt19937_float
 #include "../Distributions/Distributions.cl"
-#define SIR_BINOMIAL_TOLERANCE 10
+#define SIR_BINOMIAL_TOLERANCE 1e-2
 
-void SIR_Stochastic_Binomial(float* x, float* x_next, constant float* param, float dt, local PRNG_STATE* state)
+void SIR_Stochastic_Binomial(float* x, float* x_next, constant float* param, float dt, PRNG_STATE* state)
 {
     float alpha = param[0];
     float beta = param[1];
@@ -18,9 +21,9 @@ void SIR_Stochastic_Binomial(float* x, float* x_next, constant float* param, flo
     // printf("S: %f, I: %f, R: %f\n", S, I, R);
     float p_I = 1-exp(-beta*I/N_pop*dt);
     float p_R = 1-exp(-alpha*dt);
-    float k_SI;
+    float k_SI = 0;
 
-    if (S*p_I > SIR_BINOMIAL_TOLERANCE)
+    if (S*p_I <= SIR_BINOMIAL_TOLERANCE)
     {
         k_SI = PoissonSample(state, S*p_I);
     }

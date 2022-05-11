@@ -1,16 +1,23 @@
 #include <tyche.cl>
 #include <xorshift1024.cl>
-void UniformSample(local PRNG_STATE* state, float min, float max, uint N, float* res)
+#include <mt19937.cl>
+void UniformSample(PRNG_STATE* state, float min, float max, uint N, float* res)
 {
     for (int i = 0; i < N; i++)
     {
-        res[i] = PRNG_FLOAT_FN(state);
+        res[i] = PRNG_FLOAT_FN(*state);
     }
 }
 
+bool BernoulliTrial(PRNG_STATE* state, float p)
+{
+    float r;
+    UniformSample(state, 0.0f, 1.0f, 1, &r);
+    return r < p;
+}
 
 
-uint BinomialSample(local PRNG_STATE* state, const uint N, float p)
+uint BinomialSample(PRNG_STATE* state, const uint N, float p)
 {
     float uSample = 1.f;
     uint count = 0;
@@ -26,7 +33,7 @@ uint BinomialSample(local PRNG_STATE* state, const uint N, float p)
     return count;
 }
 
-float PoissonSample(local PRNG_STATE* state, float lambda)
+float PoissonSample(PRNG_STATE* state, float lambda)
 {
     float x = 0;
     float p = -lambda;

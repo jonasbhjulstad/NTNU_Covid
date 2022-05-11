@@ -6,3 +6,4 @@ target_include_directories(RNG_Example PUBLIC ${NV_UTILS_DIR} "../Utils")
 target_link_libraries(RNG_Example PUBLIC NV_CL_DefaultInstance)
 
 add_subdirectory(SIR)
+add_subdirectory(Network)

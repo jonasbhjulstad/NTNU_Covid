@@ -314,7 +314,6 @@ namespace ImGUI_UI
 		ImGui::Begin("Example settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::Checkbox("Display nodes", &uiSettings.display.nodes);
 		ImGui::Checkbox("Display edges", &uiSettings.display.edges);
-		ImGui::Checkbox("Animate light", &uiSettings.animateLight);
 		ImGui::SliderFloat("Movement speed", &camera.movementSpeed, 1.0f, 100.0f);
 		float fontSize_old = uiSettings.fontSize;
 		ImGui::SliderFloat("Font size", &uiSettings.fontSize, .1f, 10.0f);
@@ -322,11 +321,10 @@ namespace ImGUI_UI
 		{
 			ImGui::GetIO().FontGlobalScale = uiSettings.fontSize;
 		}
-		ImGui::SliderFloat("Light speed", &uiSettings.lightSpeed, 0.1f, 1.0f);
 		ImGui::End();
 
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
-		ImGui::ShowDemoWindow();
+		// ImGui::ShowDemoWindow();
 
 		// }
 

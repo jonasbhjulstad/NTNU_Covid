@@ -1,0 +1,5 @@
+add_executable(SIR_Network_Example SIR_Network_Example.cpp)
+target_link_libraries(SIR_Network_Example PUBLIC OpenCL NV_INCLUDE_PATHS)
+add_definitions(${CL_COMPILE_DEFINITIONS} -D PWD=${CMAKE_CURRENT_SOURCE_DIR}/)
+target_include_directories(SIR_Network_Example PUBLIC ${NV_UTILS_DIR} "../../Utils")
+target_link_libraries(SIR_Network_Example PUBLIC NV_CL_DefaultInstance OpenCL::OpenCL OpenCL::Headers igraph::igraph)

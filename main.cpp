@@ -32,17 +32,15 @@ const std::string modelPath = assetPath + "models/";
 const std::string texturePath = assetPath + "textures/";
 #endif
 
-#define NODE_COUNT 100
 
-
-std::vector<NodeInstanceData> prepareNodes()
+std::vector<NodeInstanceData> prepareNodes(float offset[3], size_t N_nodes)
 {
     std::default_random_engine gen;
     std::uniform_real_distribution<float> dst(-100.f, 100.f);
-    std::vector<NodeInstanceData> instanceData(NODE_COUNT);
-    for (int i = 0; i < NODE_COUNT; i++)
+    std::vector<NodeInstanceData> instanceData(N_nodes);
+    for (int i = 0; i < N_nodes; i++)
     {
-        instanceData.push_back({{dst(gen), dst(gen), dst(gen)}, {1.f,1.f,1.f, .8f},1.f});
+        instanceData.push_back({{dst(gen) + offset[0], dst(gen) + offset[2], dst(gen) + offset[3]}, {1.f,1.f,1.f, .8f},1.f});
     }
     return instanceData;
 }
@@ -132,8 +130,28 @@ int main()
     camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
     camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
-    auto nodeInstanceData = prepareNodes();
-    auto edgeInstanceData = prepareEdges(nodeInstanceData, .6f);
+
+    size_t N_cluster_nodes = 100;
+    size_t N_clusters = 5;
+    float nodePosOffset[3] = {0.f, 0.f, 0.f};
+    auto nodeInstanceData = prepareNodes(nodePosOffset, N_cluster_nodes);
+    auto edgeInstanceData = prepareEdges(nodeInstanceData, 0.7f);
+    std::default_random_engine gen;
+    std::uniform_real_distribution<float> dst(-500.f, 500.f);
+    for (int i = 0; i < N_clusters; i++)
+    {
+        nodePosOffset[0] = dst(gen);
+        nodePosOffset[1] = dst(gen);
+        nodePosOffset[2] = dst(gen);
+        //cout nodePosOffset
+        std::cout << nodePosOffset[0] << " " << nodePosOffset[1] << " " << nodePosOffset[2] << std::endl;
+
+        auto nodeClusterInstance = prepareNodes(nodePosOffset, N_cluster_nodes);
+        nodeInstanceData.insert(nodeInstanceData.end(), nodeClusterInstance.begin(), nodeClusterInstance.end());
+        auto edgeClusterInstance = prepareEdges(nodeClusterInstance, .7f);
+        edgeInstanceData.insert(edgeInstanceData.end(), edgeClusterInstance.begin(), edgeClusterInstance.end());
+    }
+
 
     prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera);
 

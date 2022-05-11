@@ -14,7 +14,7 @@ void beginCommandBuffer(VkCommandBuffer commandBuffer)
 void beginRenderPass(VkRenderPass renderPass, VkCommandBuffer commandBuffer, VkFramebuffer frameBuffer, uint32_t width, uint32_t height)
 {
     VkClearValue clearValues[2];
-    clearValues[0].color = {{0.141, 0.035, 1., 1.f}};
+    clearValues[0].color = {{67./255, 74./255, 69./255, 1.f}};
     clearValues[1].depthStencil = {1.0f, 0};
 
     VkRenderPassBeginInfo renderPassBeginInfo = initializers::renderPassBeginInfo();

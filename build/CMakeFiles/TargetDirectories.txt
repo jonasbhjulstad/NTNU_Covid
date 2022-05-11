@@ -57,3 +57,6 @@
 /home/deb/Documents/NetworkViewport/build/OpenCL/Examples/SIR/CMakeFiles/SIR_Example.dir
 /home/deb/Documents/NetworkViewport/build/OpenCL/Examples/SIR/CMakeFiles/edit_cache.dir
 /home/deb/Documents/NetworkViewport/build/OpenCL/Examples/SIR/CMakeFiles/rebuild_cache.dir
+/home/deb/Documents/NetworkViewport/build/OpenCL/Examples/Network/CMakeFiles/SIR_Network_Example.dir
+/home/deb/Documents/NetworkViewport/build/OpenCL/Examples/Network/CMakeFiles/edit_cache.dir
+/home/deb/Documents/NetworkViewport/build/OpenCL/Examples/Network/CMakeFiles/rebuild_cache.dir

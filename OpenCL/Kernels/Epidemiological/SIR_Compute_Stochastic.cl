@@ -29,13 +29,12 @@ __kernel void SIR_Compute_Stochastic(constant ulong* seeds, constant float* x0, 
 
     assignVec(x_traj, x0, 3);
 
-    uint id = get_local_id(0);
-    uint work_dim = get_work_dim();
-    local PRNG_STATE state;
-    for (int i = 0; i < 10; i++)
-    {
-	    PRNG_SEED_FN(&state, seeds[id]);
-    }
+    uint id = get_global_id(0);
+    // uint work_dim = get_work_dim();
+    //print seed
+    // printf("seed: %d\n", seeds[0]);
+    PRNG_STATE state;
+    PRNG_SEED_FN(&state, seeds[id]);
 
     for (uint i = 0; i < Nt; i++)
     {

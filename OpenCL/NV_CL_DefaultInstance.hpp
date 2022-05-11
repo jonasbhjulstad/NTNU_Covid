@@ -23,7 +23,7 @@ struct CL_Instance
     cl_program program;
 };
 
-CL_Instance clDefaultInitialize()
+CL_Instance clDefaultInitialize(uint device_type = CL_DEVICE_TYPE_GPU)
 {
     CL_Instance clInstance;
     	/*Step1: Getting platforms and choose an available one.*/
@@ -45,19 +45,19 @@ CL_Instance clDefaultInitialize()
 		free(platforms);
 	}
 
-	status = clGetDeviceIDs(clInstance.platform, CL_DEVICE_TYPE_GPU, 0, NULL, &clInstance.numDevices);
+	status = clGetDeviceIDs(clInstance.platform, device_type, 0, NULL, &clInstance.numDevices);
 	if (clInstance.numDevices == 0) //no GPU available.
 	{
 		std::cout << "No GPU device available." << std::endl;
 		std::cout << "Choose CPU as default device." << std::endl;
-		status = clGetDeviceIDs(clInstance.platform, CL_DEVICE_TYPE_CPU, 0, NULL, &clInstance.numDevices);
+		status = clGetDeviceIDs(clInstance.platform, device_type, 0, NULL, &clInstance.numDevices);
 		clInstance.device_ids.resize(clInstance.numDevices);
-		status = clGetDeviceIDs(clInstance.platform, CL_DEVICE_TYPE_CPU, clInstance.numDevices, clInstance.device_ids.data(), NULL);
+		status = clGetDeviceIDs(clInstance.platform, device_type, clInstance.numDevices, clInstance.device_ids.data(), NULL);
 	}
 	else
 	{
 		clInstance.device_ids.resize(clInstance.numDevices);
-		status = clGetDeviceIDs(clInstance.platform, CL_DEVICE_TYPE_GPU, clInstance.numDevices, clInstance.device_ids.data(), NULL);
+		status = clGetDeviceIDs(clInstance.platform, device_type, clInstance.numDevices, clInstance.device_ids.data(), NULL);
 	}
 
 
