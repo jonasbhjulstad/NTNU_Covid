@@ -1,6 +1,7 @@
 #ifndef NV_MENU_WINDOW_DEFINES_HPP
 #define NV_MENU_WINDOW_DEFINES_HPP
-
+#include <string>
+#include <map>
 
 enum NV_Menu_Window
 {

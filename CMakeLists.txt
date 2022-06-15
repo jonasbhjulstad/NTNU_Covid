@@ -6,11 +6,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED 17)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(Vulkan REQUIRED)
+find_package(LAPACK REQUIRED)
 find_package(igraph REQUIRED)
+target_link_libraries(igraph::igraph INTERFACE LAPACK::LAPACK)
 find_package(glfw3 3.3 REQUIRED)
 find_package(glm REQUIRED)
-find_package(OpenCLHeaders REQUIRED)
-find_package(OpenCLICDLoader REQUIRED)
+find_package(Ktx REQUIRED)
+# find_package(OpenCLHeaders REQUIRED)
+# find_package(OpenCLICDLoader REQUIRED)
 FetchContent_Declare(
     imgui_repo
     GIT_REPOSITORY https://github.com/ocornut/imgui
@@ -25,7 +28,7 @@ target_include_directories(imgui PUBLIC ${imgui_repo_SOURCE_DIR} "${imgui_repo_S
 target_link_libraries(imgui PUBLIC Vulkan::Vulkan)
 target_compile_options(imgui PRIVATE "-O3")
 
-find_package(Ktx REQUIRED)
+link_libraries(LAPACK::LAPACK)
 
 MACRO(SUBDIRLIST result curdir)
   FILE(GLOB children RELATIVE ${curdir} ${curdir}/*)
@@ -55,13 +58,8 @@ set(CL_COMPILE_DEFINITIONS "-DRANDOM_CL_GENERATOR_DIR=${RANDOM_CL_GENERATOR_DIR}
 add_subdirectory(Utils)
 add_subdirectory(Vulkan)
 add_subdirectory(ImGui)
-add_subdirectory(OpenCL)
-add_executable(main main.cpp)
-# target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan")
-target_link_libraries(main PUBLIC imgui "libktx.a" 
-                    Vulkan::Vulkan igraph::igraph glfw 
-                    glm::glm NV_VulkanSetup NV_Camera 
-                    NV_ImGuiUI NV_VulkanWindow NV_VulkanInstance
-                    NV_glTFBasicInstance NV_ProjectionBuffer)
+add_subdirectory(Graph)
+add_subdirectory(Menu)
+add_subdirectory(Executables)
 add_compile_options("-Wfatal-errors")
 # add_subdirectory(examples)

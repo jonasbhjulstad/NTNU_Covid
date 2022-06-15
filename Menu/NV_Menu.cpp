@@ -1,4 +1,13 @@
 #include "NV_Menu.hpp"
+#include <map>
+#include <unordered_set>
+#include <vector>
+#include <stdexcept>
+#include "NV_Graph_Designer.hpp"
+
+namespace Menu
+{
+
 void createPreferencesMenu(ImVec4 *nodeStateColors)
 {
     if (ImGui::Begin("Preferences"))
@@ -9,7 +18,7 @@ void createPreferencesMenu(ImVec4 *nodeStateColors)
         ImGui::End();
     }
 }
-void dispatchMenuWindows(std::map<NV_Menu_Window, bool> &activeMenus)
+void dispatchMenuWindows(std::map<NV_Menu_Window, bool> &activeMenus, igraph_t* graph)
 {
     for (auto p_menu = activeMenus.begin(); p_menu != activeMenus.end();)
     {
@@ -25,16 +34,20 @@ void dispatchMenuWindows(std::map<NV_Menu_Window, bool> &activeMenus)
             else if (p_menu->first == NV_MENU_WINDOW_SAVE)
             {
             }
-            else if (p_menu->first == NV_MENU_WINDOW_NEW_GRAPH)
+            else if ((p_menu->first == NV_MENU_WINDOW_NEW_GRAPH))
             {
-                igraph_t graph;
-                switch(createGraphDesignerMenu(&graph))
+                if (graph != nullptr)
                 {
+                    std::runtime_error("No provided pointer to graph creation object!");
+                }
+                switch(createGraphDesignerMenu(graph))
+                {
+                    case GRAPH_DESIGN_STATUS_IDLE:
+                        break;
                     case GRAPH_DESIGN_STATUS_CANCELED:
                         erase_entry = true;
                         break;
                     case GRAPH_DESIGN_STATUS_GRAPH_CREATED:
-                        igraph_destroy(&graph);
                         erase_entry = true;
                         break;
                 }
@@ -87,26 +100,4 @@ void createTopMenu(UISettings &uiSettings)
     }
 }
 
-void createPopupMenu(bool &p_active)
-{
-    if (p_active)
-    {
-        if (ImGui::IsMouseClicked(1))
-        {
-            ImGui::SetNextWindowPos(ImGui::GetMousePos());
-        }
-
-        static int selected_fish = -1;
-        const char *names[] = {"Bream", "Haddock", "Mackerel", "Pollock", "Tilefish"};
-        static bool toggles[] = {true, false, false, false, false};
-        if (ImGui::BeginPopup("select"))
-        {
-            ImGui::Text("Aquarium");
-            ImGui::Separator();
-            for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-                if (ImGui::Selectable(names[i]))
-                    selected_fish = i;
-            ImGui::EndPopup();
-        }
-    }
 }

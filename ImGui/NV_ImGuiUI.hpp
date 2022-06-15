@@ -2,17 +2,14 @@
 #define NV_IMGUI_UI_HPP
 
 #include <imgui.h>
-#include <unordered_set>
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan.hpp>
 #include <NV_VulkanBuffer.hpp>
 #include <NV_VulkanDevice.hpp>
-#include <NV_VulkanInitializers.hpp>
-#include <NV_VulkanPipelineInitializers.hpp>
 #include <NV_Camera.hpp>
-#include "NV_Menu.hpp"
+#include <NV_Menu_Window_Defines.hpp>
+#include <NV_Menu.hpp>
 #include "NV_UISettings.hpp"
-#include <NV_Assets.hpp>
 // Options and values to display/toggle from the UI
 // ----------------------------------------------------------------------------
 // ImGUI class
@@ -20,6 +17,11 @@
 
 namespace ImGUI_UI
 {
+enum ImGUI_UI_Status
+{
+	IMGUI_UI_STATUS_NO_ACTION,
+	IMGUI_UI_STATUS_NEW_GRAPH
+};
 
 struct ImGuiVulkanData
 {
@@ -57,7 +59,7 @@ struct ImGuiVulkanData
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera);
+	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera, igraph_t* graph);
 
 	// Update vertex and index buffer containing the imGui elements when required
 	void updateBuffers(VulkanDevice* vulkanDevice, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer,  int32_t& indexCount, int32_t& vertexCount);

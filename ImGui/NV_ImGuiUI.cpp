@@ -1,7 +1,10 @@
 #include "NV_ImGuiUI.hpp"
+#include <NV_VulkanInitializers.hpp>
+#include <NV_VulkanPipelineInitializers.hpp>
+#include <NV_Assets.hpp>
+
 namespace ImGUI_UI
 {
-
 
 	void destroyImGuiVulkanData(ImGuiVulkanData& ivData)
 	{
@@ -274,15 +277,15 @@ namespace ImGUI_UI
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(bool updateFrameGraph, UISettings &uiSettings, float frameTime, Camera& camera)
+	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera, igraph_t* graph)
 	{
 		ImGui::NewFrame();
 
 
-		createTopMenu(uiSettings);
-		createPopupMenu(uiSettings.popup);
+		Menu::createTopMenu(uiSettings);
+		// createPopupMenu(uiSettings.popup);
 
-		dispatchMenuWindows(uiSettings.activeMenus);
+		Menu::dispatchMenuWindows(uiSettings.activeMenus, graph);
 		static float f = 0.0f;
 		// ImGui::TextUnformatted(ivData.title.c_str());
 		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
@@ -290,18 +293,15 @@ namespace ImGUI_UI
 
 
 		// Update frame time display
-		if (updateFrameGraph)
+		std::rotate(uiSettings.frameTimes.begin(), uiSettings.frameTimes.begin() + 1, uiSettings.frameTimes.end());
+		uiSettings.frameTimes.back() = frameTime;
+		if (frameTime < uiSettings.frameTimeMin)
 		{
-			std::rotate(uiSettings.frameTimes.begin(), uiSettings.frameTimes.begin() + 1, uiSettings.frameTimes.end());
-			uiSettings.frameTimes.back() = frameTime;
-			if (frameTime < uiSettings.frameTimeMin)
-			{
-				uiSettings.frameTimeMin = frameTime;
-			}
-			if (frameTime > uiSettings.frameTimeMax)
-			{
-				uiSettings.frameTimeMax = frameTime;
-			}
+			uiSettings.frameTimeMin = frameTime;
+		}
+		if (frameTime > uiSettings.frameTimeMax)
+		{
+			uiSettings.frameTimeMax = frameTime;
 		}
 
 		ImGui::PlotLines("Frame Times", &uiSettings.frameTimes[0], 50, 0, "", uiSettings.frameTimeMin, uiSettings.frameTimeMax, ImVec2(0, 80));

@@ -7,7 +7,22 @@
 */
 
 #include "NV_VulkanTools.hpp"
-
+#include <math.h>
+#include <stdlib.h>
+#include <string>
+#include <cstring>
+#include <fstream>
+#include <assert.h>
+#include <stdio.h>
+#include <vector>
+#include <stdexcept>
+#include <fstream>
+#if defined(_WIN32)
+#include <windows.h>
+#include <fcntl.h>
+#include <io.h>
+#endif
+#include <NV_VulkanInitializers.hpp>
 
 namespace tools
 {

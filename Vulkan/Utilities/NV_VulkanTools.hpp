@@ -10,23 +10,7 @@
 #define NV_VULKAN_TOOLS_HPP
 
 #include <vulkan/vulkan.hpp>
-#include <math.h>
-#include <stdlib.h>
-#include <string>
-#include <cstring>
-#include <fstream>
-#include <assert.h>
-#include <stdio.h>
-#include <vector>
 #include <iostream>
-#include <stdexcept>
-#include <fstream>
-#if defined(_WIN32)
-#include <windows.h>
-#include <fcntl.h>
-#include <io.h>
-#endif
-#include <NV_VulkanInitializers.hpp>
 
 // Custom define for better code readability
 #define VK_FLAGS_NONE 0
