@@ -20,7 +20,7 @@
 #include <random>
 
 #ifdef WIN32
-const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
+const std::string assetPath = "C:\\Users\\jonas\\Documents\\NetworkViewport\\data\\";
 const std::string shadersPath = assetPath + "shaders\\";
 const std::string computeShadersPath = assetPath + "computeShaders\\";
 const std::string modelPath = assetPath + "models\\";
