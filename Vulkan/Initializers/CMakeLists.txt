@@ -1,4 +1,0 @@
-target_link_libraries(NV_VulkanPipelineInitializers PUBLIC NV_VulkanInstance NV_VulkanTools)
-add_library(NV_VulkanInitializers INTERFACE)
-target_include_directories(NV_VulkanInitializers INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-# target_precompile_headers(NV_VulkanPipelineInitializers PUBLIC NV_VulkanPipelineInitializers.hpp NV_VulkanInitializers.hpp)

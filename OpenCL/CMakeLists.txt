@@ -1,6 +1,0 @@
-add_library(NV_CL_DefaultInstance INTERFACE)
-target_include_directories(NV_CL_DefaultInstance INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_subdirectory(Kernels)
-add_subdirectory(Utils)
-add_subdirectory(Examples)

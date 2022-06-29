@@ -1,1 +1,0 @@
-target_link_libraries(NV_ProjectionBuffer PUBLIC NV_VulkanDevice NV_VulkanBuffer NV_Camera)
