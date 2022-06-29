@@ -6,18 +6,18 @@
 #include <chrono>
 #include <memory>
 #include <vulkan/vulkan.hpp>
-#include <imgui.h>
+#include <imgui/imgui.h>
 #include <GLFW/glfw3.h>
-#include <NV_VulkanSetup.hpp>
-#include <NV_VulkanWindow.hpp>
-#include <NV_Camera.hpp>
-#include <NV_ImGuiUI.hpp>
-#include "NV_UISettings.hpp"
-#include <NV_glTFBasicInstance.hpp>
+#include <VulkanTools/Routines/VulkanSetup.hpp>
+#include <VulkanTools/Routines/VulkanWindow.hpp>
+#include <VulkanTools/Interactive/VulkanCamera.hpp>
+#include <VulkanTools/Interactive/VulkanProjectionBuffer.hpp>
+#include <NetworkViewport/ImGui/ImGuiUI.hpp>
+#include <NetworkViewport/Graph/Graph_Layout.hpp>
+#include <VulkanTools/gltf/VulkanglTFModel.hpp>
+#include <NetworkViewport/Menu/UISettings.hpp>
 #include "SetupRoutines.hpp"
 #include <random>
-#include <NV_ProjectionBuffer.hpp>
-#include <NV_Graph_Layout.hpp>
 
 #ifdef WIN32
 const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";

@@ -8,15 +8,15 @@
 #include <vulkan/vulkan.hpp>
 #include <imgui.h>
 #include <GLFW/glfw3.h>
-#include <NV_VulkanSetup.hpp>
-#include <NV_VulkanWindow.hpp>
-#include <NV_Camera.hpp>
-#include <NV_ImGuiUI.hpp>
-#include "NV_UISettings.hpp"
-#include <NV_glTFBasicInstance.hpp>
+#include <VulkanSetup.hpp>
+#include <VulkanWindow.hpp>
+#include <VulkanCamera.hpp>
+#include <ImGuiUI.hpp>
+#include "UISettings.hpp"
+#include <VulkanglTFBasicInstance.hpp>
 #include "SetupRoutines.hpp"
 #include <random>
-#include <NV_ProjectionBuffer.hpp>
+#include <ProjectionBuffer.hpp>
 
 #ifdef WIN32
 const std::string assetPath = "C:\\Users\\jonas\\Documents\\Vulkan\\examples\\imgui\\data\\";
