@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.5)
 project(NetworkViewport)
 include(FetchContent)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
@@ -14,25 +14,24 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(OpenMP_libgomp_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
   set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
 endif()
-
+include(FindVulkan)
+include(cmake/CPM.cmake)
+include(cmake/external_packages.cmake)
 find_package(OpenMP REQUIRED)
-find_package(Vulkan REQUIRED)
-find_package(LAPACK REQUIRED)
 find_package(igraph REQUIRED)
-find_package(imgui REQUIRED)
 find_package(glm REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(Ktx REQUIRED)
+find_package(LAPACK REQUIRED)
+# find_package(VulkanTools REQUIRED)
+add_subdirectory(thirdparty)
+# find_package(VulkanTools REQUIRED)
 
-target_link_libraries(igraph::igraph INTERFACE LAPACK::LAPACK)
-find_package(VulkanTools REQUIRED)
-target_link_libraries(VulkanTools::VulkanTools INTERFACE KTX::ktx)
 
-
-FetchContent_Declare(randomCL_repo
-GIT_REPOSITORY https://github.com/bstatcomp/RandomCL.git
-)
-FetchContent_MakeAvailable(randomCL_repo)
+# FetchContent_Declare(randomCL_repo
+# GIT_REPOSITORY https://github.com/bstatcomp/RandomCL.git
+# )
+# FetchContent_MakeAvailable(randomCL_repo)
 set(EXAMPLES_DATA_DIR "${CMAKE_BINARY_DIR}/examples/data/")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/examples/data")
 set(CL_GENERATOR_DIR "${randomcl_repo_SOURCE_DIR}/generators")
@@ -45,6 +44,6 @@ file(GLOB NV_SOURCE NetworkViewport/Graph/*.cpp NetworkViewport/ImGui/*.cpp Netw
 add_library(NetworkViewport STATIC)
 target_sources(NetworkViewport PRIVATE ${NV_SOURCE} PUBLIC FILE_SET HEADERS 
 BASE_DIRS "${PROJECT_SOURCE_FOLDER}" FILES ${NV_HEADERS})
-target_link_libraries(NetworkViewport PRIVATE imgui igraph::igraph KTX::ktx VulkanTools::VulkanTools)
+target_link_libraries(NetworkViewport PRIVATE imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools)
 
 add_subdirectory(Executables)
