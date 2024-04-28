@@ -1,7 +1,7 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
 
-// #include "VulkanglTFModel.h"
+// #include <NetworkViewport/VulkanglTFModel.h>
 #include <random>
 #include <chrono>
 #include <memory>
@@ -12,9 +12,9 @@
 #include <NV_VulkanWindow.hpp>
 #include <NV_Camera.hpp>
 #include <NV_ImGuiUI.hpp>
-#include "NV_UISettings.hpp"
+#include <NetworkViewport/NV_UISettings.hpp>
 #include <NV_glTFBasicInstance.hpp>
-#include "SetupRoutines.hpp"
+#include <NetworkViewport/SetupRoutines.hpp>
 #include <random>
 #include <NV_ProjectionBuffer.hpp>
 
@@ -25,7 +25,7 @@ const std::string computeShadersPath = assetPath + "computeShaders\\";
 const std::string modelPath = assetPath + "models\\";
 const std::string texturePath = assetPath + "textures\\";
 #else
-const std::string assetPath = "/home/deb/Documents/NetworkViewport/data/";
+const std::string assetPath = "/home/deb/Documents/NetworkViewport/";
 const std::string shadersPath = assetPath + "shaders/";
 const std::string computeShadersPath = assetPath + "computeShaders/";
 const std::string modelPath = assetPath + "models/";

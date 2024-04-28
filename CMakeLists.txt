@@ -24,7 +24,7 @@ find_package(glfw3 REQUIRED)
 find_package(Ktx REQUIRED)
 find_package(LAPACK REQUIRED)
 # find_package(VulkanTools REQUIRED)
-add_subdirectory(thirdparty)
+# add_subdirectory(thirdparty)
 # find_package(VulkanTools REQUIRED)
 
 
@@ -38,12 +38,9 @@ set(CL_GENERATOR_DIR "${randomcl_repo_SOURCE_DIR}/generators")
 set(CL_KERNEL_DIR "${CMAKE_SOURCE_DIR}/OpenCL/Kernels/")
 set(CL_COMPILE_DEFINITIONS "-DRANDOM_CL_GENERATOR_DIR=${RANDOM_CL_GENERATOR_DIR} -DCL_TARGET_OPENCL_VERSION=300")
 
-file(GLOB NV_HEADERS NetworkViewport/Graph/*.hpp NetworkViewport/ImGui/*.hpp NetworkViewport/Menu/*.hpp NetworkViewport/Utils/*.hpp)
-file(GLOB NV_SOURCE NetworkViewport/Graph/*.cpp NetworkViewport/ImGui/*.cpp NetworkViewport/Menu/*.cpp)
-
-add_library(NetworkViewport STATIC)
-target_sources(NetworkViewport PRIVATE ${NV_SOURCE} PUBLIC FILE_SET HEADERS 
-BASE_DIRS "${PROJECT_SOURCE_FOLDER}" FILES ${NV_HEADERS})
-target_link_libraries(NetworkViewport PRIVATE imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools)
+file(GLOB NetworkViewport_SOURCES source/*.cpp)
+add_library(NetworkViewport STATIC ${NetworkViewport_SOURCES})
+target_link_libraries(NetworkViewport PUBLIC imgui::imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools)
+target_include_directories(NetworkViewport PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 
 add_subdirectory(Executables)

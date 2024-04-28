@@ -2,10 +2,10 @@
 #define SETUP_ROUTINES_HPP
 #include <vector>
 #include <vulkan/vulkan.hpp>
-#include <VulkanTools/Utilities/VulkanTools.hpp>
-#include <VulkanTools/Structures/VulkanInstance.hpp>
-#include <VulkanTools/InstanceGraphics/GLTF_BasicInstance.hpp>
-#include <NetworkViewport/ImGui/ImGuiUI.hpp>
+#include <VulkanTools/Tools.hpp>
+#include <VulkanTools/Instance.hpp>
+#include <VulkanTools/GLTF_BasicInstance.hpp>
+#include <NetworkViewport/ImGuiUI.hpp>
 
 void beginCommandBuffer(VkCommandBuffer commandBuffer)
 {

@@ -1,0 +1,13 @@
+#ifndef FILEPATHS_H
+#define FILEPATHS_H
+#include <string>
+
+const char* ROOT_DIR = "@CMAKE_SOURCE_DIRECTORY@";
+const char* CL_GENERATOR_DIR = "@CL_GENERATOR_DIR@";
+const char* IMGUI_DIR = "@IMGUI_DIR@";
+const char* OPENCL_DIR = "@OPENCL_DIR@";
+const char* VULKAN_DIR = "@VULKAN_DIR@";
+const char* EXAMPLES_DATA_DIR = "@EXAMPLES_DATA_DIR@";
+const char* CL_KERNEL_DIR = "@CL_KERNEL_DIR@";
+
+#endif

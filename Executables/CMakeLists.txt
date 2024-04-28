@@ -7,7 +7,7 @@
 #                     glTFBasicInstance ProjectionBuffer Graph)
 
 add_executable(ER_Clusters_2D ER_Clusters_2D.cpp)
-
+target_link_libraries(ER_Clusters_2D PUBLIC NetworkViewport)
 get_cmake_property(_variableNames VARIABLES)
 foreach(_variableName ${_variableNames})
   if(_variableName MATCHES "CLCPP.*LIBRARIES")

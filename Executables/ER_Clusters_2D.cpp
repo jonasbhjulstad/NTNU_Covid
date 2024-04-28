@@ -1,22 +1,22 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
 
-// #include "VulkanglTFModel.h"
+// #include <NetworkViewport/VulkanglTFModel.h>
 #include <random>
 #include <chrono>
 #include <memory>
 #include <vulkan/vulkan.hpp>
 #include <imgui/imgui.h>
 #include <GLFW/glfw3.h>
-#include <VulkanTools/Routines/VulkanSetup.hpp>
-#include <VulkanTools/Routines/VulkanWindow.hpp>
-#include <VulkanTools/Interactive/VulkanCamera.hpp>
-#include <VulkanTools/Interactive/VulkanProjectionBuffer.hpp>
-#include <NetworkViewport/ImGui/ImGuiUI.hpp>
-#include <NetworkViewport/Graph/Graph_Layout.hpp>
-#include <VulkanTools/gltf/VulkanglTFModel.hpp>
-#include <NetworkViewport/Menu/UISettings.hpp>
-#include "SetupRoutines.hpp"
+#include <VulkanTools/Setup.hpp>
+#include <VulkanTools/Window.hpp>
+#include <VulkanTools/Camera.hpp>
+#include <VulkanTools/ProjectionBuffer.hpp>
+#include <NetworkViewport/ImGuiUI.hpp>
+#include <NetworkViewport/Graph_Layout.hpp>
+#include <VulkanTools/gltf/glTFModel.hpp>
+#include <NetworkViewport/UISettings.hpp>
+#include <NetworkViewport/SetupRoutines.hpp>
 #include <random>
 
 #ifdef WIN32
