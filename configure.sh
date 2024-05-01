@@ -1,1 +1,0 @@
-CC=clang-12 CXX=clang++-15 cmake ./ -B ./build -DOpenMP_C_FLAGS=-fopenmp=lomp -DOpenMP_CXX_FLAGS=-fopenmp=lomp -DOpenMP_C_LIB_NAMES="libomp" -DOpenMP_CXX_LIB_NAMES="libomp" -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp" -DOpenMP_CXX_LIB_NAMES="libomp" -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp"
