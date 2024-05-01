@@ -5,7 +5,7 @@
 #include <VulkanTools/Tools.hpp>
 #include <VulkanTools/Instance.hpp>
 #include <VulkanTools/GLTF_BasicInstance.hpp>
-#include <NetworkViewport/ImGuiUI.hpp>
+#include <VulkanViewport/ImGuiUI.hpp>
 
 void beginCommandBuffer(VkCommandBuffer commandBuffer)
 {
@@ -41,7 +41,7 @@ void beginRenderPass(VkRenderPass renderPass, VkCommandBuffer commandBuffer, VkF
 void buildCommandBuffers(std::vector<VkCommandBuffer>& commandBuffers, 
 std::vector<VkFramebuffer>& frameBuffers,
 VkRenderPass renderPass,
-ImGUI_UI::ImGuiVulkanData& ivData,
+VkVP::ImGuiVulkanData& ivData,
 const std::vector<std::unique_ptr<glTFBasicInstance::InstancePipelineData>>& instancePipelines,
 int width, int height)
 {
@@ -57,7 +57,7 @@ int width, int height)
         {
             buildCommandBuffer(*instancePipeline, commandBuffers[i]);
         }
-        ImGUI_UI::drawFrame(ivData, commandBuffers[i]);
+        VkVP::drawFrame(ivData, commandBuffers[i]);
 
 
         vkCmdEndRenderPass(commandBuffers[i]);
@@ -66,7 +66,7 @@ int width, int height)
     }
 }
 
-void rebuildBuffers(VulkanInstance &vulkanInstance, const std::vector<std::unique_ptr<glTFBasicInstance::InstancePipelineData>>& instancePipelines, ImGUI_UI::ImGuiVulkanData& ivData, Camera &camera, int width, int height)
+void rebuildBuffers(VulkanInstance &vulkanInstance, const std::vector<std::unique_ptr<glTFBasicInstance::InstancePipelineData>>& instancePipelines, VkVP::ImGuiVulkanData& ivData, Camera &camera, int width, int height)
 {
     VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
     // Ensure all operations on the device have been finished before destroying resources
@@ -117,7 +117,7 @@ void submitBuffers(VulkanInstance &vulkanInstance, uint32_t& currentBufferIdx)
     VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
 }
 
-void updateWindowSize(VulkanInstance &vulkanInstance, ImGUI_UI::ImGuiVulkanData& ivData, Camera& camera, const std::vector<std::unique_ptr<glTFBasicInstance::InstancePipelineData>>& instancePipelines, int& width, int& height)
+void updateWindowSize(VulkanInstance &vulkanInstance, VkVP::ImGuiVulkanData& ivData, Camera& camera, const std::vector<std::unique_ptr<glTFBasicInstance::InstancePipelineData>>& instancePipelines, int& width, int& height)
 {
     static int width_old, height_old;
     // glfwGetWindowSize(vulkanInstance.glfwWindow, &width, &height);

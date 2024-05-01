@@ -1,9 +1,9 @@
-#include <NetworkViewport/ImGuiUI.hpp>
+#include <VulkanViewport/ImGuiUI.hpp>
 #include <VulkanTools/Initializers.hpp>
 #include <VulkanTools/PipelineInitializers.hpp>
 #include <VulkanTools/GLTF_Assets.hpp>
 
-namespace ImGUI_UI
+namespace VkVP
 {
 
 	void destroyImGuiVulkanData(ImGuiVulkanData& ivData)
@@ -282,10 +282,10 @@ namespace ImGUI_UI
 		ImGui::NewFrame();
 
 
-		Menu::createTopMenu(uiSettings);
+		createTopMenu(uiSettings);
 		// createPopupMenu(uiSettings.popup);
 
-		Menu::dispatchMenuWindows(uiSettings.activeMenus, graph);
+		dispatchMenuWindows(uiSettings.activeMenus, graph);
 		static float f = 0.0f;
 		// ImGui::TextUnformatted(ivData.title.c_str());
 		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);

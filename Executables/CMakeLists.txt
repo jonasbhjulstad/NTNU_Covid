@@ -7,7 +7,13 @@
                     # glTFBasicInstance ProjectionBuffer Graph)
 
 add_executable(ER_Clusters_2D ER_Clusters_2D.cpp)
-target_link_libraries(ER_Clusters_2D PUBLIC NetworkViewport)
+target_link_libraries(ER_Clusters_2D PUBLIC VulkanViewport)
+add_dependencies(ER_Clusters_2D node.frag.spv ${GRAPH_SHADERS})
+
+
+# add_executable(VoxelGround VoxelGround.cpp)
+# target_link_libraries(VoxelGround PUBLIC VulkanViewport)
+# add_dependencies(VoxelGround ${VOXEL_SHADERS})
 # get_cmake_property(_variableNames VARIABLES)
 foreach(_variableName ${_variableNames})
   if(_variableName MATCHES "CLCPP.*LIBRARIES")
@@ -17,4 +23,4 @@ foreach(_variableName ${_variableNames})
 endforeach()
 # target_include_directories(main PUBLIC "${CMAKE_SOURCE_DIR}/Vulkan")
 # target_link_libraries(ER_Clusters_2D PUBLIC LAPACK::LAPACK imgui igraph::igraph Vulkan::Vulkan glfw igraph::igraph
-                    # glm::glm NetworkViewport KTX::ktx)
+                    # glm::glm VulkanViewport KTX::ktx)

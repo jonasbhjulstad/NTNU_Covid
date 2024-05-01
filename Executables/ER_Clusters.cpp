@@ -1,7 +1,7 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
 
-// #include <NetworkViewport/VulkanglTFModel.h>
+// #include <VulkanViewport/VulkanglTFModel.h>
 #include <random>
 #include <chrono>
 #include <memory>
@@ -12,9 +12,9 @@
 #include <VulkanWindow.hpp>
 #include <VulkanCamera.hpp>
 #include <ImGuiUI.hpp>
-#include <NetworkViewport/UISettings.hpp>
+#include <VulkanViewport/UISettings.hpp>
 #include <VulkanglTFBasicInstance.hpp>
-#include <NetworkViewport/SetupRoutines.hpp>
+#include <VulkanViewport/SetupRoutines.hpp>
 #include <random>
 #include <ProjectionBuffer.hpp>
 
@@ -25,7 +25,7 @@ const std::string computeShadersPath = assetPath + "computeShaders\\";
 const std::string modelPath = assetPath + "models\\";
 const std::string texturePath = assetPath + "textures\\";
 #else
-const std::string assetPath = "/home/deb/Documents/NetworkViewport/";
+const std::string assetPath = "/home/deb/Documents/VulkanViewport/";
 const std::string shadersPath = assetPath + "shaders/";
 const std::string computeShadersPath = assetPath + "computeShaders/";
 const std::string modelPath = assetPath + "models/";
@@ -37,7 +37,7 @@ std::vector<NodeInstanceData> prepareNodes(float offset[3], size_t N_nodes)
 {
     std::default_random_engine gen;
     std::uniform_real_distribution<float> dst(-100.f, 100.f);
-    std::vector<NodeInstanceData> instanceData = graph::layout::kamada_kawai_3D(graph, );
+    std::vector<NodeInstanceData> instanceData = VkVP::kamada_kawai_3D(graph, );
     for (int i = 0; i < N_nodes; i++)
     {
         instanceData.push_back({{dst(gen) + offset[0], dst(gen) + offset[2], dst(gen) + offset[3]}, {1.f,1.f,1.f, .8f},1.f});
@@ -155,7 +155,7 @@ int main()
 
     prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera);
 
-    using namespace glTFBasicInstance;
+    using namespace VkVP
 
     VkDescriptorPool renderDescriptorPool;
     setupDescriptorPool(vulkanDevice->logicalDevice, renderDescriptorPool);
@@ -203,11 +203,11 @@ int main()
 
     // camera.setWindowID(ImGui::GetCurrentWindow());
 
-    ImGUI_UI::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
+    VkVP::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
 
-    ImGUI_UI::setupImGuiVisuals(width, height, uiSettings);
+    VkVP::setupImGuiVisuals(width, height, uiSettings);
 
-    ImGUI_UI::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, assetPath + "shaders/");
+    VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, assetPath + "shaders/");
 
 
 
@@ -231,9 +231,9 @@ int main()
         frameTimer = (float)tDiff / 1000.0f;
         tStart = tEnd;
 
-        ImGUI_UI_Status UIStatus = ImGUI_UI::newFrame(uiSettings, frameTimer, camera);
+        ImGUI_UI_Status UIStatus = VkVP::newFrame(uiSettings, frameTimer, camera);
 
-        ImGUI_UI::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
+        VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
 
         updateProjectionBuffer(vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera, true);
 

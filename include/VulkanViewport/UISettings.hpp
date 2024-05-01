@@ -4,7 +4,7 @@
 #include <array>
 #include <map>
 #include <imgui/imgui.h>
-#include <NetworkViewport/Menu_Window_Defines.hpp>
+#include <VulkanViewport/Menu_Window_Defines.hpp>
 struct UISettings
 {
 	struct

@@ -7,15 +7,15 @@
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Device.hpp>
 #include <VulkanTools/Camera.hpp>
-#include <NetworkViewport/Menu_Window_Defines.hpp>
-#include <NetworkViewport/Menu.hpp>
-#include <NetworkViewport/UISettings.hpp>
+#include <VulkanViewport/Menu_Window_Defines.hpp>
+#include <VulkanViewport/Menu.hpp>
+#include <VulkanViewport/UISettings.hpp>
 // Options and values to display/toggle from the UI
 // ----------------------------------------------------------------------------
 // ImGUI class
 // ----------------------------------------------------------------------------
 
-namespace ImGUI_UI
+namespace VkVP
 {
 enum ImGUI_UI_Status
 {

@@ -1,11 +1,11 @@
-#include <NetworkViewport/Menu.hpp>
+#include <VulkanViewport/Menu.hpp>
 #include <map>
 #include <unordered_set>
 #include <vector>
 #include <stdexcept>
-#include <NetworkViewport/Graph_Designer.hpp>
+#include <VulkanViewport/Graph_Designer.hpp>
 
-namespace Menu
+namespace VkVP
 {
 
 void createPreferencesMenu(ImVec4 *nodeStateColors)

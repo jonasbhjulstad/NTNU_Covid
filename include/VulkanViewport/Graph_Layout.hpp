@@ -6,7 +6,7 @@
 #include <VulkanTools/NodeInstance.hpp>
 #include <VulkanTools/EdgeInstance.hpp>
 
-namespace graph::layout
+namespace VkVP
 {
     std::vector<NodeInstanceData> kamada_kawai_2D(const igraph_t& graph, size_t max_iter, float epsilon)
     {

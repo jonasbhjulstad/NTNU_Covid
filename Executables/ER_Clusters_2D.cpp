@@ -1,7 +1,7 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
 
-// #include <NetworkViewport/VulkanglTFModel.h>
+// #include <VulkanViewport/VulkanglTFModel.h>
 #include <random>
 #include <chrono>
 #include <memory>
@@ -12,26 +12,14 @@
 #include <VulkanTools/Window.hpp>
 #include <VulkanTools/Camera.hpp>
 #include <VulkanTools/ProjectionBuffer.hpp>
-#include <NetworkViewport/ImGuiUI.hpp>
-#include <NetworkViewport/Graph_Layout.hpp>
+#include <VulkanViewport/ImGuiUI.hpp>
+#include <VulkanViewport/Graph_Layout.hpp>
 #include <VulkanTools/gltf/glTFModel.hpp>
-#include <NetworkViewport/UISettings.hpp>
-#include <NetworkViewport/SetupRoutines.hpp>
+#include <VulkanViewport/UISettings.hpp>
+#include <VulkanViewport/SetupRoutines.hpp>
 #include <random>
+#include <VulkanViewport/Filepaths.hpp>
 
-#ifdef WIN32
-const std::string assetPath = "C:\\Users\\jonas\\Documents\\NetworkViewport\\data\\";
-const std::string shadersPath = assetPath + "shaders\\";
-const std::string computeShadersPath = assetPath + "computeShaders\\";
-const std::string modelPath = assetPath + "models\\";
-const std::string texturePath = assetPath + "textures\\";
-#else
-const std::string assetPath = "/home/deb/Documents/NetworkViewport/data/";
-const std::string shadersPath = assetPath + "shaders/";
-const std::string computeShadersPath = assetPath + "computeShaders/";
-const std::string modelPath = assetPath + "models/";
-const std::string texturePath = assetPath + "textures/";
-#endif
 
 void setupDescriptorPool(VkDevice logicalDevice, VkDescriptorPool& descriptorPool)
 {
@@ -53,7 +41,7 @@ void setupDescriptorPool(VkDevice logicalDevice, VkDescriptorPool& descriptorPoo
 
 int main()
 {
-
+    using namespace VkVP;
     VulkanInstance vulkanInstance;
 
     /* Setup, Integration and Initialization of Vulkan/GLFW */
@@ -91,7 +79,7 @@ int main()
     /* User Interface Settings */
 
     UISettings uiSettings;
-    uiSettings.fontPath = assetPath + "fonts/DroidSansMono.ttf";
+    uiSettings.fontPath = ASSET_DIR + "fonts/DroidSansMono.ttf";
     Camera camera;
     camera.type = camera.firstperson;
     camera.position = glm::vec3(0.0f, 0.0f, -10.0f);
@@ -104,24 +92,25 @@ int main()
     
     igraph_t graph;
     igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, 0.5, 0, 0);
+    using namespace VkVP;
 
-    auto nodeInstanceData = graph::layout::kamada_kawai_2D(graph, 500, 0);
-    auto edgeInstanceData = graph::layout::get_edge_positions(nodeInstanceData, graph);
+    auto nodeInstanceData = kamada_kawai_2D(graph, 500, 0);
+    auto edgeInstanceData = get_edge_positions(nodeInstanceData, graph);
 
 
     prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera);
 
-    using namespace glTFBasicInstance;
 
     VkDescriptorPool renderDescriptorPool;
     setupDescriptorPool(vulkanDevice->logicalDevice, renderDescriptorPool);
 
     VkDeviceSize offset[1] = {0};
+    using namespace glTFBasicInstance;
 
     InstanceRenderingParams nodeParams;
-    nodeParams.vertexShaderPath = shadersPath + "node.vert.spv";
-    nodeParams.fragmentShaderPath = shadersPath + "node.frag.spv";
-    nodeParams.modelPath = modelPath + "ico_node.gltf";
+    nodeParams.vertexShaderPath = SHADER_DIR + "node.vert.spv";
+    nodeParams.fragmentShaderPath = SHADER_DIR + "node.frag.spv";
+    nodeParams.modelPath = MODEL_DIR + "ico_node.gltf";
     nodeParams.vulkanDevice = vulkanInstance.vulkanDevice;
     nodeParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
     nodeParams.queue = vulkanInstance.queue;
@@ -131,9 +120,9 @@ int main()
     nodeParams.offset = offset;
 
     InstanceRenderingParams edgeParams;
-    edgeParams.vertexShaderPath = shadersPath + "edge.vert.spv";
-    edgeParams.fragmentShaderPath = shadersPath + "edge.frag.spv";
-    edgeParams.modelPath = modelPath + "bezier.gltf";
+    edgeParams.vertexShaderPath = SHADER_DIR + "edge.vert.spv";
+    edgeParams.fragmentShaderPath = SHADER_DIR + "edge.frag.spv";
+    edgeParams.modelPath = MODEL_DIR + "bezier.gltf";
     edgeParams.vulkanDevice = vulkanInstance.vulkanDevice;
     edgeParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
     edgeParams.queue = vulkanInstance.queue;
@@ -141,7 +130,6 @@ int main()
     edgeParams.pipelineCache = vulkanInstance.pipelineCache;
     edgeParams.descriptorPool = renderDescriptorPool;
     edgeParams.offset = offset;
-
     std::vector<std::unique_ptr<InstancePipelineData>> instancePipelines;
     instancePipelines.push_back(prepareInstanceRendering<NodeInstanceData>(nodeParams, nodeInstanceData));
     instancePipelines.push_back(prepareInstanceRendering<EdgeInstanceData>(edgeParams, edgeInstanceData));    
@@ -159,11 +147,11 @@ int main()
 
     // camera.setWindowID(ImGui::GetCurrentWindow());
 
-    ImGUI_UI::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
+    VkVP::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
 
-    ImGUI_UI::setupImGuiVisuals(width, height, uiSettings);
+    VkVP::setupImGuiVisuals(width, height, uiSettings);
 
-    ImGUI_UI::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, assetPath + "shaders/");
+    VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, ASSET_DIR + "shaders/");
 
 
 
@@ -188,9 +176,9 @@ int main()
         tStart = tEnd;
 
         igraph_t newGraph;
-        ImGUI_UI::newFrame(uiSettings, frameTimer, camera, &newGraph);
+        VkVP::newFrame(uiSettings, frameTimer, camera, &newGraph);
 
-        ImGUI_UI::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
+        VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
 
         updateProjectionBuffer(vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera, true);
 

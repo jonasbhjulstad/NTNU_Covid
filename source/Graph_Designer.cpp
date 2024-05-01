@@ -4,8 +4,8 @@
 #include <imgui/imgui.h>
 #include <igraph/igraph_games.h>
 #include <stdexcept>
-#include <NetworkViewport/Graph_Designer.hpp>
-namespace Menu
+#include <VulkanViewport/Graph_Designer.hpp>
+namespace VkVP
 {
 
 
