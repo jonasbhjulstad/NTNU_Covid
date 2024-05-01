@@ -15,7 +15,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(OpenMP_libiomp5_LIBRARY ${OpenMP_CXX_LIB_NAMES} CACHE STRING "" FORCE)
 endif()
 include(FindVulkan)
-include(cmake/CPM.cmake)
 include(cmake/external_packages.cmake)
 find_package(OpenMP REQUIRED)
 find_package(igraph REQUIRED)
@@ -40,7 +39,7 @@ set(CL_COMPILE_DEFINITIONS "-DRANDOM_CL_GENERATOR_DIR=${RANDOM_CL_GENERATOR_DIR}
 
 file(GLOB NetworkViewport_SOURCES source/*.cpp)
 add_library(NetworkViewport STATIC ${NetworkViewport_SOURCES})
-target_link_libraries(NetworkViewport PUBLIC imgui::imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools)
+target_link_libraries(NetworkViewport PUBLIC imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools::VulkanTools)
 target_include_directories(NetworkViewport PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 
 add_subdirectory(Executables)
