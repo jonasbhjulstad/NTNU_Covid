@@ -3,7 +3,6 @@
 #include <igraph/igraph.h>
 #include <imgui/imgui.h>
 #include <string>
-#include <VulkanViewport/Graph_Generation.hpp>
 #define GRAPH_CREATION_MAX_NODES 1000
 #define GRAPH_CREATION_MAX_EDGES 10000
 

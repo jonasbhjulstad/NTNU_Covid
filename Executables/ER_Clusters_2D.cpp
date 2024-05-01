@@ -151,7 +151,7 @@ int main()
 
     VkVP::setupImGuiVisuals(width, height, uiSettings);
 
-    VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, ASSET_DIR + "shaders/");
+    VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, SHADER_DIR);
 
 
 

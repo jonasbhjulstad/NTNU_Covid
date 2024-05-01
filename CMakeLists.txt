@@ -22,5 +22,5 @@ add_library(VulkanViewport STATIC ${VulkanViewport_SOURCES})
 target_link_libraries(VulkanViewport PUBLIC imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools::VulkanTools)
 target_include_directories(VulkanViewport PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 target_include_directories(VulkanViewport PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include> $<INSTALL_INTERFACE:include>)
-
+add_dependencies(VulkanViewport ${UI_SHADERS})
 add_subdirectory(Executables)

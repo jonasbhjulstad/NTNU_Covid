@@ -32,3 +32,5 @@ endforeach()
 
 set(GRAPH_SHADERS node.frag.spv node.vert.spv edge.frag.spv edge.vert.spv PARENT_SCOPE)
 set(VOXEL_SHADERS cube.frag.spv cube.vert.spv PARENT_SCOPE)
+
+set(UI_SHADERS ui.frag.spv ui.vert.spv PARENT_SCOPE)
