@@ -18,7 +18,7 @@ void createPreferencesMenu(ImVec4 *nodeStateColors)
         ImGui::End();
     }
 }
-void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus, igraph_t* graph)
+void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus)
 {
     for (auto p_menu = activeMenus.begin(); p_menu != activeMenus.end();)
     {
@@ -36,21 +36,6 @@ void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus, igraph_t* gra
             }
             else if ((p_menu->first == MENU_WINDOW_NEW_GRAPH))
             {
-                if (graph != nullptr)
-                {
-                    std::runtime_error("No provided pointer to graph creation object!");
-                }
-                switch(createGraphDesignerMenu(graph))
-                {
-                    case GRAPH_DESIGN_STATUS_IDLE:
-                        break;
-                    case GRAPH_DESIGN_STATUS_CANCELED:
-                        erase_entry = true;
-                        break;
-                    case GRAPH_DESIGN_STATUS_GRAPH_CREATED:
-                        erase_entry = true;
-                        break;
-                }
             }
             else if (p_menu->first == MENU_WINDOW_IMPORT)
             {

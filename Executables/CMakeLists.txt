@@ -8,7 +8,11 @@
 
 add_executable(ER_Clusters_2D ER_Clusters_2D.cpp)
 target_link_libraries(ER_Clusters_2D PUBLIC VulkanViewport)
-add_dependencies(ER_Clusters_2D node.frag.spv ${GRAPH_SHADERS})
+add_dependencies(ER_Clusters_2D ${GRAPH_SHADERS})
+
+add_executable(WayCubes WayCubes.cpp)
+target_link_libraries(WayCubes PUBLIC VulkanViewport)
+add_dependencies(WayCubes ${WAY_SHADERS})
 
 
 add_executable(VoxelGround VoxelGround.cpp)

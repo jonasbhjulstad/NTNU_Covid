@@ -277,7 +277,7 @@ namespace VkVP
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera, igraph_t* graph)
+	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera)
 	{
 		ImGui::NewFrame();
 
@@ -285,7 +285,7 @@ namespace VkVP
 		createTopMenu(uiSettings);
 		// createPopupMenu(uiSettings.popup);
 
-		dispatchMenuWindows(uiSettings.activeMenus, graph);
+		dispatchMenuWindows(uiSettings.activeMenus);
 		static float f = 0.0f;
 		// ImGui::TextUnformatted(ivData.title.c_str());
 		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
@@ -311,9 +311,7 @@ namespace VkVP
 		ImGui::InputFloat3("rotation", &camera.rotation.x);
 
 		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-		ImGui::Begin("Example settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::Checkbox("Display nodes", &uiSettings.display.nodes);
-		ImGui::Checkbox("Display edges", &uiSettings.display.edges);
+		ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 		ImGui::SliderFloat("Movement speed", &camera.movementSpeed, 1.0f, 100.0f);
 		float fontSize_old = uiSettings.fontSize;
 		ImGui::SliderFloat("Font size", &uiSettings.fontSize, .1f, 10.0f);

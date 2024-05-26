@@ -8,8 +8,8 @@ layout (location = 3) in vec3 inColor;
 
 // Instanced attributes
 layout (location = 4) in vec3 instancePos;
-// layout (location = 5) in vec3 instanceRot;
-layout (location = 5) in vec3 instanceScale;
+layout (location = 5) in float instanceScale;
+layout (location = 6) in float instanceRot; //[rad]
 // layout (location = 7) in int instanceTexIndex;
 
 layout (binding = 0) uniform UBO 
@@ -32,9 +32,17 @@ void main()
 	outUV = vec3(inUV, .0);
 	
 	vec4 locPos = vec4(inPos.xyz, 1.0);
-	locPos.x *= instanceScale.x;
-	locPos.y *= instanceScale.y;
-	locPos.z *= instanceScale.z;
+
+	locPos.x *= instanceScale;
+	locPos.y *= 0.0001;
+	locPos.z *= 0.0000001;
+
+	//rotate locPos around z-axis
+	float c = cos(instanceRot);
+	float s = sin(instanceRot);
+	mat3 rot = mat3(c, -s, 0.0, s, c, 0.0, 0.0, 0.0, 1.0);
+	locPos.xyz = rot * locPos.xyz;
+
 	vec4 pos = vec4((locPos.xyz) + instancePos, 1.0);
 
 	gl_Position = ubo.projection * ubo.modelview * pos;

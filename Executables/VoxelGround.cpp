@@ -30,7 +30,8 @@ std::vector<VkVP::VoxelInstanceData> generate_ground(uint32_t Nx, uint32_t Ny,
     for (uint32_t j = 0; j < Ny; j++) {
       for (uint32_t k = 0; k < Nz; k++) {
         ground[i * Ny * Nz + j * Nz + k].pos = glm::vec3(i, j, k);
-        ground[i * Ny * Nz + j * Nz + k].color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        // ground[i * Ny * Nz + j * Nz + k].color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        ground[i * Ny * Nz + j * Nz + k].scale = glm::vec3(1.0f, 1.0f, 1.0f);
       }
     }
   }
@@ -102,15 +103,7 @@ int main()
     camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
 
-    size_t N_nodes = 100;
-    float nodePosOffset[3] = {0.f, 0.f, 0.f};
-    
-    igraph_t graph;
-    igraph_erdos_renyi_game(&graph, IGRAPH_ERDOS_RENYI_GNP, N_nodes, 0.5, 0, 0);
     using namespace VkVP;
-
-    auto nodeInstanceData = kamada_kawai_2D(graph, 500, 0);
-    auto edgeInstanceData = get_edge_positions(nodeInstanceData, graph);
 
 
     prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera);
@@ -122,10 +115,11 @@ int main()
     VkDeviceSize offset[1] = {0};
     using namespace glTFBasicInstance;
     auto voxelInstanceData = generate_ground(10, 10, 10);
+    voxelInstanceData[0].scale.x = 10.0f;
     InstanceRenderingParams voxelParams;
     voxelParams.vertexShaderPath = SHADER_DIR + "cube.vert.spv";
     voxelParams.fragmentShaderPath = SHADER_DIR + "cube.frag.spv";
-    voxelParams.modelPath = MODEL_DIR + "cube.glb";
+    voxelParams.modelPath = MODEL_DIR + "cube.gltf";
     voxelParams.vulkanDevice = vulkanInstance.vulkanDevice;
     voxelParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
     voxelParams.queue = vulkanInstance.queue;
@@ -157,8 +151,6 @@ int main()
     VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass, vulkanInstance.queue, SHADER_DIR);
 
 
-
-
     /* Render-loop variables */
     bool rebuildSwapChain = false;
     uint32_t currentBufferIdx;
@@ -178,8 +170,7 @@ int main()
         frameTimer = (float)tDiff / 1000.0f;
         tStart = tEnd;
 
-        igraph_t newGraph;
-        VkVP::newFrame(uiSettings, frameTimer, camera, &newGraph);
+        VkVP::newFrame(uiSettings, frameTimer, camera);
 
         VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
 

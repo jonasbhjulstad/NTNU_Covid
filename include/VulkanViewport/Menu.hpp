@@ -7,7 +7,7 @@
 namespace VkVP
 {
 void createPreferencesMenu(ImVec4 *nodeStateColors);
-void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus, igraph_t* graph);
+void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus);
 void createTopMenu(UISettings &uiSettings);
 }
 #endif

@@ -1,16 +1,10 @@
 #pragma once
 #include <string>
-
 namespace VkVP
 {
-    // const std::string assetPath = "/home/deb/Documents/VulkanViewport/data/";
-// const std::string shadersPath = assetPath + "shaders/";
-// const std::string computeShadersPath = assetPath + "computeShaders/";
-// const std::string modelPath = assetPath + "models/";
-// const std::string texturePath = assetPath + "textures/";
     const std::string SHADER_DIR = "@VulkanViewport_SHADER_DIR@";
     const std::string ASSET_DIR = "@VulkanViewport_ASSET_DIR@";
     const std::string TEXTURE_DIR = ASSET_DIR + "textures/";
     const std::string MODEL_DIR = ASSET_DIR + "models/";
-    
+    const std::string OSM_MAP_DIR = "@VulkanViewport_OSM_MAP_DIR@";
 }

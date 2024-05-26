@@ -59,7 +59,7 @@ struct ImGuiVulkanData
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera, igraph_t* graph);
+	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera);
 
 	// Update vertex and index buffer containing the imGui elements when required
 	void updateBuffers(VulkanDevice* vulkanDevice, VulkanBuffer& vertexBuffer, VulkanBuffer& indexBuffer,  int32_t& indexCount, int32_t& vertexCount);

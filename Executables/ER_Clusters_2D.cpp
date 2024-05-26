@@ -175,8 +175,7 @@ int main()
         frameTimer = (float)tDiff / 1000.0f;
         tStart = tEnd;
 
-        igraph_t newGraph;
-        VkVP::newFrame(uiSettings, frameTimer, camera, &newGraph);
+        VkVP::newFrame(uiSettings, frameTimer, camera);
 
         VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
 

@@ -7,8 +7,8 @@
 namespace VkVP {
 struct VoxelInstanceData {
   glm::vec3 pos;
-  glm::vec4 color;
-  float scale = 1.0f;
+  glm::vec3 scale;
+  glm::mat3 rotation;
   // Per-Instance attributes
   static std::vector<VkVertexInputAttributeDescription>
   getAttributeDescriptions(uint32_t bind_ID, uint32_t layoutOffset) {
@@ -16,8 +16,8 @@ struct VoxelInstanceData {
         initializers::vertexInputAttributeDescription(
             bind_ID, layoutOffset, VK_FORMAT_R32G32B32_SFLOAT, 0), // Position
         initializers::vertexInputAttributeDescription(
-            bind_ID, layoutOffset + 1, VK_FORMAT_R32_SFLOAT,
-            sizeof(float) * 3), // scale
+            bind_ID, layoutOffset + 1, VK_FORMAT_R32G32B32_SFLOAT,
+            sizeof(glm::vec3)), // scale
     };
   }
 };
