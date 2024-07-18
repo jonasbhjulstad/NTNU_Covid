@@ -1,88 +1,65 @@
-#include <VulkanViewport/Menu.hpp>
+#include <VulkanTools/Camera.hpp>
+#include <VulkanViewport/Editor/Menu.hpp>
 #include <map>
+#include <stdexcept>
 #include <unordered_set>
 #include <vector>
-#include <stdexcept>
-#include <VulkanViewport/Graph_Designer.hpp>
 
-namespace VkVP
-{
+namespace VkVP {
 
-void createPreferencesMenu(ImVec4 *nodeStateColors)
-{
-    if (ImGui::Begin("Preferences"))
-    {
-        ImGui::ColorEdit4("Suceptible", (float *)&nodeStateColors[0], ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit4("Infected", (float *)&nodeStateColors[1], ImGuiColorEditFlags_Float);
-        ImGui::ColorEdit4("Recovered", (float *)&nodeStateColors[2], ImGuiColorEditFlags_Float);
-        ImGui::End();
+void showPerformanceStats(const std::array<float, 50> &frameTimes) {
+  ImGui::PlotLines("Frame Times", frameTimes.data(), 50, 0, "", 0.0f, 120.0f,
+                   ImVec2(0, 80));
+}
+
+void showCameraSettings(Camera &camera) {
+  ImGui::Begin("Camera Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+  ImGui::InputFloat3("Position", &camera.position.x);
+  ImGui::InputFloat3("Rotation", &camera.rotation.x);
+  ImGui::SliderFloat("Movement speed", &camera.movementSpeed, 1.0f, 20.0f);
+}
+
+void showFontSettings() {
+  static float fontSize = 1.0f;
+  ImGui::SliderFloat("Font size", &fontSize, .1f, 10.0f);
+  ImGui::GetIO().FontGlobalScale = fontSize;
+}
+void dispatchMenu(const Menu_Windows activeMenu) {
+  switch (activeMenu) {
+  case Menu_Windows::TOP_MENU_NEW:
+    break;
+  case Menu_Windows::TOP_MENU_OPEN:
+    break;
+  case Menu_Windows::TOP_MENU_SAVE:
+    break;
+  case Menu_Windows::TOP_MENU_IMPORT:
+    break;
+  case Menu_Windows::TOP_MENU_PREFERENCES:
+    break;
+  default:
+    throw std::runtime_error("Invalid menu option");
+    break;
+  }
+}
+
+void createTopMenu(std::unordered_set<Menu_Windows> &activeMenus) {
+  if (ImGui::BeginMainMenuBar()) {
+    for (const auto &menu : Top_Menu_Names) {
+      if (ImGui::BeginMenu(menu.second.c_str())) 
+      {
+        activeMenus.insert(menu.first);
+        ImGui::EndMenu();
+      }
     }
-}
-void dispatchMenuWindows(std::map<Menu_Window, bool> &activeMenus)
-{
-    for (auto p_menu = activeMenus.begin(); p_menu != activeMenus.end();)
-    {
-        bool erase_entry = false;
-        if (p_menu->second)
-        {
-            if (p_menu->first == MENU_WINDOW_NEW)
-            {
-            }
-            else if (p_menu->first == MENU_WINDOW_OPEN)
-            {
-            }
-            else if (p_menu->first == MENU_WINDOW_SAVE)
-            {
-            }
-            else if ((p_menu->first == MENU_WINDOW_NEW_GRAPH))
-            {
-            }
-            else if (p_menu->first == MENU_WINDOW_IMPORT)
-            {
-            }
-            else if (p_menu->first == MENU_WINDOW_PREFERENCES)
-            {
-            }
-
-            if (erase_entry)
-            {
-                p_menu = activeMenus.erase(p_menu);
-            }
-            else
-            {
-                p_menu++;
-            }
-        }
-    }
+  }
+  ImGui::EndMainMenuBar();
 }
 
-void createTopMenu(UISettings &uiSettings)
-{
-    if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            for (const auto &menu : Menu_Window_Names)
-            {
-                if (ImGui::MenuItem(menu.second.c_str()))
-                {
-                    uiSettings.activeMenus[menu.first] = true;
-                }
-            }
-            ImGui::EndMenu();
-        }
+void createMenus() {
+  static std::unordered_set<Menu_Windows> activeMenus{};
+  createTopMenu(activeMenus);
 
-        if (ImGui::BeginMenu("Edit"))
-        {
-            ImGui::MenuItem("Undo");
-            ImGui::MenuItem("Redo");
-            ImGui::MenuItem("Cut");
-            ImGui::MenuItem("Copy");
-            ImGui::MenuItem("Paste");
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
-    }
+  std::for_each(activeMenus.begin(), activeMenus.end(), dispatchMenu);
 }
 
-}
+} // namespace VkVP

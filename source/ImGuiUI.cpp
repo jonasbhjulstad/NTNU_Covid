@@ -1,4 +1,4 @@
-#include <VulkanViewport/ImGuiUI.hpp>
+#include <VulkanViewport/UI/ImGuiUI.hpp>
 #include <VulkanTools/Initializers.hpp>
 #include <VulkanTools/PipelineInitializers.hpp>
 #include <VulkanTools/GLTF_Assets.hpp>
@@ -277,15 +277,14 @@ namespace VkVP
 
 
 	// Starts a new imGui frame and sets up windows and ui elements
-	void newFrame(UISettings &uiSettings, float frameTime, Camera& camera)
+	void newFrame(UISettings& uiSettings, float frameTime,  Camera& camera)
 	{
+		static std::array<float, 50> frameTimes{};
+		// ImGui::Begin();
 		ImGui::NewFrame();
 
+		createMenus();
 
-		createTopMenu(uiSettings);
-		// createPopupMenu(uiSettings.popup);
-
-		dispatchMenuWindows(uiSettings.activeMenus);
 		static float f = 0.0f;
 		// ImGui::TextUnformatted(ivData.title.c_str());
 		// ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
@@ -293,35 +292,11 @@ namespace VkVP
 
 
 		// Update frame time display
-		std::rotate(uiSettings.frameTimes.begin(), uiSettings.frameTimes.begin() + 1, uiSettings.frameTimes.end());
-		uiSettings.frameTimes.back() = frameTime;
-		if (frameTime < uiSettings.frameTimeMin)
-		{
-			uiSettings.frameTimeMin = frameTime;
-		}
-		if (frameTime > uiSettings.frameTimeMax)
-		{
-			uiSettings.frameTimeMax = frameTime;
-		}
+		std::rotate(frameTimes.begin(), frameTimes.begin() + 1, frameTimes.end());
+		frameTimes.back() = frameTime;
 
-		ImGui::PlotLines("Frame Times", &uiSettings.frameTimes[0], 50, 0, "", uiSettings.frameTimeMin, uiSettings.frameTimeMax, ImVec2(0, 80));
+		ImGui::EndFrame();
 
-		ImGui::Text("Camera");
-		ImGui::InputFloat3("position", &camera.position.x);
-		ImGui::InputFloat3("rotation", &camera.rotation.x);
-
-		ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-		ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-		ImGui::SliderFloat("Movement speed", &camera.movementSpeed, 1.0f, 100.0f);
-		float fontSize_old = uiSettings.fontSize;
-		ImGui::SliderFloat("Font size", &uiSettings.fontSize, .1f, 10.0f);
-		if (fontSize_old != uiSettings.fontSize)
-		{
-			ImGui::GetIO().FontGlobalScale = uiSettings.fontSize;
-		}
-		ImGui::End();
-
-		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver);
 		// ImGui::ShowDemoWindow();
 
 		// }

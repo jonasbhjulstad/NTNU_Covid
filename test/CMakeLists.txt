@@ -1,1 +1,1 @@
-add_subdirectory(osm)
+# add_subdirectory(osm)

@@ -12,10 +12,9 @@
 #include <VulkanTools/Window.hpp>
 #include <VulkanTools/Camera.hpp>
 #include <VulkanTools/ProjectionBuffer.hpp>
-#include <VulkanViewport/ImGuiUI.hpp>
-#include <VulkanViewport/Graph_Layout.hpp>
+#include <VulkanViewport/UI/ImGuiUI.hpp>
 #include <VulkanTools/gltf/glTFModel.hpp>
-#include <VulkanViewport/UISettings.hpp>
+#include <VulkanViewport/UI/UISettings.hpp>
 #include <VulkanViewport/SetupRoutines.hpp>
 #include <VulkanViewport/Instance/Voxel.hpp>
 #include <random>
@@ -114,8 +113,8 @@ int main()
 
     VkDeviceSize offset[1] = {0};
     using namespace glTFBasicInstance;
-    auto voxelInstanceData = generate_ground(10, 10, 10);
-    voxelInstanceData[0].scale.x = 10.0f;
+    auto voxelInstanceData = generate_ground(1, 1, 11);
+    // voxelInstanceData[0].scale.x = 10.0f;
     InstanceRenderingParams voxelParams;
     voxelParams.vertexShaderPath = SHADER_DIR + "cube.vert.spv";
     voxelParams.fragmentShaderPath = SHADER_DIR + "cube.frag.spv";

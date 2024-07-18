@@ -3,7 +3,7 @@ project(VulkanViewport)
 set(CMAKE_CXX_STANDARD_REQUIRED 17)
 set(CMAKE_CXX_STANDARD 17)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
-
+include(cmake/ccache.cmake)
 include(${PROJECT_SOURCE_DIR}/cmake/external_packages.cmake)
 
 
@@ -14,15 +14,14 @@ add_subdirectory(shaders)
 
 set(VulkanViewport_SHADER_DIR ${PROJECT_BINARY_DIR}/shaders/)
 set(VulkanViewport_ASSET_DIR ${PROJECT_SOURCE_DIR}/assets/)
-set(VulkanViewport_OSM_MAP_DIR "${PROJECT_BINARY_DIR}/osm/")
-file(MAKE_DIRECTORY ${VulkanViewport_OSM_MAP_DIR})
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/include/VulkanViewport)
 configure_file(include/VulkanViewport/Filepaths.hpp.in ${PROJECT_BINARY_DIR}/include/VulkanViewport/Filepaths.hpp @ONLY)
 
 
-file(GLOB_RECURSE VulkanViewport_SOURCES source/*.cpp)
-add_library(VulkanViewport STATIC ${VulkanViewport_SOURCES})
-target_link_libraries(VulkanViewport PUBLIC imgui LAPACK::LAPACK igraph::igraph KTX::ktx VulkanTools::VulkanTools ${OSM_XML_LIBRARIES})
+file(GLOB VulkanViewport_SOURCES source/*.cpp)
+add_library(VulkanViewport ${VulkanViewport_SOURCES})
+
+target_link_libraries(VulkanViewport PUBLIC imgui KTX::ktx VulkanTools::VulkanTools imgui::imgui)
 target_include_directories(VulkanViewport PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:include>)
 target_include_directories(VulkanViewport PUBLIC $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include> $<INSTALL_INTERFACE:include>)
 add_dependencies(VulkanViewport ${UI_SHADERS})

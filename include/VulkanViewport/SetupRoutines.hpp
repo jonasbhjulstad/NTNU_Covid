@@ -5,7 +5,7 @@
 #include <VulkanTools/Tools.hpp>
 #include <VulkanTools/Instance.hpp>
 #include <VulkanTools/GLTF_BasicInstance.hpp>
-#include <VulkanViewport/ImGuiUI.hpp>
+#include <VulkanViewport/UI/ImGuiUI.hpp>
 
 void beginCommandBuffer(VkCommandBuffer commandBuffer)
 {
@@ -111,7 +111,7 @@ void submitBuffers(VulkanInstance &vulkanInstance, uint32_t& currentBufferIdx)
     vulkanInstance.submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     vulkanInstance.submitInfo.commandBufferCount = 1;
     vulkanInstance.submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBufferIdx];
-    vulkanInstance.submitInfo.pNext = NULL;
+    vulkanInstance.submitInfo.pNext = nullptr;
     VK_CHECK_RESULT(vkQueueSubmit(vulkanInstance.queue, 1, &vulkanInstance.submitInfo, VK_NULL_HANDLE));
     VK_CHECK_RESULT(vulkanInstance.swapChain.queuePresent(vulkanInstance.queue, currentBufferIdx, vulkanInstance.semaphores.renderComplete));
     VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
@@ -127,9 +127,28 @@ void updateWindowSize(VulkanInstance &vulkanInstance, VkVP::ImGuiVulkanData& ivD
         ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
         ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanInstance.vulkanDevice->physicalDevice, 
         vulkanInstance.vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, 
-        vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, NULL, width, height, vulkanInstance.swapChain.imageCount);
+        vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, nullptr, width, height, vulkanInstance.swapChain.imageCount);
         vulkanInstance.ImGuiWindow.FrameIndex = 0;
         rebuildBuffers(vulkanInstance, instancePipelines, ivData, camera, width, height);
+    }
+    width_old = width;
+    height_old = height;
+}
+
+
+void updateWindowSize(VulkanInstance &vulkanInstance, VkVP::ImGuiVulkanData& ivData, Camera& camera, int& width, int& height)
+{
+    static int width_old, height_old;
+    // glfwGetWindowSize(vulkanInstance.glfwWindow, &width, &height);
+    glfwGetFramebufferSize(vulkanInstance.glfwWindow, &width, &height);
+    if (width_old != width || height_old != height)
+    {
+        ImGui_ImplVulkan_SetMinImageCount(vulkanInstance.swapChain.imageCount);
+        ImGui_ImplVulkanH_CreateOrResizeWindow(vulkanInstance.instance, vulkanInstance.vulkanDevice->physicalDevice, 
+        vulkanInstance.vulkanDevice->logicalDevice, &vulkanInstance.ImGuiWindow, 
+        vulkanInstance.vulkanDevice->queueFamilyIndices.graphics, nullptr, width, height, vulkanInstance.swapChain.imageCount);
+        vulkanInstance.ImGuiWindow.FrameIndex = 0;
+        
     }
     width_old = width;
     height_old = height;

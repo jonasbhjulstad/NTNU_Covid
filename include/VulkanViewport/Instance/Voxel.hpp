@@ -1,7 +1,6 @@
 #pragma once
 #include <VulkanTools/Initializers.hpp>
 #include <glm/glm.hpp>
-#include <igraph/igraph.h>
 #include <vector>
 #include <vulkan/vulkan.hpp>
 namespace VkVP {

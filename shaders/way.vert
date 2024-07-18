@@ -7,7 +7,7 @@ layout (location = 2) in vec2 inUV;
 layout (location = 3) in vec3 inColor;
 
 // Instanced attributes
-layout (location = 4) in vec3 instancePos;
+layout (location = 4) in vec2 instancePos;
 layout (location = 5) in float instanceScale;
 layout (location = 6) in float instanceRot; //[rad]
 // layout (location = 7) in int instanceTexIndex;
@@ -33,22 +33,24 @@ void main()
 	
 	vec4 locPos = vec4(inPos.xyz, 1.0);
 
-	locPos.x *= instanceScale;
-	locPos.y *= 0.0001;
-	locPos.z *= 0.0000001;
+	locPos.x *= 1;
+	locPos.y *= 1;
+	locPos.z *= 1;
 
 	//rotate locPos around z-axis
 	float c = cos(instanceRot);
 	float s = sin(instanceRot);
 	mat3 rot = mat3(c, -s, 0.0, s, c, 0.0, 0.0, 0.0, 1.0);
-	locPos.xyz = rot * locPos.xyz;
+	// locPos.xyz = rot * locPos.xyz;
 
-	vec4 pos = vec4((locPos.xyz) + instancePos, 1.0);
+	vec3 instPos = vec3(instancePos.x, instancePos.y, 0.0);
+
+	vec4 pos = vec4((locPos.xyz) + instPos, 1.0);
 
 	gl_Position = ubo.projection * ubo.modelview * pos;
 	outNormal = mat3(ubo.modelview) * inNormal;
 
-	pos = ubo.modelview * vec4(inPos.xyz + instancePos, 1.0);
+	pos = ubo.modelview * vec4(inPos.xyz + instPos, 1.0);
 	vec3 lPos = mat3(ubo.modelview) * ubo.lightPos.xyz;
 	outLightVec = lPos - pos.xyz;
 	outViewVec = -pos.xyz;		

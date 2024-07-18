@@ -1,6 +1,6 @@
 #ifndef STYLE_HPP
 #define STYLE_HPP
-#include <imgui.h>
+#include <imgui/imgui.h>
 
 void ImGui::ShowStyleEditor(ImGuiStyle* ref)
 {

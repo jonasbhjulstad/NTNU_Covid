@@ -7,9 +7,9 @@
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Device.hpp>
 #include <VulkanTools/Camera.hpp>
-#include <VulkanViewport/Menu_Window_Defines.hpp>
-#include <VulkanViewport/Menu.hpp>
-#include <VulkanViewport/UISettings.hpp>
+#include <VulkanViewport/Editor/Menu_Window_Defines.hpp>
+#include <VulkanViewport/Editor/Menu.hpp>
+#include <VulkanViewport/UI/UISettings.hpp>
 // Options and values to display/toggle from the UI
 // ----------------------------------------------------------------------------
 // ImGUI class
