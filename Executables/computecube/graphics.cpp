@@ -1,15 +1,16 @@
 #include "graphics.hpp"
+#include <VulkanTools/GLTF_Assets.hpp>
 #include <VulkanTools/Initializers.hpp>
 #include <VulkanViewport/Filepaths.hpp>
-#include <VulkanTools/GLTF_Assets.hpp>
 
-void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics& graphics,
-                         std::vector<VkCommandBuffer> &drawCmdBuffers, VulkanBuffer& storageBuffer, uint32_t N_particles,
-                         int width, int height) {
+void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics &graphics,
+                         std::vector<VkCommandBuffer> &drawCmdBuffers,
+                         VulkanBuffer &storageBuffer, uint32_t N_particles,
+                         int width, int height, uint32_t compute_QFI) {
   auto &vulkanDevice = vulkanInstance.vulkanDevice;
   auto &device = vulkanInstance.vulkanDevice->logicalDevice;
-  auto& frameBuffers = vulkanInstance.frameBuffers;
-  VkRenderPass& renderPass = vulkanInstance.renderPass;
+  auto &frameBuffers = vulkanInstance.frameBuffers;
+  VkRenderPass &renderPass = vulkanInstance.renderPass;
   VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 
   VkClearValue clearValues[2];
@@ -31,6 +32,24 @@ void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics& graphics,
     renderPassBeginInfo.framebuffer = frameBuffers[i];
 
     VK_CHECK_RESULT(vkBeginCommandBuffer(drawCmdBuffers[i], &cmdBufInfo));
+
+    // Acquire barrier
+    if (graphics.queueFamilyIndex != compute_QFI) {
+      VkBufferMemoryBarrier buffer_barrier = {
+          VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+          nullptr,
+          0,
+          VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+          compute_QFI,
+          graphics.queueFamilyIndex,
+          storageBuffer.buffer,
+          0,
+          storageBuffer.size};
+
+      vkCmdPipelineBarrier(drawCmdBuffers[i], VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                           VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, 0, 0, nullptr, 1,
+                           &buffer_barrier, 0, nullptr);
+    }
 
     // Draw the particle system using the update vertex buffer
     vkCmdBeginRenderPass(drawCmdBuffers[i], &renderPassBeginInfo,
@@ -54,35 +73,34 @@ void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics& graphics,
                            offsets);
     vkCmdDraw(drawCmdBuffers[i], N_particles, 1, 0, 0);
 
-
     vkCmdEndRenderPass(drawCmdBuffers[i]);
 
-    // // Release barrier
-    // if (graphics.queueFamilyIndex != compute.queueFamilyIndex) {
-    //   VkBufferMemoryBarrier buffer_barrier = {
-    //       VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-    //       nullptr,
-    //       VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-    //       0,
-    //       graphics.queueFamilyIndex,
-    //       compute.queueFamilyIndex,
-    //       storageBuffer.buffer,
-    //       0,
-    //       storageBuffer.size};
+    // Release barrier
+    if (graphics.queueFamilyIndex != compute_QFI) {
+      VkBufferMemoryBarrier buffer_barrier = {
+          VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+          nullptr,
+          VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+          0,
+          graphics.queueFamilyIndex,
+          compute_QFI,
+          storageBuffer.buffer,
+          0,
+          storageBuffer.size};
 
-    //   vkCmdPipelineBarrier(drawCmdBuffers[i],
-    //                        VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-    //                        VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr,
-    //                        1, &buffer_barrier, 0, nullptr);
-    // }
+      vkCmdPipelineBarrier(drawCmdBuffers[i],
+                           VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+                           VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr,
+                           1, &buffer_barrier, 0, nullptr);
+    }
 
     VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
   }
 }
 
-
 void prepareGraphics(VulkanInstance &vulkanInstance, Graphics &graphics,
-                     VkDescriptorPool& descriptorPool, ParticleTextures& textures) {
+                     VkDescriptorPool &descriptorPool,
+                     ParticleTextures &textures) {
   auto &vulkanDevice = vulkanInstance.vulkanDevice;
   auto &device = vulkanDevice->logicalDevice;
   VkQueue queue = vulkanInstance.queue;
@@ -199,13 +217,16 @@ void prepareGraphics(VulkanInstance &vulkanInstance, Graphics &graphics,
   vertexInputState.pVertexAttributeDescriptions = inputAttributes.data();
   using namespace VkVP;
   // Shaders
-  shaderStages[0] = loadShader(device, VkVP::SHADER_DIR + "/ComputeCube/particle.vert.spv",
-                               VK_SHADER_STAGE_VERTEX_BIT);
-  shaderStages[1] = loadShader(device, VkVP::SHADER_DIR + "/ComputeCube/particle.frag.spv",
-                               VK_SHADER_STAGE_FRAGMENT_BIT);
+  shaderStages[0] =
+      loadShader(device, VkVP::SHADER_DIR + "/ComputeCube/particle.vert.spv",
+                 VK_SHADER_STAGE_VERTEX_BIT);
+  shaderStages[1] =
+      loadShader(device, VkVP::SHADER_DIR + "/ComputeCube/particle.frag.spv",
+                 VK_SHADER_STAGE_FRAGMENT_BIT);
 
   VkGraphicsPipelineCreateInfo pipelineCreateInfo =
-      initializers::pipelineCreateInfo(graphics.pipelineLayout, vulkanInstance.renderPass, 0);
+      initializers::pipelineCreateInfo(graphics.pipelineLayout,
+                                       vulkanInstance.renderPass, 0);
   pipelineCreateInfo.pVertexInputState = &vertexInputState;
   pipelineCreateInfo.pInputAssemblyState = &inputAssemblyState;
   pipelineCreateInfo.pRasterizationState = &rasterizationState;
@@ -228,9 +249,9 @@ void prepareGraphics(VulkanInstance &vulkanInstance, Graphics &graphics,
   blendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
   blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
 
-  VK_CHECK_RESULT(vkCreateGraphicsPipelines(device, vulkanInstance.pipelineCache, 1,
-                                            &pipelineCreateInfo, nullptr,
-                                            &graphics.pipeline));
+  VK_CHECK_RESULT(vkCreateGraphicsPipelines(
+      device, vulkanInstance.pipelineCache, 1, &pipelineCreateInfo, nullptr,
+      &graphics.pipeline));
 
   // We use a semaphore to synchronize compute and graphics
   VkSemaphoreCreateInfo semaphoreCreateInfo =
@@ -245,7 +266,8 @@ void prepareGraphics(VulkanInstance &vulkanInstance, Graphics &graphics,
   VK_CHECK_RESULT(vkQueueSubmit(queue, 1, &submitInfo, VK_NULL_HANDLE));
   VK_CHECK_RESULT(vkQueueWaitIdle(queue));
 }
-void updateGraphicsUniformBuffers(Graphics& graphics, Camera& camera, uint32_t width, uint32_t height) {
+void updateGraphicsUniformBuffers(Graphics &graphics, Camera &camera,
+                                  uint32_t width, uint32_t height) {
   graphics.uniformData.projection = camera.matrices.perspective;
   graphics.uniformData.view = camera.matrices.view;
   graphics.uniformData.screenDim = glm::vec2((float)width, (float)height);

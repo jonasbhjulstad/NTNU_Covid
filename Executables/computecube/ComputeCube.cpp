@@ -54,7 +54,7 @@ void prepare(VulkanInstance &vulkanInstance, VkDescriptorPool &descriptorPool,
       vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
   compute.queue = vulkanInstance.queue;
   loadAssets(vulkanInstance);
-  prepareStorageBuffers(vulkanInstance, compute, particleBuffer, storageBuffer);
+  prepareStorageBuffers(vulkanInstance, compute, particleBuffer, storageBuffer, graphics.queueFamilyIndex);
   prepareGraphics(vulkanInstance, graphics, descriptorPool, textures);
   prepareCompute(vulkanInstance, compute, storageBuffer, descriptorPool);
 }
@@ -200,7 +200,7 @@ int main() {
                           vulkanInstance.projection.data, camera);
 
   VkDeviceSize offset[1] = {0};
-  uint32_t particles_per_attractor = 100;
+  uint32_t particles_per_attractor = 128;
   std::vector<Particle> particleBuffer =
       create_particles(particles_per_attractor);
   VkVP::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
@@ -256,15 +256,9 @@ int main() {
     recreateCommandBuffers(vulkanInstance, width, height);
 
     buildCommandBuffers(vulkanInstance, graphics, vulkanInstance.drawCmdBuffers,
-                        storageBuffer, particleBuffer.size(), width, height);
-    buildComputeCommandBuffer(compute, storageBuffer, particleBuffer.size());
+                        storageBuffer, particleBuffer.size(), width, height, compute.queueFamilyIndex);
+    buildComputeCommandBuffer(compute, storageBuffer, particleBuffer.size(), graphics.queueFamilyIndex);
     particles_draw(vulkanInstance, currentBuffer);
-    //  buildCommandBuffers(vulkanInstance.drawCmdBuffers,
-    //                     vulkanInstance.frameBuffers,
-    //                     vulkanInstance.renderPass, ivData, instancePipelines,
-    //                     width, height);
-
-    // submitBuffers(vulkanInstance, currentBufferIdx);
   }
 
   ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance,

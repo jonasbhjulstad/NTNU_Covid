@@ -6,10 +6,29 @@
 #include <glm/glm.hpp>
 #include <random>
 void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
-                               uint32_t N_particles) {
+                               uint32_t N_particles, uint32_t graphics_QFI) {
   VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
 
   VK_CHECK_RESULT(vkBeginCommandBuffer(compute.commandBuffer, &cmdBufInfo));
+
+  // Acquire barrier
+  if (graphics_QFI != compute.queueFamilyIndex) {
+    VkBufferMemoryBarrier buffer_barrier = {
+        VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+        nullptr,
+        0,
+        VK_ACCESS_SHADER_WRITE_BIT,
+        graphics_QFI,
+        compute.queueFamilyIndex,
+        storageBuffer.buffer,
+        0,
+        storageBuffer.size};
+
+    vkCmdPipelineBarrier(compute.commandBuffer,
+                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 1,
+                         &buffer_barrier, 0, nullptr);
+  }
 
   // First pass: Calculate particle movement
   // -------------------------------------------------------------------------------------------------------
@@ -42,24 +61,24 @@ void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
                     compute.pipelineIntegrate);
   vkCmdDispatch(compute.commandBuffer, N_particles / 256, 1, 1);
 
-  //   // Release barrier
-  //   if (graphics.queueFamilyIndex != compute.queueFamilyIndex) {
-  //     VkBufferMemoryBarrier buffer_barrier = {
-  //         VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-  //         nullptr,
-  //         VK_ACCESS_SHADER_WRITE_BIT,
-  //         0,
-  //         compute.queueFamilyIndex,
-  //         graphics.queueFamilyIndex,
-  //         storageBuffer.buffer,
-  //         0,
-  //         storageBuffer.size};
+  // Release barrier
+  if (compute.queueFamilyIndex != graphics_QFI) {
+    VkBufferMemoryBarrier buffer_barrier = {
+        VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+        nullptr,
+        VK_ACCESS_SHADER_WRITE_BIT,
+        0,
+        compute.queueFamilyIndex,
+        graphics_QFI,
+        storageBuffer.buffer,
+        0,
+        storageBuffer.size};
 
-  //     vkCmdPipelineBarrier(compute.commandBuffer,
-  //                          VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-  //                          VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0,
-  //                          nullptr, 1, &buffer_barrier, 0, nullptr);
-  //   }
+    vkCmdPipelineBarrier(compute.commandBuffer,
+                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                         VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 1,
+                         &buffer_barrier, 0, nullptr);
+  }
 
   vkEndCommandBuffer(compute.commandBuffer);
 }
@@ -67,7 +86,7 @@ void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
 // Setup and fill the compute shader storage buffers containing the particles
 void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
                            std::vector<Particle> &particleBuffer,
-                           VulkanBuffer &storageBuffer) {
+                           VulkanBuffer &storageBuffer, uint32_t graphics_QFI) {
 
   uint32_t N_particles = particleBuffer.size();
   auto &vulkanDevice = vulkanInstance.vulkanDevice;
@@ -101,6 +120,23 @@ void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
   copyRegion.size = storageBufferSize;
   vkCmdCopyBuffer(copyCmd, stagingBuffer.buffer, storageBuffer.buffer, 1,
                   &copyRegion);
+
+  if (graphics_QFI != compute.queueFamilyIndex) {
+    VkBufferMemoryBarrier buffer_barrier = {
+        VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+        nullptr,
+        VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+        0,
+        graphics_QFI,
+        compute.queueFamilyIndex,
+        storageBuffer.buffer,
+        0,
+        storageBuffer.size};
+
+    vkCmdPipelineBarrier(copyCmd, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+                         VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 1,
+                         &buffer_barrier, 0, nullptr);
+  }
   vulkanDevice->flushCommandBuffer(copyCmd, compute.queue, true);
 
   stagingBuffer.destroy();
@@ -115,7 +151,7 @@ void updateComputeUniformBuffers(Compute &compute, float frameTimer,
 
 void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
                     VulkanBuffer &storageBuffer,
-                    VkDescriptorPool& descriptorPool) {
+                    VkDescriptorPool &descriptorPool) {
   auto &vulkanDevice = vulkanInstance.vulkanDevice;
   VkDevice device = vulkanDevice->logicalDevice;
   // Create a compute capable device queue

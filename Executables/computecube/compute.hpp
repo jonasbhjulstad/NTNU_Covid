@@ -1,8 +1,8 @@
 #pragma once
-#include <vulkan/vulkan.h>
+#include "particle.hpp"
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Instance.hpp>
-#include "particle.hpp"
+#include <vulkan/vulkan.h>
 
 struct Compute {
   uint32_t queueFamilyIndex; // Used to check if compute and graphics queue
@@ -30,13 +30,16 @@ struct Compute {
     float power{0.75f};
     float soften{0.05f};
   } uniformData;
-  VulkanBuffer uniformBuffer; // Uniform buffer object containing particle system
-                             // parameters
+  VulkanBuffer uniformBuffer; // Uniform buffer object containing particle
+                              // system parameters
 };
-void buildComputeCommandBuffer(Compute& compute, VulkanBuffer& storageBuffer, uint32_t N_particles);
-void prepareStorageBuffers(VulkanInstance& vulkanInstance, Compute &compute,
+void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
+                               uint32_t N_particles, uint32_t graphics_QFI);
+void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
                            std::vector<Particle> &particleBuffer,
-                           VulkanBuffer &storageBuffer);
+                           VulkanBuffer &storageBuffer, uint32_t graphics_QFI);
 void updateComputeUniformBuffers(Compute &compute, float frameTimer,
-                                 bool paused = false) ;
-void prepareCompute(VulkanInstance &vulkanInstance, Compute& compute, VulkanBuffer& storageBuffer, VkDescriptorPool& descriptorPool) ;
+                                 bool paused = false);
+void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
+                    VulkanBuffer &storageBuffer,
+                    VkDescriptorPool &descriptorPool);

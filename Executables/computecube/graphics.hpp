@@ -22,9 +22,10 @@ struct Graphics {
   } uniformData;
   VulkanBuffer uniformBuffer; // Contains scene matrices
 };
-void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics& graphics,
-                         std::vector<VkCommandBuffer> &drawCmdBuffers, VulkanBuffer& storageBuffer, uint32_t N_particles,
-                         int width, int height);
+void buildCommandBuffers(VulkanInstance &vulkanInstance, Graphics &graphics,
+                         std::vector<VkCommandBuffer> &drawCmdBuffers,
+                         VulkanBuffer &storageBuffer, uint32_t N_particles,
+                         int width, int height, uint32_t compute_QFI);
 void prepareGraphics(VulkanInstance &vulkanInstance, Graphics &graphics,
                      VkDescriptorPool& descriptorPool, ParticleTextures& textures);
 void updateGraphicsUniformBuffers(Graphics& graphics, Camera& camera, uint32_t width, uint32_t height);
