@@ -4,7 +4,7 @@ include(FindVulkan)
 
 find_package(glfw3 REQUIRED)
 
-CPMAddPackage("gh:jonasbhjulstad/VulkanTools#v1.0.6")
+CPMAddPackage("gh:jonasbhjulstad/VulkanTools#v1.0.7")
 CPMAddPackage("gh:jonasbhjulstad/imgui#v1.0.2")
 
 # find_package(OpenMP REQUIRED)

@@ -185,10 +185,7 @@ namespace VkVP
 		vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(writeDescriptorSets.size()), writeDescriptorSets.data(), 0, nullptr);
 
 		// Pipeline cache
-		VkPipelineCacheCreateInfo pipelineCacheCreateInfo = {};
-		pipelineCacheCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO;
-		VK_CHECK_RESULT(vkCreatePipelineCache(logicalDevice, &pipelineCacheCreateInfo, nullptr, &ivData.pipelineCache));
-
+		initializers::createPipelineCache(logicalDevice, &ivData.pipelineCache);
 		// Pipeline layout
 		// Push constants for UI rendering parameters
 		VkPushConstantRange pushConstantRange = initializers::pushConstantRange(VK_SHADER_STAGE_VERTEX_BIT, sizeof(ivData.pushConstBlock), 0);
@@ -267,10 +264,6 @@ namespace VkVP
 		
 		shaderStages[0] = loadShader(logicalDevice, shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
 		shaderStages[1] = loadShader(logicalDevice, shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
-
-
-		// shaderStages[0] = example->loadShader(shadersPath + "ui.vert.spv", VK_SHADER_STAGE_VERTEX_BIT);
-		// shaderStages[1] = example->loadShader(shadersPath + "ui.frag.spv", VK_SHADER_STAGE_FRAGMENT_BIT);
 
 		VK_CHECK_RESULT(vkCreateGraphicsPipelines(logicalDevice, ivData.pipelineCache, 1, &pipelineCreateInfo, nullptr, &ivData.pipeline));
 	}

@@ -15,7 +15,7 @@
 #include <VulkanViewport/UI/ImGuiUI.hpp>
 #include <VulkanTools/gltf/glTFModel.hpp>
 #include <VulkanViewport/UI/UISettings.hpp>
-#include <VulkanViewport/SetupRoutines.hpp>
+#include <VulkanViewport/InstanceRendering/SetupRoutines.hpp>
 #include <VulkanViewport/Instance/Voxel.hpp>
 #include <random>
 #include <VulkanViewport/Filepaths.hpp>

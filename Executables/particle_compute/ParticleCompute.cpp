@@ -14,7 +14,7 @@
 #include <VulkanTools/gltf/glTFModel.hpp>
 #include <VulkanViewport/Filepaths.hpp>
 #include <VulkanViewport/Instance/Voxel.hpp>
-#include <VulkanViewport/SetupRoutines.hpp>
+#include <VulkanViewport/InstanceRendering/SetupRoutines.hpp>
 #include <VulkanViewport/UI/ImGuiUI.hpp>
 #include <VulkanViewport/UI/UISettings.hpp>
 #include <chrono>
@@ -256,7 +256,7 @@ int main() {
     recreateCommandBuffers(vulkanInstance, width, height);
 
     buildCommandBuffers(vulkanInstance, graphics, vulkanInstance.drawCmdBuffers,
-                        storageBuffer, particleBuffer.size(), width, height, compute.queueFamilyIndex);
+                        storageBuffer, ivData, particleBuffer.size(), width, height, compute.queueFamilyIndex);
     buildComputeCommandBuffer(compute, storageBuffer, particleBuffer.size(), graphics.queueFamilyIndex);
     particles_draw(vulkanInstance, currentBuffer);
   }
