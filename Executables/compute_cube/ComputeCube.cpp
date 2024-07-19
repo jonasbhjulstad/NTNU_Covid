@@ -264,7 +264,7 @@ int main() {
         std::chrono::duration<double, std::milli>(tEnd - tStart).count();
     frameTimer = (float)tDiff / 1000.0f;
     tStart = tEnd;
-    VkVP::newFrame(uiSettings, frameTimer, camera);
+    VkVP::newFrame(frameTimer, camera);
     VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
     updateProjectionBuffer(vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera, true);
 
