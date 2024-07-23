@@ -1,9 +1,10 @@
-#include "particle.hpp"
+#include <VulkanViewport/Compute/Cube/particle.hpp>
+#include <glm/ext/matrix_transform.inl>
 #include <glm/glm.hpp>
 #include <random>
-
-glm::mat3 randomRotation(std::mt19937& rng) {
-  std::uniform_real_distribution<float> dist(0.0f, 2*M_PI);
+namespace VkVP::Cube {
+glm::mat3 randomRotation(std::mt19937 &rng) {
+  std::uniform_real_distribution<float> dist(0.0f, 2 * M_PI);
   glm::mat4 rot = glm::mat3(1.0f);
 
   float angle = dist(rng);
@@ -15,8 +16,7 @@ glm::mat3 randomRotation(std::mt19937& rng) {
   return glm::mat3(rot);
 }
 
-std::vector<Particle>
-createComputeParticles(uint32_t particles_per_attractor) {
+std::vector<Particle> createParticles(uint32_t particles_per_attractor) {
   std::vector<glm::vec3> attractors = {
       glm::vec3(5.0f, 0.0f, 0.0f), glm::vec3(-5.0f, 0.0f, 0.0f),
       glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -5.0f),
@@ -72,3 +72,4 @@ createComputeParticles(uint32_t particles_per_attractor) {
   return particleComputeBuffer;
 }
 
+} // namespace VkVP::Cube

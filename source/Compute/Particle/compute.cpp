@@ -1,34 +1,13 @@
-#include "compute.hpp"
+#include <VulkanViewport/Compute/Particle/compute.hpp>
 #include <VulkanTools/GLTF_Assets.hpp>
 #include <VulkanTools/Initializers.hpp>
 #include <VulkanTools/Tools.hpp>
 #include <VulkanViewport/Filepaths.hpp>
 #include <glm/glm.hpp>
 #include <random>
+namespace VkVP::Particle {
 void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
                                uint32_t N_particles, uint32_t graphics_QFI) {
-  VkCommandBufferBeginInfo cmdBufInfo = initializers::commandBufferBeginInfo();
-
-  VK_CHECK_RESULT(vkBeginCommandBuffer(compute.commandBuffer, &cmdBufInfo));
-
-  // Acquire barrier
-  if (graphics_QFI != compute.queueFamilyIndex) {
-    VkBufferMemoryBarrier buffer_barrier = {
-        VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-        nullptr,
-        0,
-        VK_ACCESS_SHADER_WRITE_BIT,
-        graphics_QFI,
-        compute.queueFamilyIndex,
-        storageBuffer.buffer,
-        0,
-        storageBuffer.size};
-
-    vkCmdPipelineBarrier(compute.commandBuffer,
-                         VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, 0, 0, nullptr, 1,
-                         &buffer_barrier, 0, nullptr);
-  }
 
   // First pass: Calculate particle movement
   // -------------------------------------------------------------------------------------------------------
@@ -61,31 +40,12 @@ void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
                     compute.pipelineIntegrate);
   vkCmdDispatch(compute.commandBuffer, N_particles / 256, 1, 1);
 
-  // Release barrier
-  if (compute.queueFamilyIndex != graphics_QFI) {
-    VkBufferMemoryBarrier buffer_barrier = {
-        VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-        nullptr,
-        VK_ACCESS_SHADER_WRITE_BIT,
-        0,
-        compute.queueFamilyIndex,
-        graphics_QFI,
-        storageBuffer.buffer,
-        0,
-        storageBuffer.size};
 
-    vkCmdPipelineBarrier(compute.commandBuffer,
-                         VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                         VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 1,
-                         &buffer_barrier, 0, nullptr);
-  }
-
-  vkEndCommandBuffer(compute.commandBuffer);
 }
 
 // Setup and fill the compute shader storage buffers containing the particles
 void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
-                           std::vector<ParticleComputeData> &particleBuffer,
+                           std::vector<Particle> &particleBuffer,
                            VulkanBuffer &storageBuffer, uint32_t graphics_QFI) {
 
   uint32_t N_particles = particleBuffer.size();
@@ -93,7 +53,7 @@ void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
 
   compute.uniformData.particleCount = N_particles;
 
-  VkDeviceSize storageBufferSize = particleBuffer.size() * sizeof(ParticleComputeData);
+  VkDeviceSize storageBufferSize = particleBuffer.size() * sizeof(Particle);
 
   // Staging
   // SSBO won't be changed on the host after upload so copy to device local
@@ -264,6 +224,6 @@ void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
       initializers::semaphoreCreateInfo();
   VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr,
                                     &compute.semaphore));
-
   // Build a single command buffer containing the compute dispatch commands
 }
+} // namespace VkVP::Particle

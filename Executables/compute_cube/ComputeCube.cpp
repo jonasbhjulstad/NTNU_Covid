@@ -1,146 +1,48 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
-
+#define GLFW_INCLUDE_VULKAN
 // #include <VulkanViewport/VulkanglTFModel.h>
-#include "compute.hpp"
-#include "graphics.hpp"
-#include "particle.hpp"
 #include <GLFW/glfw3.h>
 #include <VulkanTools/Camera.hpp>
+#include <VulkanTools/InstanceRendering/InstancePipeline.hpp>
 #include <VulkanTools/ProjectionBuffer.hpp>
+#include <VulkanTools/Renderpass.hpp>
 #include <VulkanTools/Setup.hpp>
+#include <VulkanTools/Submit.hpp>
 #include <VulkanTools/Window.hpp>
-#include <VulkanTools/gltf/Texture.hpp>
 #include <VulkanTools/gltf/glTFModel.hpp>
-#include <VulkanTools/Instance.hpp>
+#include <VulkanViewport/Compute/Common/synchronization.hpp>
+#include <VulkanViewport/Compute/Cube/compute.hpp>
+#include <VulkanViewport/Compute/Cube/graphics.hpp>
+#include <VulkanViewport/Compute/Cube/particle.hpp>
 #include <VulkanViewport/Filepaths.hpp>
-#include <VulkanViewport/Instance/Voxel.hpp>
-#include <VulkanViewport/InstanceRendering/SetupRoutines.hpp>
 #include <VulkanViewport/UI/ImGuiUI.hpp>
-#include <VulkanViewport/UI/UISettings.hpp>
 #include <chrono>
-
-// Particle Definition
-VkDescriptorPool descriptorPool;
+#include <memory>
+constexpr bool ENABLE_COMPUTE_QUEUE = true;
+constexpr uint32_t PARTICLE_RENDER_IMAGE_COUNT = 3;
 uint32_t numParticles{0};
-Compute compute;
-// We use a shader storage buffer object to store the particlces
-// This is updated by the compute pipeline and displayed as a vertex buffer by
-// the graphics pipeline
-VulkanBuffer storageBuffer;
+VkVP::Cube::Compute compute;
 
-// Resources for the graphics part of the example
+void setupDescriptorPool(VkDevice logicalDevice,
+                         VkDescriptorPool &descriptorPool) {
+  // Example uses one ubo
+  std::vector<VkDescriptorPoolSize> poolSizes = {
+      initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 2),
+      initializers::descriptorPoolSize(VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1),
+      initializers::descriptorPoolSize(
+          VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 3),
+  };
 
-// Resources for the compute part of the example
-
-void loadAssets(VulkanInstance &vulkanInstance) {
-  textures.particle.loadFromFile(
-      VkVP::TEXTURE_DIR + "/particle01_rgba.ktx", VK_FORMAT_R8G8B8A8_UNORM,
-      vulkanInstance.vulkanDevice, vulkanInstance.queue);
-  textures.gradient.loadFromFile(
-      VkVP::TEXTURE_DIR + "/particle_gradient_rgba.ktx",
-      VK_FORMAT_R8G8B8A8_UNORM, vulkanInstance.vulkanDevice,
-      vulkanInstance.queue);
+  VkDescriptorPoolCreateInfo descriptorPoolInfo =
+      initializers::descriptorPoolCreateInfo(poolSizes.size(), poolSizes.data(),
+                                             3);
+  descriptorPoolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+  
+  VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo,
+                                         nullptr, &descriptorPool));
 }
 
-void prepare(VulkanInstance &vulkanInstance, VkDescriptorPool &descriptorPool,
-             std::vector<Particle> &particleBuffer, uint32_t width,
-             uint32_t height) {
-  uint32_t graphics_QFI =
-      vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
-  compute.queueFamilyIndex =
-      vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
-  compute.queue = vulkanInstance.queue;
-  loadAssets(vulkanInstance);
-  prepareStorageBuffers(vulkanInstance, compute, particleBuffer, storageBuffer, graphics.queueFamilyIndex);
-  // prepareGraphics(vulkanInstance, , descriptorPool);
-  prepareCompute(vulkanInstance, compute, storageBuffer, descriptorPool);
-}
-
-void submitFrame(VulkanInstance &vulkanInstance, uint32_t currentBuffer) {
-  VkResult result = vulkanInstance.swapChain.queuePresent(
-      vulkanInstance.queue, currentBuffer,
-      vulkanInstance.semaphores.renderComplete);
-  // Recreate the swapchain if it's no longer compatible with the surface
-  // (OUT_OF_DATE) or no longer optimal for presentation (SUBOPTIMAL)
-  //   if ((result == VK_ERROR_OUT_OF_DATE_KHR) || (result ==
-  //   VK_SUBOPTIMAL_KHR)) {
-  //     windowResize();
-  //     if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-  //       return;
-  //     }
-  //   } else {
-  VK_CHECK_RESULT(result);
-  VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
-}
-void particles_draw(VulkanInstance &vulkanInstance, uint32_t &currentBuffer) {
-
-  VkPipelineStageFlags waitStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-
-  // Submit compute commands
-  VkSubmitInfo computeSubmitInfo = initializers::submitInfo();
-  computeSubmitInfo.commandBufferCount = 1;
-  computeSubmitInfo.pCommandBuffers = &compute.commandBuffer;
-  computeSubmitInfo.waitSemaphoreCount = 1;
-  computeSubmitInfo.pWaitSemaphores = &graphics.semaphore;
-  computeSubmitInfo.pWaitDstStageMask = &waitStageMask;
-  computeSubmitInfo.signalSemaphoreCount = 1;
-  computeSubmitInfo.pSignalSemaphores = &compute.semaphore;
-  VK_CHECK_RESULT(
-      vkQueueSubmit(compute.queue, 1, &computeSubmitInfo, VK_NULL_HANDLE));
-
-  VkResult result = vulkanInstance.swapChain.acquireNextImage(
-      vulkanInstance.semaphores.presentComplete, &currentBuffer);
-
-  VkPipelineStageFlags graphicsWaitStageMasks[] = {
-      VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
-  VkSemaphore graphicsWaitSemaphores[] = {
-      compute.semaphore, vulkanInstance.semaphores.presentComplete};
-  VkSemaphore graphicsSignalSemaphores[] = {
-      graphics.semaphore, vulkanInstance.semaphores.renderComplete};
-  auto submitInfo = initializers::submitInfo();
-  // Submit graphics commands
-  submitInfo.commandBufferCount = 1;
-  submitInfo.pCommandBuffers = &vulkanInstance.drawCmdBuffers[currentBuffer];
-  submitInfo.waitSemaphoreCount = 2;
-  submitInfo.pWaitSemaphores = graphicsWaitSemaphores;
-  submitInfo.pWaitDstStageMask = graphicsWaitStageMasks;
-  submitInfo.signalSemaphoreCount = 2;
-  submitInfo.pSignalSemaphores = graphicsSignalSemaphores;
-  VK_CHECK_RESULT(
-      vkQueueSubmit(vulkanInstance.queue, 1, &submitInfo, VK_NULL_HANDLE));
-  submitFrame(vulkanInstance, currentBuffer);
-}
-void recreateCommandBuffers(VulkanInstance& vulkanInstance, uint32_t width, uint32_t height)
-{
-    VkDevice logicalDevice = vulkanInstance.vulkanDevice->logicalDevice;
-    // Ensure all operations on the device have been finished before destroying resources
-    vkDeviceWaitIdle(logicalDevice);
-    vulkanInstance.swapChain.create(&vulkanInstance.ImGuiWindow, (uint32_t *)&width, (uint32_t *)&height, false);
-    vulkanInstance.ImGuiWindow.Swapchain = vulkanInstance.swapChain.swapChain;
-    // Recreate the frame buffersqueuePresent
-    vkDestroyImageView(logicalDevice, vulkanInstance.depthStencil.view, nullptr);
-    vkDestroyImage(logicalDevice, vulkanInstance.depthStencil.image, nullptr);
-    vkFreeMemory(logicalDevice, vulkanInstance.depthStencil.mem, nullptr);
-    initializers::setupDepthStencil(vulkanInstance, width, height);
-    for (uint32_t i = 0; i < vulkanInstance.frameBuffers.size(); i++)
-    {
-        vkDestroyFramebuffer(logicalDevice, vulkanInstance.frameBuffers[i], nullptr);
-    }
-    initializers::setupFrameBuffer(logicalDevice,
-                                   vulkanInstance.renderPass,
-                                   width,
-                                   height,
-                                   vulkanInstance.depthStencil.view,
-                                   vulkanInstance.swapChain,
-                                   vulkanInstance.frameBuffers);
-
-    // Command buffers need to be recreated as they may store
-    // references to the recreated frame buffer
-    initializers::destroyCommandBuffers(logicalDevice, vulkanInstance.vulkanDevice->commandPool, vulkanInstance.drawCmdBuffers);
-    initializers::createCommandBuffers(logicalDevice, vulkanInstance.drawCmdBuffers, vulkanInstance.swapChain, vulkanInstance.vulkanDevice->commandPool);
-}
 int main() {
   using namespace VkVP;
   VulkanInstance vulkanInstance;
@@ -150,42 +52,38 @@ int main() {
   if (!glfwInit())
     return 1;
 
-  int width = 1280;
-  int height = 720;
+  uint32_t width = 1280;
+  uint32_t height = 720;
 
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+  VkVP::assignGLFWRequiredInstanceExtensions(vulkanInstance);
   vulkanInstance.glfwWindow =
-      glfwCreateWindow(width, height, "VoxelGround", nullptr, nullptr);
-
-  if (!glfwVulkanSupported()) {
-    printf("GLFW: Vulkan Not Supported\n");
-    return 1;
-  }
-  uint32_t extensions_count = 0;
-  const char **extensions =
-      glfwGetRequiredInstanceExtensions(&extensions_count);
-  for (int i = 0; i < extensions_count; i++) {
-    vulkanInstance.enabledInstanceExtensions.push_back(extensions[i]);
-  }
-
+      VkVP::createGLFWWindow(width, height, "ComputeCube");
+  // vulkanInstance.enabledInstanceExtensions.push_back(VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
   createVulkanInstance(
       ENABLE_VALIDATION, "VoxelGround", vulkanInstance.instance,
       vulkanInstance.supportedInstanceExtensions,
-      vulkanInstance.enabledInstanceExtensions, VK_API_VERSION_1_0);
-  setupVulkanPhysicalDevice(vulkanInstance, ENABLE_VALIDATION);
+      vulkanInstance.enabledInstanceExtensions, VK_API_VERSION_1_2);
+  vulkanInstance.enabledInstanceExtensions.push_back(
+      VK_KHR_SYNCHRONIZATION_2_EXTENSION_NAME);
+  //   std::for_each(vulkanInstance.supportedInstanceExtensions.begin(),
+  //                 vulkanInstance.supportedInstanceExtensions.end(),
+  //                 [](auto &ext) { std::cout << ext << std::endl; });
+
+  setupVulkanPhysicalDevice(vulkanInstance, ENABLE_VALIDATION,
+                            ENABLE_COMPUTE_QUEUE);
 
   VK_CHECK_RESULT(glfwCreateWindowSurface(vulkanInstance.instance,
                                           vulkanInstance.glfwWindow, nullptr,
                                           &vulkanInstance.surface));
 
   VulkanDevice *vulkanDevice = vulkanInstance.vulkanDevice;
-  setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
   prepareVulkan(vulkanInstance, width, height);
+  VkVP::setupGLFWVulkanWindow(vulkanInstance, width, height,
+                              PARTICLE_RENDER_IMAGE_COUNT);
 
   /* User Interface Settings */
 
-  UISettings uiSettings;
-  uiSettings.fontPath = VkVP::ASSET_DIR + "fonts/DroidSansMono.ttf";
+  std::string fontPath = VkVP::ASSET_DIR + "fonts/DroidSansMono.ttf";
   Camera camera;
   camera.type = camera.firstperson;
   camera.position = glm::vec3(0.0f, 0.0f, -10.0f);
@@ -198,12 +96,10 @@ int main() {
                           vulkanInstance.projection.data, camera);
 
   VkDeviceSize offset[1] = {0};
-  uint32_t particles_per_attractor = 128;
-  std::vector<Particle> particleBuffer =
-      create_particles(particles_per_attractor);
-  VkVP::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
-
-
+  uint32_t particles_per_attractor = 8;
+  std::vector<VkVP::Cube::Particle> particles =
+      VkVP::Cube::createParticles(particles_per_attractor);
+  uint32_t N_particles = particles.size();
 
   /* ImGUI App Initialization */
 
@@ -217,67 +113,133 @@ int main() {
 
   // camera.setWindowID(ImGui::GetCurrentWindow());
 
-
-  VkVP::setupImGuiVisuals(width, height, uiSettings);
-
-  VkVP::initializeImGuiVulkanResources(ivData, vulkanInstance.renderPass,
-                                       vulkanInstance.queue, VkVP::SHADER_DIR);
-
-  /* Render-loop variables */
-  bool rebuildSwapChain = false;
-  uint32_t currentBufferIdx;
-  float frameTimer;
+  float frameTimer = 0.0f;
+  VkVP::ImGuiUI ui(vulkanInstance.vulkanDevice, SHADER_DIR, fontPath);
+  ui.initialize(vulkanInstance.queue, vulkanInstance.renderPass, width, height);
   auto tStart = std::chrono::high_resolution_clock::now();
-  uint32_t currentBuffer = 0;
+  auto &drawCmdBuffers = vulkanInstance.drawCmdBuffers;
+  auto &renderPass = vulkanInstance.renderPass;
+  //   prepare(vulkanInstance, particles, width, height);
+  uint32_t graphics_QFI =
+      vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
+  uint32_t compute_QFI =
+      vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
 
-  
-  //instance data preparation
-  auto voxelInstanceData = generate_ground(1, 1, 11);
-  // voxelInstanceData[0].scale.x = 10.0f;
+  uint32_t currentBuffer = 0;
+  uint32_t cubes_per_attractor = 128;
+  // instance data preparation
+  auto particleInstanceData = VkVP::Cube::createParticles(cubes_per_attractor);
   VkVP::InstanceRenderingParams voxelParams;
-  voxelParams.vertexShaderPath = VkVP::SHADER_DIR + "cube.vert.spv";
-  voxelParams.fragmentShaderPath = VkVP::SHADER_DIR + "cube.frag.spv";
+  voxelParams.vertexShaderPath =
+      VkVP::SHADER_DIR + "/ComputeCube/compute_cube.vert.spv";
+  voxelParams.fragmentShaderPath =
+      VkVP::SHADER_DIR + "/ComputeCube/compute_cube.frag.spv";
   voxelParams.modelPath = VkVP::MODEL_DIR + "cube.gltf";
   voxelParams.vulkanDevice = vulkanInstance.vulkanDevice;
   voxelParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
   voxelParams.queue = vulkanInstance.queue;
   voxelParams.renderPass = vulkanInstance.renderPass;
   voxelParams.pipelineCache = vulkanInstance.pipelineCache;
-  voxelParams.descriptorPool = descriptorPool;
+  voxelParams.descriptorPool = vulkanInstance.descriptorPool;
   voxelParams.offset = offset;
+  // Configure storage for compute / graphics interop
+  voxelParams.bufferUsageFlags =
+      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  compute.queueFamilyIndex =
+      vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
+  compute.queue = vulkanInstance.queue;
+  setupDescriptorPool(vulkanDevice->logicalDevice,
+                      vulkanInstance.descriptorPool);
+    std::unique_ptr<VkVP::InstancePipelineData> cubePipeline = prepareSynchronizedInstancePipeline(vulkanInstance, voxelParams, particles, graphics_QFI, compute_QFI);
+  VulkanBuffer &instanceBuffer = cubePipeline->instanceBuffer;
+  compute.commandPool = vulkanInstance.vulkanDevice->commandPool;
+  VkVP::Cube::prepareCompute(vulkanInstance, compute, instanceBuffer,
+                             vulkanInstance.descriptorPool);
+  auto device = vulkanInstance.vulkanDevice->logicalDevice;
+//   {
+//     auto semaCI = initializers::semaphoreCreateInfo();
+//     VK_CHECK_RESULT(vkCreateSemaphore(device, &semaCI, nullptr,
+//                                       &compute.semaphores.compute));
+//     VK_CHECK_RESULT(vkCreateSemaphore(device, &semaCI, nullptr,
+//                                       &compute.semaphores.graphics));
+    
 
-  std::vector<std::unique_ptr<InstancePipelineData>> instancePipelines;
-  instancePipelines.push_back(prepareInstanceRendering<VoxelInstanceData>(voxelParams, voxelInstanceData));
+//     if (graphics_QFI != compute_QFI) {
+//       initializers::beginCommandBuffer(compute.commandBuffer);
+//       VkBufferMemoryBarrier buffer_barrier = {
+//           VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
+//           nullptr,
+//           VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
+//           0,
+//           graphics_QFI,
+//           compute.queueFamilyIndex,
+//           instanceBuffer.buffer,
+//           0,
+//           instanceBuffer.size};
+
+//       vkCmdPipelineBarrier(compute.commandBuffer, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
+//                            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr,
+//                            1, &buffer_barrier, 0, nullptr);
+//         vulkanDevice->flushCommandBuffer(compute.commandBuffer, compute.queue, true);
+//     }
+//   }
+  VkSubmitInfo submitInfo = initializers::submitInfo();
+  submitInfo.pSignalSemaphores = &compute.semaphores.graphics;
+  submitInfo.signalSemaphoreCount = 1;
+  VK_CHECK_RESULT(
+      vkQueueSubmit(vulkanInstance.queue, 1, &submitInfo, VK_NULL_HANDLE));
 
 
-
-  prepare(vulkanInstance, descriptorPool, particleBuffer, width, height);
   while (!glfwWindowShouldClose(vulkanInstance.glfwWindow)) {
     glfwPollEvents();
 
     // Start the Dear ImGui frame
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
+    // Start the Dear ImGui frame
     camera.update(frameTimer);
     auto tEnd = std::chrono::high_resolution_clock::now();
     auto tDiff =
         std::chrono::duration<double, std::milli>(tEnd - tStart).count();
     frameTimer = (float)tDiff / 1000.0f;
     tStart = tEnd;
-    VkVP::newFrame(frameTimer, camera);
-    VkVP::updateBuffers(vulkanInstance.vulkanDevice, ivData.vertexBuffer, ivData.indexBuffer, ivData.indexCount, ivData.vertexCount);
-    updateProjectionBuffer(vulkanInstance.projection.buffer, vulkanInstance.projection.data, camera, true);
+    ui.newFrame(frameTimer, camera);
+    ui.updateBuffers();
+    updateProjectionBuffer(vulkanInstance.projection.buffer,
+                           vulkanInstance.projection.data, camera, true);
+    VkVP::Cube::updateComputeUniformBuffers(compute, frameTimer);
+    if (VkVP::getFrameBufferSizeChange(vulkanInstance.glfwWindow, width,
+                                       height)) {
+      VkVP::resizeImGuiWindow(vulkanInstance, width, height);
+    }
+    for (int i = 0; i < drawCmdBuffers.size(); i++) {
+      initializers::beginCommandBuffer(drawCmdBuffers[i]);
+      VkVP::Compute::graphicsMemoryBarrierAquire(
+          instanceBuffer, drawCmdBuffers[i], graphics_QFI, compute_QFI);
+      VkVP::beginRenderPass(renderPass, drawCmdBuffers[i],
+                            vulkanInstance.frameBuffers[i], width, height);
+      VkVP::buildCommandBuffer(*cubePipeline, drawCmdBuffers[i]);
+      ui.drawFrame(drawCmdBuffers[i]);
+      vkCmdEndRenderPass(drawCmdBuffers[i]);
+      VkVP::Compute::graphicsMemoryBarrierRelease(
+          instanceBuffer, drawCmdBuffers[i], graphics_QFI, compute_QFI);
+      VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
+    }
 
-    updateGraphicsUniformBuffers(graphics, camera, width, height);
-    updateComputeUniformBuffers(compute, frameTimer);
+    // Build Compute
+    initializers::beginCommandBuffer(compute.commandBuffer);
+    VkVP::Compute::computeMemoryBarrierAquire(
+        instanceBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
+    buildComputeCommandBuffer(compute, instanceBuffer, N_particles,
+                              graphics_QFI);
+    VkVP::Compute::computeMemoryBarrierRelease(
+        instanceBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
+    vkEndCommandBuffer(compute.commandBuffer);
 
-    updateWindowSize(vulkanInstance, ivData, camera, instancePipelines,  width, height);
-
-    // recreateCommandBuffers(vulkanInstance, width, height);
-    // buildCommandBuffers(vulkanInstance, graphics, vulkanInstance.drawCmdBuffers,
-    //                     storageBuffer, ivData, particleBuffer.size(), width, height, compute.queueFamilyIndex);
-    buildComputeCommandBuffer(compute, storageBuffer, particleBuffer.size(), graphics.queueFamilyIndex);
-    particles_draw(vulkanInstance, currentBuffer);
+    // Submit all buffers
+    VkVP::submitBuffers(vulkanInstance, compute.commandBuffer,
+                        compute.semaphores.graphics,
+                        compute.semaphores.compute);
   }
 
   ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance,
@@ -285,14 +247,6 @@ int main() {
                                   &vulkanInstance.ImGuiWindow, nullptr);
   vkDestroyDescriptorPool(vulkanDevice->logicalDevice,
                           vulkanInstance.descriptorPool, nullptr);
-
-#ifdef IMGUI_VULKAN_DEBUG_REPORT
-  // Remove the debug report callback
-  auto vkDestroyDebugReportCallbackEXT =
-      (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(
-          g_Instance, "vkDestroyDebugReportCallbackEXT");
-  vkDestroyDebugReportCallbackEXT(g_Instance, g_DebugReport, g_Allocator);
-#endif // IMGUI_VULKAN_DEBUG_REPORT
 
   glfwDestroyWindow(vulkanInstance.glfwWindow);
   glfwTerminate();

@@ -2,8 +2,10 @@
 #include "particle.hpp"
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Instance.hpp>
+#include <VulkanTools/InstanceRendering/InstancePipeline.hpp>
+#include <memory>
 #include <vulkan/vulkan.h>
-
+namespace VkVP::Cube {
 struct Compute {
   uint32_t queueFamilyIndex; // Used to check if compute and graphics queue
                              // families differ and require additional barriers
@@ -13,6 +15,12 @@ struct Compute {
                              // differ from the one used for graphics)
   VkCommandBuffer commandBuffer; // Command buffer storing the dispatch commands
                                  // and barriers
+  struct {
+    VkSemaphore graphics;
+    VkSemaphore compute;
+    /* data */
+  } semaphores;
+
   VkSemaphore
       semaphore; // Execution dependency between compute & graphic submission
   VkDescriptorSetLayout descriptorSetLayout; // Compute shader binding layout
@@ -43,3 +51,6 @@ void updateComputeUniformBuffers(Compute &compute, float frameTimer,
 void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
                     VulkanBuffer &storageBuffer,
                     VkDescriptorPool &descriptorPool);
+
+
+} // namespace VkVP::Cube

@@ -1,22 +1,22 @@
 #define KTX_OPENGL_ES3 1
 #define ENABLE_VALIDATION true
-
+#define GLFW_INCLUDE_VULKAN
 // #include <VulkanViewport/VulkanglTFModel.h>
 #include <GLFW/glfw3.h>
 #include <VulkanTools/Camera.hpp>
 #include <VulkanTools/ProjectionBuffer.hpp>
 #include <VulkanTools/Setup.hpp>
 #include <VulkanTools/Window.hpp>
+#include <VulkanTools/Renderpass.hpp>
 #include <VulkanTools/gltf/glTFModel.hpp>
 #include <VulkanViewport/Filepaths.hpp>
 #include <VulkanViewport/Instance/Voxel.hpp>
-#include <VulkanViewport/InstanceRendering/SetupRoutines.hpp>
+#include <VulkanTools/InstanceRendering/InstancePipeline.hpp>
 #include <VulkanViewport/UI/ImGuiUI.hpp>
-#include <chrono>
-#include <imgui/imgui.h>
+#include <VulkanTools/Submit.hpp>
 #include <memory>
+#include <chrono>
 #include <random>
-#include <vulkan/vulkan.hpp>
 
 std::vector<VkVP::VoxelInstanceData> generate_ground(uint32_t Nx, uint32_t Ny,
                                                      uint32_t Nz) {
@@ -34,6 +34,8 @@ std::vector<VkVP::VoxelInstanceData> generate_ground(uint32_t Nx, uint32_t Ny,
   }
   return ground;
 }
+
+
 void setupDescriptorPool(VkDevice logicalDevice,
                          VkDescriptorPool &descriptorPool) {
   // Example uses one ubo
@@ -46,24 +48,11 @@ void setupDescriptorPool(VkDevice logicalDevice,
   VkDescriptorPoolCreateInfo descriptorPoolInfo =
       initializers::descriptorPoolCreateInfo(poolSizes.size(), poolSizes.data(),
                                              2);
-
+  descriptorPoolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
   VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo,
                                          nullptr, &descriptorPool));
 }
 
-bool getFrameBufferSizeChange(GLFWwindow *window, uint32_t &width,
-                              uint32_t &height) {
-
-  uint32_t w_new, h_new;
-  glfwGetFramebufferSize(vulkanInstance.glfwWindow, &w_new, &h_new);
-
-  if (w_new != width || h_new != height) {
-    width = w_new;
-    height = h_new;
-    return true;
-  }
-  return false;
-}
 
 int main() {
   using namespace VkVP;
@@ -74,40 +63,21 @@ int main() {
   if (!glfwInit())
     return 1;
 
-  int width = 1280;
-  int height = 720;
-
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  vulkanInstance.glfwWindow =
-      glfwCreateWindow(width, height, "VoxelGround", NULL, NULL);
-
-  if (!glfwVulkanSupported()) {
-    printf("GLFW: Vulkan Not Supported\n");
-    return 1;
-  }
-  uint32_t extensions_count = 0;
-  const char **extensions =
-      glfwGetRequiredInstanceExtensions(&extensions_count);
-  for (int i = 0; i < extensions_count; i++) {
-    vulkanInstance.enabledInstanceExtensions.push_back(extensions[i]);
-  }
-
+  uint32_t width = 1280;
+  uint32_t height = 720;
+  VkVP::assignGLFWRequiredInstanceExtensions(vulkanInstance);
+  vulkanInstance.glfwWindow = VkVP::createGLFWWindow(width, height, "VoxelGround");
   createVulkanInstance(
       ENABLE_VALIDATION, "VoxelGround", vulkanInstance.instance,
       vulkanInstance.supportedInstanceExtensions,
       vulkanInstance.enabledInstanceExtensions, VK_API_VERSION_1_0);
   setupVulkanPhysicalDevice(vulkanInstance, ENABLE_VALIDATION);
-
-  VK_CHECK_RESULT(glfwCreateWindowSurface(vulkanInstance.instance,
-                                          vulkanInstance.glfwWindow, NULL,
-                                          &vulkanInstance.surface));
-
   VulkanDevice *vulkanDevice = vulkanInstance.vulkanDevice;
-  setupGLFWVulkanWindow(vulkanInstance, width, height, 2);
+  VK_CHECK_RESULT(glfwCreateWindowSurface(vulkanInstance.instance, vulkanInstance.glfwWindow, nullptr, &vulkanInstance.surface));
   prepareVulkan(vulkanInstance, width, height);
-
+  VkVP::setupGLFWVulkanWindow(vulkanInstance, width, height);
+  // VkVP::setupGLFWVulkanWindow(vulkanInstance, width, height);
   /* User Interface Settings */
-
   std::string fontPath = ASSET_DIR + "fonts/DroidSansMono.ttf";
   Camera camera;
   camera.type = camera.firstperson;
@@ -115,32 +85,27 @@ int main() {
   camera.rotation = glm::vec3(-45.0f, 0.0f, 0.0f);
   camera.setPerspective(60.0f, (float)width / (float)height, 0.1f, 1000.0f);
 
-  using namespace VkVP;
 
   prepareProjectionBuffer(vulkanDevice, vulkanInstance.projection.buffer,
                           vulkanInstance.projection.data, camera);
 
-  VkDescriptorPool renderDescriptorPool;
-  setupDescriptorPool(vulkanDevice->logicalDevice, renderDescriptorPool);
-
+  setupDescriptorPool(vulkanDevice->logicalDevice, vulkanInstance.descriptorPool);
   VkDeviceSize offset[1] = {0};
-  using namespace glTFBasicInstance;
-  auto voxelInstanceData = generate_ground(1, 1, 11);
-  // voxelInstanceData[0].scale.x = 10.0f;
-  InstanceRenderingParams voxelParams;
+  auto voxelInstanceData = generate_ground(1, 1, 1);
+  VkVP::InstanceRenderingParams voxelParams;
   voxelParams.vertexShaderPath = SHADER_DIR + "cube.vert.spv";
   voxelParams.fragmentShaderPath = SHADER_DIR + "cube.frag.spv";
-  voxelParams.modelPath = MODEL_DIR + "cube.gltf";
+  voxelParams.modelPath = MODEL_DIR + "monkey.gltf";
   voxelParams.vulkanDevice = vulkanInstance.vulkanDevice;
   voxelParams.uniformProjectionBuffer = &vulkanInstance.projection.buffer;
   voxelParams.queue = vulkanInstance.queue;
   voxelParams.renderPass = vulkanInstance.renderPass;
   voxelParams.pipelineCache = vulkanInstance.pipelineCache;
-  voxelParams.descriptorPool = renderDescriptorPool;
+  voxelParams.descriptorPool = vulkanInstance.descriptorPool;
   voxelParams.offset = offset;
 
-  std::vector<std::unique_ptr<InstancePipelineData>> instancePipelines;
-  instancePipelines.push_back(prepareInstanceRendering<VoxelInstanceData>(
+  std::vector<std::unique_ptr<VkVP::InstancePipelineData>> instancePipelines;
+  instancePipelines.push_back(VkVP::prepareInstanceRendering<VoxelInstanceData>(
       voxelParams, voxelInstanceData));
 
   /* ImGUI App Initialization */
@@ -152,7 +117,7 @@ int main() {
 
   // VkVP::ImGuiVulkanData ivData(vulkanInstance.vulkanDevice);
   VkVP::ImGuiUI ui(vulkanInstance.vulkanDevice, SHADER_DIR, fontPath);
-  ui.initialize();
+  ui.initialize(vulkanInstance.queue,vulkanInstance.renderPass, width, height);
 
   /* Render-loop variables */
   uint32_t currentBufferIdx;
@@ -160,6 +125,7 @@ int main() {
   auto tStart = std::chrono::high_resolution_clock::now();
   auto &drawCmdBuffers = vulkanInstance.drawCmdBuffers;
   auto &renderPass = vulkanInstance.renderPass;
+  auto& lightPos = vulkanInstance.projection.data.lightPos;
   while (!glfwWindowShouldClose(vulkanInstance.glfwWindow)) {
     glfwPollEvents();
 
@@ -172,17 +138,18 @@ int main() {
         std::chrono::duration<double, std::milli>(tEnd - tStart).count();
     frameTimer = (float)tDiff / 1000.0f;
     tStart = tEnd;
-    ui.newFrame(frameTime, camera);
+    ui.newFrame(frameTimer, camera);
     ui.updateBuffers();
+    // lightPos = glm::vec4(camera.position, lightPos.w);
     updateProjectionBuffer(vulkanInstance.projection.buffer,
                            vulkanInstance.projection.data, camera, true);
-    if (getFrameBufferSizeChange(vulkanInstance.glfwWindow, width, height)) {
-      resizeImGuiWindow(vulkanInstance, width, height);
+    if (VkVP::getFrameBufferSizeChange(vulkanInstance.glfwWindow, width, height)) {
+      VkVP::resizeImGuiWindow(vulkanInstance, width, height);
     }
 
     for (int i = 0; i < drawCmdBuffers.size(); i++) {
       initializers::beginCommandBuffer(drawCmdBuffers[i]);
-      beginRenderPass(renderPass, drawCmdBuffers[i], width, height);
+      VkVP::beginRenderPass(renderPass, drawCmdBuffers[i], vulkanInstance.frameBuffers[i], width, height);
       std::for_each(instancePipelines.begin(), instancePipelines.end(),
                     [&](auto &pipeline) {
                       buildCommandBuffer(*pipeline, drawCmdBuffers[i]);
@@ -194,12 +161,19 @@ int main() {
 
     submitBuffers(vulkanInstance, currentBufferIdx);
   }
+  VK_CHECK_RESULT(vkDeviceWaitIdle(vulkanDevice->logicalDevice));
+  ImGui_ImplVulkan_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
 
+                      
+  vkDestroyDescriptorPool(vulkanDevice->logicalDevice,
+                          vulkanInstance.descriptorPool, NULL);
   ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance,
                                   vulkanDevice->logicalDevice,
                                   &vulkanInstance.ImGuiWindow, NULL);
-  vkDestroyDescriptorPool(vulkanDevice->logicalDevice,
-                          vulkanInstance.descriptorPool, NULL);
+
+
 
 #ifdef IMGUI_VULKAN_DEBUG_REPORT
   // Remove the debug report callback
@@ -211,6 +185,6 @@ int main() {
 
   glfwDestroyWindow(vulkanInstance.glfwWindow);
   glfwTerminate();
-
+  // destroyVulkanInstance(vulkanInstance);
   return 0;
 }

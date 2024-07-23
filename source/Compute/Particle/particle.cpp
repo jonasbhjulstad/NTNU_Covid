@@ -1,6 +1,8 @@
-#include "particle.hpp"
+#include <VulkanViewport/Compute/Particle/particle.hpp>
 #include <random>
 #include <glm/glm.hpp>
+namespace VkVP::Particle
+{
 std::vector<Particle> create_particles(uint32_t particles_per_attractor)
 {
   // We mark a few particles as attractors that move along a given path, these
@@ -55,4 +57,4 @@ std::vector<Particle> create_particles(uint32_t particles_per_attractor)
     }
   }
     return particleBuffer;
-}
+}}

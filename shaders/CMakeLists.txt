@@ -29,6 +29,7 @@ endfunction()
 add_shaders("vert")
 add_shaders("frag")
 add_subdirectory(ComputeCube)
+add_subdirectory(ComputeParticle)
 
 set(GRAPH_SHADERS node_frag_shader node_vert_shader edge_frag_shader edge_vert_shader PARENT_SCOPE)
 set(VOXEL_SHADERS cube_frag_shader cube_vert_shader PARENT_SCOPE)

@@ -2,19 +2,19 @@
 #include <VulkanTools/Initializers.hpp>
 #include <VulkanTools/PipelineInitializers.hpp>
 #include <VulkanViewport/UI/ImGuiUI.hpp>
-#include <VulkanViewport/UI/ImguiUI.hpp>
 
 namespace VkVP {
 
-ImGuiUI::ImGuiUI(VulkanDevice *vulkanDevice,
-                 const std::string &shadersPath const std::string &fontPath)
+ImGuiUI::ImGuiUI(VulkanDevice *vulkanDevice, const std::string &shadersPath,
+                 const std::string &fontPath)
     : ivData(vulkanDevice), vulkanDevice(vulkanDevice),
       shadersPath(shadersPath), fontPath(fontPath),
       logicalDevice(vulkanDevice->logicalDevice) {}
 
-void ImGuiUI::initialize(uint32_t width, uint32_t height) {
+void ImGuiUI::initialize(VkQueue queue, VkRenderPass renderPass, uint32_t width,
+                         uint32_t height) {
   setupVisuals(width, height);
-  initializeResources(vulkanDevice->renderPass, vulkanDevice->queue);
+  initializeResources(renderPass, queue);
 }
 
 // Initialize styles, keys, etc.
@@ -39,7 +39,6 @@ void ImGuiUI::setupVisuals(float width, float height) {
 ImGuiUI::~ImGuiUI() { destroyImGuiVulkanData(); }
 
 void ImGuiUI::destroyImGuiVulkanData() {
-  ImGui::DestroyContext();
   VkDevice logicalDevice = vulkanDevice->logicalDevice;
   // Release all Vulkan resources required for rendering imGui
   ivData.vertexBuffer.destroy();
@@ -315,23 +314,12 @@ void ImGuiUI::newFrame(float frameTime, Camera &camera) {
   // ImGui::Begin();
   ImGui::NewFrame();
 
-  createMenus();
-
   static float f = 0.0f;
-  // ImGui::TextUnformatted(ivData.title.c_str());
-  // ImGui::TextUnformatted(vulkanDevice->properties.deviceName);
-
-  // Update frame time display
   std::rotate(frameTimes.begin(), frameTimes.begin() + 1, frameTimes.end());
   frameTimes.back() = frameTime;
 
   ImGui::EndFrame();
 
-  // ImGui::ShowDemoWindow();
-
-  // }
-
-  // Render to generate draw buffers
   ImGui::Render();
 }
 
@@ -353,25 +341,25 @@ void ImGuiUI::updateBuffers() {
   auto &vertexBuffer = ivData.vertexBuffer;
   // Vertex buffer
   if ((vertexBuffer.buffer == VK_NULL_HANDLE) ||
-      (vertexCount != imDrawData->TotalVtxCount)) {
+      (ivData.vertexCount != imDrawData->TotalVtxCount)) {
     vertexBuffer.unmap();
     vertexBuffer.destroy();
     VK_CHECK_RESULT(vulkanDevice->createBuffer(
         VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
         &vertexBuffer, vertexBufferSize));
-    vertexCount = imDrawData->TotalVtxCount;
+    ivData.vertexCount = imDrawData->TotalVtxCount;
     vertexBuffer.map();
   }
   auto &indexBuffer = ivData.indexBuffer;
   // Index buffer
   if ((indexBuffer.buffer == VK_NULL_HANDLE) ||
-      (indexCount < imDrawData->TotalIdxCount)) {
+      (ivData.indexCount < imDrawData->TotalIdxCount)) {
     indexBuffer.unmap();
     indexBuffer.destroy();
     VK_CHECK_RESULT(vulkanDevice->createBuffer(
         VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
         &indexBuffer, indexBufferSize));
-    indexCount = imDrawData->TotalIdxCount;
+    ivData.indexCount = imDrawData->TotalIdxCount;
     indexBuffer.map();
   }
 
@@ -449,6 +437,5 @@ void ImGuiUI::drawFrame(VkCommandBuffer commandBuffer) {
     }
   }
 }
-
 
 } // namespace VkVP

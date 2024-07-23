@@ -19,29 +19,44 @@ layout (binding = 0) uniform UBO
 	vec4 lightPos;
 } ubo;
 
+layout (binding = 1) uniform UBO_Light
+{
+	vec4 albedo;
+	vec4 ambientLightColor;
+} ubo_light;
+
 layout (location = 0) out vec3 outNormal;
 layout (location = 1) out vec3 outColor;
 layout (location = 2) out vec3 outUV;
 layout (location = 3) out vec3 outViewVec;
 layout (location = 4) out vec3 outLightVec;
 
+
 void main() 
 {
+	mat3 rot = mat3(1.0);
 	//compute vertex position with scaling
-	outColor = inColor;
 	outUV = vec3(inUV, .0);
 	
-	vec4 locPos = vec4(inPos.xyz, 1.0);
+	vec3 locPos = vec3(inPos);
 	locPos.x *= instanceScale.x;
 	locPos.y *= instanceScale.y;
 	locPos.z *= instanceScale.z;
-	vec4 pos = vec4((locPos.xyz) + instancePos, 1.0);
+	vec4 worldPos = vec4(rot*locPos + instancePos, 1.0);
+	gl_Position = ubo.projection*ubo.modelview*worldPos;
 
-	gl_Position = ubo.projection * ubo.modelview * pos;
+	vec3 lightColor = ubo_light.albedo.xyz*ubo_light.albedo.w;
+	vec3 ambientLight = ubo_light.ambientLightColor.xyz*ubo_light.ambientLightColor.w;
+	vec3 directionToLight = ubo.lightPos.xyz - worldPos.xyz;
+	vec3 diffuseLight = lightColor*max(dot(inNormal, normalize(directionToLight)), 0);
+	outColor = (diffuseLight + ambientLight)*inColor;
+	// gl_Position = ubo.projection * ubo.modelview * pos;
 	outNormal = mat3(ubo.modelview) * inNormal;
 
-	pos = ubo.modelview * vec4(inPos.xyz + instancePos, 1.0);
 	vec3 lPos = mat3(ubo.modelview) * ubo.lightPos.xyz;
-	outLightVec = lPos - pos.xyz;
-	outViewVec = -pos.xyz;		
+	outLightVec = directionToLight;
+	outViewVec = -worldPos.xyz;		
 }
+
+
+

@@ -1,0 +1,26 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "dpcpp",
+            "displayName": "dpcpp",
+            "description": "Using compilers: C = /home/deb/sycl_workspace/llvm/build/bin/clang, CXX = /home/deb/sycl_workspace/llvm/build/bin/clang++",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/install/${presetName}",
+                "CMAKE_C_COMPILER": "/home/deb/sycl_workspace/llvm/build/bin/clang",
+                "CMAKE_CXX_COMPILER": "/home/deb/sycl_workspace/llvm/build/bin/clang++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "-Wfatal-errors"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "compute-debug",
+            "targets": [
+                "ParticleCompute"
+            ]
+        }
+    ]
+}

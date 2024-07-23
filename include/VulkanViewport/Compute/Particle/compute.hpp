@@ -3,7 +3,7 @@
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Instance.hpp>
 #include <vulkan/vulkan.h>
-
+namespace VkVP::Particle {
 struct Compute {
   uint32_t queueFamilyIndex; // Used to check if compute and graphics queue
                              // families differ and require additional barriers
@@ -38,8 +38,10 @@ void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
 void prepareStorageBuffers(VulkanInstance &vulkanInstance, Compute &compute,
                            std::vector<Particle> &particleBuffer,
                            VulkanBuffer &storageBuffer, uint32_t graphics_QFI);
-void updateComputeUniformBuffers(Compute &compute, float frameTimer,
-                                 bool paused = false);
 void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
                     VulkanBuffer &storageBuffer,
                     VkDescriptorPool &descriptorPool);
+
+void updateComputeUniformBuffers(Compute &compute, float frameTimer,
+                                 bool paused = false);
+} // namespace VkVP::Particle

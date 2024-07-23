@@ -5,9 +5,6 @@
 #include <VulkanTools/Buffer.hpp>
 #include <VulkanTools/Camera.hpp>
 #include <VulkanTools/Device.hpp>
-#include <VulkanViewport/Editor/Menu.hpp>
-#include <VulkanViewport/Editor/Menu_Window_Defines.hpp>
-#include <VulkanViewport/UI/UISettings.hpp>
 #include <imgui/imgui.h>
 #include <vulkan/vulkan.hpp>
 // Options and values to display/toggle from the UI
@@ -49,10 +46,11 @@ struct ImGuiUI {
   std::string shadersPath;
   std::string fontPath;
   float fontSize = .5f;
-  explicit ImGuiUI(VulkanDevice *vulkanDevice,
-                   const std::string &shadersPath const std::string &fontPath);
+  explicit ImGuiUI(VulkanDevice *vulkanDevice, const std::string &shadersPath,
+                   const std::string &fontPath);
 
-  void initialize(uint32_t width, uint32_t height);
+  void initialize(VkQueue queue, VkRenderPass renderPass, uint32_t width,
+                  uint32_t height);
 
   // Initialize styles, keys, etc.
   void setupVisuals(float width, float height);
@@ -62,8 +60,7 @@ struct ImGuiUI {
   void destroyImGuiVulkanData();
 
   // Initialize all Vulkan resources used by the ui
-  void initializeResources(VkRenderPass &renderPass,
-                                      VkQueue copyQueue);
+  void initializeResources(VkRenderPass &renderPass, VkQueue copyQueue);
 
   // Starts a new imGui frame and sets up windows and ui elements
   void newFrame(float frameTime, Camera &camera);
