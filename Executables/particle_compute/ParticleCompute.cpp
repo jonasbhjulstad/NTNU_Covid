@@ -58,14 +58,14 @@ void prepare(VulkanInstance &vulkanInstance,
              std::vector<VkVP::Particle::Particle> &particleBuffer,
              uint32_t width, uint32_t height) {
   using namespace VkVP::Particle;
-  graphics.queueFamilyIndex =
+  uint32_t graphics_QFI =
       vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
   compute.queueFamilyIndex =
       vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
   compute.queue = vulkanInstance.queue;
   loadAssets(vulkanInstance);
   prepareStorageBuffers(vulkanInstance, compute, particleBuffer, storageBuffer,
-                        graphics.queueFamilyIndex);
+                        graphics_QFI);
   VkVP::Particle::prepareCompute(vulkanInstance, compute, storageBuffer,
                                  vulkanInstance.descriptorPool);
   VkVP::Particle::prepareGraphics(vulkanInstance, graphics,
@@ -169,7 +169,7 @@ int main() {
                             vulkanInstance.frameBuffers[i], width, height);
       VkVP::Particle::buildGraphicsCommandBuffer(
           vulkanInstance, graphics, drawCmdBuffers[i], storageBuffer,
-          N_particles, width, height, compute.queueFamilyIndex);
+          N_particles, width, height, compute_QFI);
       ui.drawFrame(drawCmdBuffers[i]);
       vkCmdEndRenderPass(drawCmdBuffers[i]);
       VkVP::Compute::graphicsMemoryBarrierRelease(
@@ -180,7 +180,7 @@ int main() {
     VkVP::Compute::computeMemoryBarrierAquire(
         storageBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
     buildComputeCommandBuffer(compute, storageBuffer, N_particles,
-                              graphics.queueFamilyIndex);
+                              graphics_QFI);
     VkVP::Compute::computeMemoryBarrierRelease(
         storageBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
     vkEndCommandBuffer(compute.commandBuffer);

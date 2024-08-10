@@ -8,8 +8,6 @@
 #include <vulkan/vulkan.h>
 namespace VkVP::Particle {
 struct Graphics {
-  uint32_t queueFamilyIndex; // Used to check if compute and graphics queue
-                             // families differ and require additional barriers
   VkDescriptorSetLayout
       descriptorSetLayout; // Particle system rendering shader binding layout
   VkDescriptorSet descriptorSet;   // Particle system rendering shader bindings

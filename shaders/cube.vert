@@ -10,7 +10,6 @@ layout (location = 3) in vec3 inColor;
 layout (location = 4) in vec3 instancePos;
 // layout (location = 5) in vec3 instanceRot;
 layout (location = 5) in vec3 instanceScale;
-// layout (location = 7) in int instanceTexIndex;
 
 layout (binding = 0) uniform UBO 
 {

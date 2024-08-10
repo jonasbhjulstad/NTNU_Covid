@@ -38,7 +38,7 @@ void setupDescriptorPool(VkDevice logicalDevice,
       initializers::descriptorPoolCreateInfo(poolSizes.size(), poolSizes.data(),
                                              3);
   descriptorPoolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-  
+
   VK_CHECK_RESULT(vkCreateDescriptorPool(logicalDevice, &descriptorPoolInfo,
                                          nullptr, &descriptorPool));
 }
@@ -52,8 +52,8 @@ int main() {
   if (!glfwInit())
     return 1;
 
-  uint32_t width = 1280;
-  uint32_t height = 720;
+  uint32_t width = 800;
+  uint32_t height = 800;
 
   VkVP::assignGLFWRequiredInstanceExtensions(vulkanInstance);
   vulkanInstance.glfwWindow =
@@ -101,30 +101,12 @@ int main() {
       VkVP::Cube::createParticles(particles_per_attractor);
   uint32_t N_particles = particles.size();
 
-  /* ImGUI App Initialization */
 
-  IMGUI_CHECKVERSION();
-  ImGui::CreateContext();
-  ImGuiContext *g = ImGui::GetCurrentContext();
-  camera.setContext(g);
-  ImGuiIO &io = ImGui::GetIO();
-  camera.mousePos_old = {io.MousePos.x, io.MousePos.y};
-  ImGui_Vulkan_Init(vulkanInstance);
-
-  // camera.setWindowID(ImGui::GetCurrentWindow());
-
-  float frameTimer = 0.0f;
-  VkVP::ImGuiUI ui(vulkanInstance.vulkanDevice, SHADER_DIR, fontPath);
-  ui.initialize(vulkanInstance.queue, vulkanInstance.renderPass, width, height);
-  auto tStart = std::chrono::high_resolution_clock::now();
-  auto &drawCmdBuffers = vulkanInstance.drawCmdBuffers;
-  auto &renderPass = vulkanInstance.renderPass;
   //   prepare(vulkanInstance, particles, width, height);
   uint32_t graphics_QFI =
       vulkanInstance.vulkanDevice->queueFamilyIndices.graphics;
   uint32_t compute_QFI =
       vulkanInstance.vulkanDevice->queueFamilyIndices.compute;
-
   uint32_t currentBuffer = 0;
   uint32_t cubes_per_attractor = 128;
   // instance data preparation
@@ -150,45 +132,41 @@ int main() {
   compute.queue = vulkanInstance.queue;
   setupDescriptorPool(vulkanDevice->logicalDevice,
                       vulkanInstance.descriptorPool);
-    std::unique_ptr<VkVP::InstancePipelineData> cubePipeline = prepareSynchronizedInstancePipeline(vulkanInstance, voxelParams, particles, graphics_QFI, compute_QFI);
+  std::unique_ptr<VkVP::InstancePipelineData> cubePipeline =
+      prepareSynchronizedInstancePipeline(vulkanInstance, voxelParams,
+                                          particles, graphics_QFI, compute_QFI);
   VulkanBuffer &instanceBuffer = cubePipeline->instanceBuffer;
   compute.commandPool = vulkanInstance.vulkanDevice->commandPool;
   VkVP::Cube::prepareCompute(vulkanInstance, compute, instanceBuffer,
                              vulkanInstance.descriptorPool);
+
+
+
+
+
+  /* ImGUI App Initialization */
+
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiContext *g = ImGui::GetCurrentContext();
+  camera.setContext(g);
+  ImGuiIO &io = ImGui::GetIO();
+  camera.mousePos_old = {io.MousePos.x, io.MousePos.y};
+  ImGui_Vulkan_Init(vulkanInstance);
+
+  // camera.setWindowID(ImGui::GetCurrentWindow());
+
+  float frameTimer = 0.0f;
+  VkVP::ImGuiUI ui(vulkanInstance.vulkanDevice, SHADER_DIR, fontPath);
+  ui.initialize(vulkanInstance.queue, vulkanInstance.renderPass, width, height);
+  auto tStart = std::chrono::high_resolution_clock::now();
+  auto &drawCmdBuffers = vulkanInstance.drawCmdBuffers;
+  auto &renderPass = vulkanInstance.renderPass;
+
+
   auto device = vulkanInstance.vulkanDevice->logicalDevice;
-//   {
-//     auto semaCI = initializers::semaphoreCreateInfo();
-//     VK_CHECK_RESULT(vkCreateSemaphore(device, &semaCI, nullptr,
-//                                       &compute.semaphores.compute));
-//     VK_CHECK_RESULT(vkCreateSemaphore(device, &semaCI, nullptr,
-//                                       &compute.semaphores.graphics));
-    
 
-//     if (graphics_QFI != compute_QFI) {
-//       initializers::beginCommandBuffer(compute.commandBuffer);
-//       VkBufferMemoryBarrier buffer_barrier = {
-//           VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER,
-//           nullptr,
-//           VK_ACCESS_VERTEX_ATTRIBUTE_READ_BIT,
-//           0,
-//           graphics_QFI,
-//           compute.queueFamilyIndex,
-//           instanceBuffer.buffer,
-//           0,
-//           instanceBuffer.size};
-
-//       vkCmdPipelineBarrier(compute.commandBuffer, VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
-//                            VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr,
-//                            1, &buffer_barrier, 0, nullptr);
-//         vulkanDevice->flushCommandBuffer(compute.commandBuffer, compute.queue, true);
-//     }
-//   }
-  VkSubmitInfo submitInfo = initializers::submitInfo();
-  submitInfo.pSignalSemaphores = &compute.semaphores.graphics;
-  submitInfo.signalSemaphoreCount = 1;
-  VK_CHECK_RESULT(
-      vkQueueSubmit(vulkanInstance.queue, 1, &submitInfo, VK_NULL_HANDLE));
-
+  compute.uniformData.particleCount = N_particles;
 
   while (!glfwWindowShouldClose(vulkanInstance.glfwWindow)) {
     glfwPollEvents();
@@ -196,7 +174,6 @@ int main() {
     // Start the Dear ImGui frame
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
-    // Start the Dear ImGui frame
     camera.update(frameTimer);
     auto tEnd = std::chrono::high_resolution_clock::now();
     auto tDiff =
@@ -207,6 +184,8 @@ int main() {
     ui.updateBuffers();
     updateProjectionBuffer(vulkanInstance.projection.buffer,
                            vulkanInstance.projection.data, camera, true);
+    // VkVP::Cube::updateGraphicsUniformBuffers(graphics, camera, width,
+    //                                              height);
     VkVP::Cube::updateComputeUniformBuffers(compute, frameTimer);
     if (VkVP::getFrameBufferSizeChange(vulkanInstance.glfwWindow, width,
                                        height)) {
@@ -214,6 +193,7 @@ int main() {
     }
     for (int i = 0; i < drawCmdBuffers.size(); i++) {
       initializers::beginCommandBuffer(drawCmdBuffers[i]);
+
       VkVP::Compute::graphicsMemoryBarrierAquire(
           instanceBuffer, drawCmdBuffers[i], graphics_QFI, compute_QFI);
       VkVP::beginRenderPass(renderPass, drawCmdBuffers[i],
@@ -225,8 +205,6 @@ int main() {
           instanceBuffer, drawCmdBuffers[i], graphics_QFI, compute_QFI);
       VK_CHECK_RESULT(vkEndCommandBuffer(drawCmdBuffers[i]));
     }
-
-    // Build Compute
     initializers::beginCommandBuffer(compute.commandBuffer);
     VkVP::Compute::computeMemoryBarrierAquire(
         instanceBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
@@ -235,13 +213,10 @@ int main() {
     VkVP::Compute::computeMemoryBarrierRelease(
         instanceBuffer, compute.commandBuffer, graphics_QFI, compute_QFI);
     vkEndCommandBuffer(compute.commandBuffer);
-
-    // Submit all buffers
     VkVP::submitBuffers(vulkanInstance, compute.commandBuffer,
                         compute.semaphores.graphics,
                         compute.semaphores.compute);
   }
-
   ImGui_ImplVulkanH_DestroyWindow(vulkanInstance.instance,
                                   vulkanDevice->logicalDevice,
                                   &vulkanInstance.ImGuiWindow, nullptr);

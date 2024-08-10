@@ -39,11 +39,8 @@ void buildComputeCommandBuffer(Compute &compute, VulkanBuffer &storageBuffer,
   vkCmdBindPipeline(compute.commandBuffer, VK_PIPELINE_BIND_POINT_COMPUTE,
                     compute.pipelineIntegrate);
   vkCmdDispatch(compute.commandBuffer, N_particles / 256, 1, 1);
-
-
 }
 // Setup and fill the compute shader storage buffers containing the particles
-
 void updateComputeUniformBuffers(Compute &compute, float frameTimer,
                                  bool paused) {
   compute.uniformData.deltaT = paused ? 0.0f : frameTimer * 0.05f;
@@ -167,8 +164,15 @@ void prepareCompute(VulkanInstance &vulkanInstance, Compute &compute,
   VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr,
                                     &compute.semaphores.compute));
 
-  VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr, &compute.semaphores.graphics));
+  VK_CHECK_RESULT(vkCreateSemaphore(device, &semaphoreCreateInfo, nullptr,
+                                    &compute.semaphores.graphics));
+  VkSubmitInfo submitInfo = initializers::submitInfo();
+  submitInfo.signalSemaphoreCount = 1;
+  submitInfo.pSignalSemaphores = &compute.semaphores.graphics;
+  VK_CHECK_RESULT(
+      vkQueueSubmit(vulkanInstance.queue, 1, &submitInfo, VK_NULL_HANDLE));
+  VK_CHECK_RESULT(vkQueueWaitIdle(vulkanInstance.queue));
 
   // Build a single command buffer containing the compute dispatch commands
 }
-}
+} // namespace VkVP::Cube

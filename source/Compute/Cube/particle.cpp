@@ -8,11 +8,11 @@ glm::mat3 randomRotation(std::mt19937 &rng) {
   glm::mat4 rot = glm::mat3(1.0f);
 
   float angle = dist(rng);
-  glm::rotate(rot, angle, glm::vec3(0.0f, 0.0f, 1.0f));
+  rot = glm::rotate(rot, angle, glm::vec3(0.0f, 0.0f, 1.0f));
   angle = dist(rng);
-  glm::rotate(rot, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+  rot = glm::rotate(rot, angle, glm::vec3(0.0f, 1.0f, 0.0f));
   angle = dist(rng);
-  glm::rotate(rot, angle, glm::vec3(1.0f, 0.0f, 0.0f));
+  rot = glm::rotate(rot, angle, glm::vec3(1.0f, 0.0f, 0.0f));
   return glm::mat3(rot);
 }
 
@@ -42,7 +42,6 @@ std::vector<Particle> createParticles(uint32_t particles_per_attractor) {
         particle.pos = glm::vec4(attractors[i] * 1.5f, 90000.0f);
         particle.vel = glm::vec4(glm::vec4(0.0f));
       } else {
-        // Position
         glm::vec3 position(attractors[i] + glm::vec3(rndDist(rndEngine),
                                                      rndDist(rndEngine),
                                                      rndDist(rndEngine)) *
@@ -60,8 +59,6 @@ std::vector<Particle> createParticles(uint32_t particles_per_attractor) {
         float mass = (rndDist(rndEngine) * 0.5f + 0.5f) * 75.0f;
         particle.pos = glm::vec4(position, mass);
         particle.vel = glm::vec4(velocity, 0.0f);
-        particle.scale = glm::vec3(1.0f);
-        particle.rotation = randomRotation(rng);
       }
 
       // Color gradient offset

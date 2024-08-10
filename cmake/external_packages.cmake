@@ -1,7 +1,7 @@
 include(${PROJECT_SOURCE_DIR}/cmake/CPM.cmake)
 include(FindVulkan)
 
-
+message(WARNING ${Vulkan_LIBRARIES})
 find_package(glfw3 REQUIRED)
 
 CPMAddPackage("gh:jonasbhjulstad/VulkanTools#v1.0.25")

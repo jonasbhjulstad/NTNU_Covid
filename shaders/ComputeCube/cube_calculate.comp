@@ -5,8 +5,8 @@ struct Particle
 {
 	vec4 pos;
 	vec4 vel;
-	vec3 scale;
-	mat3 rotation;
+	// vec3 scale;
+	// mat3 rotation;
 };
 //  glm::vec4 pos;
 //   glm::vec4 vel;
